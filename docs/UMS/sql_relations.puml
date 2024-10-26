@@ -1,0 +1,31 @@
+@startuml
+entity User {
+    * id: Integer [PK]
+    * username: Varchar
+    * email: Varchar
+    * password: Varchar
+    * role: Varchar
+}
+
+entity Profile {
+    * id: Integer [PK]
+    * user_id: Integer [FK]
+    * bio: Text
+    * phone_number: Varchar
+}
+
+entity Role {
+    * id: Integer [PK]
+    * name: Varchar
+}
+
+entity Permission {
+    * id: Integer [PK]
+    * name: Varchar
+    * description: Text
+}
+
+User ||--|| Profile : "has one"
+User }|--|| Role : "has a"
+Role }|--o{ Permission : "has many"
+@enduml
