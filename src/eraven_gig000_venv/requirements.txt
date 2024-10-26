@@ -1,2 +1,2 @@
 django
-requests
+djangorestframework_simplejwt
