@@ -1,4 +1,5 @@
 # pages/views.py
+from django.conf.urls import handler404, handler500, handler403
 from django.shortcuts import render
 
 def landing_page_view(request):
@@ -21,6 +22,9 @@ def payment_policy_view(request):
 
 def refund_policy_view(request):
     return render(request, 'pages/refund_policy.html')
+
+def privacy_policy_view(request):
+    return render(request, 'pages/privacy.html')
 
 def info_view(request):
     return render(request, 'pages/info.html')

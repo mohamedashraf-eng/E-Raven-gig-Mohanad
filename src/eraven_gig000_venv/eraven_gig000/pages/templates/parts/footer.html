@@ -1,0 +1,65 @@
+<footer class="footer bg-dark text-white pt-5 pb-4">
+    <div class="container text-md-left">
+        <div class="row text-md-left">
+            <!-- About Section -->
+            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Path</h5>
+                <p>
+                    Path is a cutting-edge platform offering comprehensive user management and learning solutions tailored to your needs.
+                </p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Quick Links</h5>
+                <p><a href="{% url 'landing-page' %}" class="text-white footer-link">Home</a></p>
+                <p><a href="{% url 'about' %}" class="text-white footer-link">About</a></p>
+                <p><a href="{% url 'contact' %}" class="text-white footer-link">Contact</a></p>
+                <p><a href="{% url 'terms' %}" class="text-white footer-link">Terms of Service</a></p>
+                {% comment %} <p><a href="{% url 'policy' %}" class="text-white footer-link">Policy</a></p> {% endcomment %}
+                <p><a href="{% url 'privacy-policy' %}" class="text-white footer-link">Privacy Policy</a></p>
+                {% comment %} <p><a href="{% url 'payment-policy' %}" class="text-white footer-link">Payment Policy</a></p> {% endcomment %}
+                <p><a href="{% url 'refund-policy' %}" class="text-white footer-link">Refund Policy</a></p>
+                {% comment %} <p><a href="{% url 'info' %}" class="text-white footer-link">Information</a></p> {% endcomment %}
+            </div>
+            
+            <!-- Contact Section -->
+            <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Contact</h5>
+                <p><i class="bi bi-house-door-fill me-3"></i> 1234 Street Name, City, Country</p>
+                <p><i class="bi bi-envelope-fill me-3"></i> info@path.com</p>
+                <p><i class="bi bi-telephone-fill me-3"></i> +XXXXXXXXXX</p>
+            </div>
+
+            <!-- Social Media Section -->
+            <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Follow Us</h5>
+                <a href="https://facebook.com" target="_blank" class="text-white me-4 footer-social">
+                    <i class="bi bi-facebook"></i> Facebook
+                </a>
+                <br>
+                <a href="https://twitter.com" target="_blank" class="text-white me-4 footer-social">
+                    <i class="bi bi-twitter"></i> Twitter
+                </a>
+                <br>
+                <a href="https://instagram.com" target="_blank" class="text-white me-4 footer-social">
+                    <i class="bi bi-instagram"></i> Instagram
+                </a>
+                <br>
+                <a href="https://linkedin.com" target="_blank" class="text-white me-4 footer-social">
+                    <i class="bi bi-linkedin"></i> LinkedIn
+                </a>
+            </div>
+        </div>
+
+        <hr class="mb-4">
+
+        <!-- Copyright -->
+        <div class="row align-items-center">
+            <div class="col-md-7 col-lg-8">
+                <p class="text-center text-md-left">
+                    © 2023 Path. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>

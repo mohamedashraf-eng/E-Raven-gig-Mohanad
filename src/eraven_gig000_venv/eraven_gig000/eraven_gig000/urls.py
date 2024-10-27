@@ -1,25 +1,25 @@
-"""
-URL configuration for eraven_gig000 project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls import handler404, handler500, handler403
+from django.shortcuts import render
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # 
     path('api/v1/ums/', include('ums.urls')),
     path('api/v1/pages/', include('pages.urls')),
 ]
+
+# Define custom error handlers
+def custom_404_view(request, exception):
+    return render(request, 'exceptions/404.html', status=404)
+
+def custom_500_view(request):
+    return render(request, 'exceptions/500.html', status=500)
+
+def custom_403_view(request, exception):
+    return render(request, 'exceptions/403.html', status=403)
+
+# Link the custom error handlers
+handler404 = custom_404_view
+handler500 = custom_500_view
+handler403 = custom_403_view

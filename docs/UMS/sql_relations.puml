@@ -1,10 +1,14 @@
 @startuml
+
 entity User {
     * id: Integer [PK]
     * username: Varchar
     * email: Varchar
     * password: Varchar
-    * role: Varchar
+    * role_id: Integer [FK]
+    * is_staff: Boolean
+    * is_active: Boolean
+    * date_joined: DateTime
 }
 
 entity Profile {
@@ -17,6 +21,7 @@ entity Profile {
 entity Role {
     * id: Integer [PK]
     * name: Varchar
+    * description: Text
 }
 
 entity Permission {
@@ -25,7 +30,15 @@ entity Permission {
     * description: Text
 }
 
-User ||--|| Profile : "has one"
-User }|--|| Role : "has a"
-Role }|--o{ Permission : "has many"
+entity Role_Permission {
+    * id: Integer [PK]
+    * role_id: Integer [FK]
+    * permission_id: Integer [FK]
+}
+
+User ||--|| Profile : has_one
+User }|--|| Role : has_a
+Role }|--o{ Role_Permission : contains
+Permission }|--o{ Role_Permission : contains
+
 @enduml

@@ -1,0 +1,74 @@
+/* base.css */
+
+/* General body styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    margin: 0;
+    padding-top: 70px; /* Offset for fixed navbar */
+}
+
+/* Example media query for mobile adjustment */
+@media (max-width: 768px) {
+    body {
+        padding-top: 50px; /* Adjust based on header height on mobile */
+    }
+}
+
+/* Basic link styling */
+a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Container spacing */
+.container {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+/* Section Styling */
+section {
+    padding: 60px 0;
+}
+
+#hero {
+    background: url("{% static 'images/hero-bg.jpg' %}") center center/cover no-repeat;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+#features .icon-box {
+    text-align: center;
+    padding: 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#features .icon-box:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.btn-get-started {
+    display: inline-block;
+    padding: 10px 25px;
+    background-color: #0d6efd;
+    color: white;
+    border-radius: 50px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-get-started:hover {
+    background-color: #0b5ed7;
+    transform: scale(1.05);
+}
