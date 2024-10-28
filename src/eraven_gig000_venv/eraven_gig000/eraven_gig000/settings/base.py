@@ -1,14 +1,11 @@
+# settings/base.py
+
 from pathlib import Path
 import os
+from datetime import timedelta
 
 # Base directory path
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Security settings
-SECRET_KEY = 'django-insecure-kdvo2(v#+hz8!lb(gx@ju($@&dncgq*i=*$$&=8k7l^0rv$j85'
-# See what cause the error
-DEBUG = True
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Installed applications
 INSTALLED_APPS = [
@@ -18,9 +15,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Custom applications (x.apps.XConfig | X: app name)
+    # Third-party apps
     'rest_framework',
     'rest_framework_simplejwt',
+    # Custom applications
     'ums.apps.UmsConfig',
     'pages.apps.PagesConfig',
 ]
@@ -57,24 +55,10 @@ TEMPLATES = [
     },
 ]
 
-# Database configuration
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-# Password validation
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
-]
-
+# Authentication model
 AUTH_USER_MODEL = 'ums.User'
 
+# REST framework configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -84,8 +68,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-from datetime import timedelta
-
+# JWT Settings
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
@@ -98,7 +81,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
+# Static and media files
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'eraven_gig000/static')]
