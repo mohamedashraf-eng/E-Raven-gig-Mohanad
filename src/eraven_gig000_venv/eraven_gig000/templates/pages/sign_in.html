@@ -5,33 +5,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <title>Sign In</title>
     <link rel="stylesheet" href="{% static 'css/sign_in.css' %}">
+    <link rel="stylesheet" href="{% static 'css/loading_screen.css' %}">
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loader">
+            <img src="{% static 'images/path_logo.png' %}" alt="Loading Logo" class="loading-logo">
+        </div>
+        <p class="loading-quote">"Empowering Your Journey to Success"</p>
+        <p class="copyright">© 2024 English Path. All rights reserved.</p>
+    </div>
+
     <div class="container">
-        <div class="form-container">
-            <h2>Sign In</h2>
-            {% if error %}
-                <div class="error-message">{{ error }}</div>
-            {% endif %}
-            <form method="post" action="{% url 'sign-in' %}">
-                {% csrf_token %}
-                
-                <div class="form-group">
-                    <label for="id_username">Username</label>
-                    <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter your username" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="id_password">Password</label>
-                    <input type="password" name="password" id="id_password" class="form-control" placeholder="Enter your password" required>
-                </div>
-                
-                <button type="submit" class="btn">Sign In</button>
-            </form>
-            <p class="signup-link">Don't have an account? <a href="{% url 'sign-up' %}">Sign up</a></p>
+        <div class="left-panel">
+            <div class="form-container">
+                <h2>Sign In</h2>
+                {% if error %}
+                    <div class="error-message">{{ error }}</div>
+                {% endif %}
+                <form method="post" action="{% url 'sign-in' %}">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_username">Username</label>
+                        <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter your username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_password">Password</label>
+                        <input type="password" name="password" id="id_password" class="form-control" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn">Sign In</button>
+                </form>
+                <p class="signup-link">Don't have an account? <a href="{% url 'sign-up' %}">Sign up</a></p>
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="logo-container">
+                <img src="{% static 'images/path_logo.png' %}" alt="Company Logo" class="logo">
+                <p class="slogan">"Empowering Your Success"</p>
+            </div>
         </div>
     </div>
+    
+    <!-- JavaScript for Loading Screen -->
+    <script src="{% static 'js/loading_screen.js' %}"></script>
 </body>
 </html>

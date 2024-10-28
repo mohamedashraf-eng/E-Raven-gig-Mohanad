@@ -1,0 +1,48 @@
+/* static/css/loading_screen.css */
+
+/* Main Loading Screen Container */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #84D1DA; /* Light color from your palette */
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: fadeOut 1s ease-in-out forwards;
+    animation-delay: 2s; /* Adjust delay as needed */
+}
+
+/* Logo as Loader */
+.loader {
+    width: 80px;
+    height: 80px;
+    background: url('{% static "images/path_logo.png" %}') no-repeat center center;
+    background-size: contain;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+/* Loading Quote Styling */
+.loading-quote {
+    font-size: 1.1em;
+    color: #0BA2B2; /* A darker color from your palette */
+    text-align: center;
+    max-width: 300px;
+    padding: 0 20px;
+    font-weight: 500;
+}
+
+/* Animations */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; visibility: hidden; }
+}

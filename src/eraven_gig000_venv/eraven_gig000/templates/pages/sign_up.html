@@ -5,91 +5,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <title>Sign Up</title>
+    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="{% static 'css/sign_up.css' %}">
+    <link rel="stylesheet" href="{% static 'css/loading_screen.css' %}">
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loader">
+            <img src="{% static 'images/path_logo.png' %}" alt="Loading Logo" class="loading-logo">
+        </div>
+        <p class="loading-quote">"Empowering Your Journey to Success"</p>
+        <p class="copyright">© 2024 English Path. All rights reserved.</p>
+    </div>
+
     <div class="container">
-        <div class="form-container">
-            <h2>Sign Up</h2>
-            <form method="post" action="{% url 'sign-up' %}">
-                {% csrf_token %}
+        <div class="left-panel">
+            <div class="branding">
+                <img src="{% static 'images/path_logo.png' %}" alt="Company Logo" class="logo">
+                <p class="slogan">"Join us and start your journey today!"</p>
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="form-container">
+                <h2>Sign Up</h2>
+                <form method="post" action="{% url 'sign-up' %}">
+                    {% csrf_token %}
 
-                <div class="form-group">
-                    <label for="id_username"><i class="fas fa-user"></i> Username</label>
-                    <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter your username" required>
-                    {% if form.username.errors %}
-                        <div class="error">{{ form.username.errors }}</div>
-                    {% endif %}
-                </div>
+                    <div class="form-group">
+                        <label for="id_username"><i class="fas fa-user"></i> Username</label>
+                        <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter your username" required>
+                        {% if form.username.errors %}
+                            <div class="error">{{ form.username.errors }}</div>
+                        {% endif %}
+                    </div>
 
-                <div class="form-group">
-                    <label for="id_email"><i class="fas fa-envelope"></i> Email</label>
-                    <input type="email" name="email" id="id_email" class="form-control" placeholder="Enter your email" required>
-                    {% if form.email.errors %}
-                        <div class="error">{{ form.email.errors }}</div>
-                    {% endif %}
-                </div>
+                    <div class="form-group">
+                        <label for="id_email"><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" name="email" id="id_email" class="form-control" placeholder="Enter your email" required>
+                        {% if form.email.errors %}
+                            <div class="error">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
 
-                <div class="form-group">
-                    <label for="id_password1"><i class="fas fa-lock"></i> Password</label>
-                    <input type="password" name="password1" id="id_password1" class="form-control" placeholder="Enter your password" required>
-                    {% if form.password1.errors %}
-                        <div class="error">{{ form.password1.errors }}</div>
-                    {% endif %}
-                </div>
+                    <div class="form-group">
+                        <label for="id_password1"><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" name="password1" id="id_password1" class="form-control" placeholder="Enter your password" required>
+                        {% if form.password1.errors %}
+                            <div class="error">{{ form.password1.errors }}</div>
+                        {% endif %}
+                        <!-- Password Strength Indicator -->
+                        <div class="strength-indicator"></div>
+                    </div>
 
-                <div class="form-group">
-                    <label for="id_password2"><i class="fas fa-lock"></i> Confirm Password</label>
-                    <input type="password" name="password2" id="id_password2" class="form-control" placeholder="Confirm your password" required>
-                    {% if form.password2.errors %}
-                        <div class="error">{{ form.password2.errors }}</div>
-                    {% endif %}
-                </div>
+                    <div class="form-group">
+                        <label for="id_password2"><i class="fas fa-lock"></i> Confirm Password</label>
+                        <input type="password" name="password2" id="id_password2" class="form-control" placeholder="Confirm your password" required>
+                        {% if form.password2.errors %}
+                            <div class="error">{{ form.password2.errors }}</div>
+                        {% endif %}
+                    </div>
 
-                <button type="submit" class="btn">Sign Up</button>
-            </form>
-            <p class="signin-link">Already have an account? <a href="{% url 'sign-in' %}">Sign in</a></p>
+                    <button type="submit" class="btn">Sign Up</button>
+                </form>
+                <p class="signin-link">Already have an account? <a href="{% url 'sign-in' %}">Sign in</a></p>
+            </div>
         </div>
     </div>
 
-    <!-- Optional: Include JavaScript for additional functionalities -->
-    <!-- Example: Password Strength Meter -->
-    <script>
-        // Example JavaScript for password strength indicator
-        const passwordInput = document.getElementById('id_password1');
-        const strengthIndicator = document.createElement('div');
-        strengthIndicator.className = 'strength-indicator';
-        passwordInput.parentNode.appendChild(strengthIndicator);
-
-        passwordInput.addEventListener('input', function() {
-            const strength = calculatePasswordStrength(passwordInput.value);
-            strengthIndicator.textContent = `Strength: ${strength.label}`;
-            strengthIndicator.style.color = strength.color;
-        });
-
-        function calculatePasswordStrength(password) {
-            let score = 0;
-            if (password.length >= 8) score += 1;
-            if (/[A-Z]/.test(password)) score += 1;
-            if (/[a-z]/.test(password)) score += 1;
-            if (/[0-9]/.test(password)) score += 1;
-            if (/[\W_]/.test(password)) score += 1;
-
-            switch(score) {
-                case 0:
-                case 1:
-                case 2:
-                    return { label: 'Weak', color: '#d9534f' };
-                case 3:
-                case 4:
-                    return { label: 'Moderate', color: '#f0ad4e' };
-                case 5:
-                    return { label: 'Strong', color: '#5cb85c' };
-                default:
-                    return { label: 'Weak', color: '#d9534f' };
-            }
-        }
-    </script>
+    <!-- JavaScript for Loading Screen and Password Strength -->
+    <script src="{% static 'js/loading_screen.js' %}"></script>
+    <script src="{% static 'js/sign_up.js' %}"></script>
 </body>
 </html>
