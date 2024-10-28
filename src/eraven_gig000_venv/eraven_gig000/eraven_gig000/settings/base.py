@@ -61,7 +61,7 @@ AUTH_USER_MODEL = 'ums.User'
 # REST framework configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'ums.authentication.CookieJWTAuthentication',  # Custom authentication
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
@@ -69,10 +69,20 @@ REST_FRAMEWORK = {
 }
 
 # JWT Settings
+# settings.py
+from datetime import timedelta
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_COOKIE': 'access_token',                # Cookie name for the access token
+    'AUTH_COOKIE_REFRESH': 'refresh_token',       # Cookie name for the refresh token
+    'AUTH_COOKIE_HTTP_ONLY': True,                # HTTP-only cookies for security
+    'AUTH_COOKIE_SECURE': False,                  # Set to True in production with HTTPS
+    'AUTH_COOKIE_SAMESITE': 'Lax',                # 'Strict' or 'Lax' for CSRF protection
 }
 
 # Internationalization

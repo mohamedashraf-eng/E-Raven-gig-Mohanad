@@ -11,9 +11,6 @@ urlpatterns = [
     path('api/v1/pages/', include('pages.urls')),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    
 # Define custom error handlers
 def custom_404_view(request, exception):
     return render(request, 'exceptions/404.html', status=404)
@@ -28,3 +25,7 @@ def custom_403_view(request, exception):
 handler404 = custom_404_view
 handler500 = custom_500_view
 handler403 = custom_403_view
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
