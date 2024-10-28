@@ -38,6 +38,17 @@ CSRF_COOKIE_SECURE = True
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
+# Email backend configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='your-email@gmail.com')  # Use env variable for email
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='your-email-password')  # Use env variable for password
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = f'English Path <{EMAIL_HOST_USER}>'
+
+
 # Production logging (example)
 LOGGING = {
     'version': 1,

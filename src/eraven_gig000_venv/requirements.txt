@@ -1,4 +1,6 @@
 django
+django-environ
+django-ratelimit
 djangorestframework_simplejwt
 Pillow
 requests

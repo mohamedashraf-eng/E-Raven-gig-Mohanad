@@ -1,3 +1,50 @@
-body {
-    background: #000
+/* static/css/custom.css */
+
+.bg-primary-custom {
+    background-color: #84D1DA !important;
+}
+
+.bg-secondary-custom {
+    background-color: #5CC4B1 !important;
+}
+
+.btn-accent {
+    background-color: #0BA2B2;
+    color: white;
+}
+
+.btn-accent:hover {
+    background-color: #077c85;
+    color: white;
+}
+
+.link-custom {
+    color: #0BA2B2;
+    text-decoration: none;
+}
+
+.link-custom:hover {
+    color: #C3FC47;
+    text-decoration: none;
+}
+
+/* static/css/custom.css */
+
+.bg-primary-custom {
+    background-color: #84D1DA !important;
+}
+
+.btn-accent {
+    background-color: #0BA2B2;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.btn-accent:hover {
+    background-color: #077c85;
+    color: white;
+}
+
+.text-danger {
+    color: #d9534f !important;
 }

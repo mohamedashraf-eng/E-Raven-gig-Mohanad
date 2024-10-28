@@ -218,3 +218,18 @@ label {
         padding: 20px;
     }
 }
+
+/* Forgot Password link styling */
+.forgot-password-link {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.forgot-password-link a {
+    color: #0BA2B2; /* Adjust to fit your color palette */
+    text-decoration: none;
+}
+
+.forgot-password-link a:hover {
+    text-decoration: underline;
+}

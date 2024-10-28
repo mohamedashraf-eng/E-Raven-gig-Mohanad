@@ -7,6 +7,24 @@ from datetime import timedelta
 # Base directory path
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,  # Minimum length
+        }
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
 # Installed applications
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -18,6 +36,7 @@ INSTALLED_APPS = [
     # Third-party apps
     'rest_framework',
     'rest_framework_simplejwt',
+    # 'ratelimit',
     # Custom applications
     'ums.apps.UmsConfig',
     'pages.apps.PagesConfig',
@@ -32,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # ... any custom middleware
 ]
 
 # URL and WSGI settings
@@ -67,10 +87,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
 }
-
-# JWT Settings
-# settings.py
-from datetime import timedelta
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),

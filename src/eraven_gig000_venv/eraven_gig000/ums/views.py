@@ -15,6 +15,21 @@ from .serializers import (
 from .permissions import IsAdminOrReadOnly
 from django.http import JsonResponse
 from datetime import timedelta
+from django.contrib.auth.views import PasswordResetView
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.contrib.auth import get_user_model
+import logging
+from django.shortcuts import redirect
+
+logger = logging.getLogger(__name__)
+
+User = get_user_model()
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -141,6 +156,56 @@ class LogoutView(APIView):
         response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
         return response
 
+class CustomPasswordResetView(PasswordResetView):
+    def form_valid(self, form):
+        email = form.cleaned_data.get('email')
+        
+        try:
+            # Verify if a user exists with the provided email
+            user = User.objects.get(email=email)
+            logger.debug(f"User found with email {email}")
+
+            # Generate the UID and token for the reset URL
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+
+            # Construct the password reset URL
+            reset_url = self.request.build_absolute_uri(
+                reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+            )
+            
+            # Prepare the email context
+            subject = "Password Reset Requested"
+            context = {
+                'user': user,
+                'reset_url': reset_url,
+                'domain': self.request.get_host(),
+                'protocol': 'https' if self.request.is_secure() else 'http',
+            }
+
+            # Render HTML message and plain text fallback
+            html_message = render_to_string('registration/password_reset_email.html', context)
+            plain_message = strip_tags(html_message)  # Plain text fallback
+
+            # Send the email with HTML content only
+            send_mail(
+                subject=subject,
+                message=plain_message,  # Plain text version
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                html_message=html_message,  # HTML version
+                fail_silently=False,
+            )
+            logger.debug(f"Password reset email sent successfully to {email}")
+
+            # Redirect to password_reset_done page after successful email
+            return redirect(reverse('password_reset_done'))
+
+        except User.DoesNotExist:
+            logger.warning(f"No user found with email {email}")
+            form.add_error('email', "No account found with this email address.")
+            return self.form_invalid(form)
+    
 def token_lifetime_view(request):
     access_token_lifetime = settings.SIMPLE_JWT.get('ACCESS_TOKEN_LIFETIME', timedelta(minutes=15)).total_seconds()
     return JsonResponse({'access_token_lifetime': access_token_lifetime})

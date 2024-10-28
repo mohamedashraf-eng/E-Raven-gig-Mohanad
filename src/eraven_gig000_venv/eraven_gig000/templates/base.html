@@ -1,4 +1,4 @@
-<!-- base.html -->
+<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -15,6 +15,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
         <!-- Custom CSS -->
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
         <link rel="stylesheet" href="{% static 'css/base.css' %}">
         <link rel="stylesheet" href="{% static 'css/header.css' %}">
         <link rel="stylesheet" href="{% static 'css/footer.css' %}">
@@ -33,23 +34,19 @@
         <div id="loading-screen" class="loading-screen">
             <div class="loader">
                 <img src="{% static 'images/path_logo.png' %}" alt="Loading Logo" class="loading-logo">
+                <!-- Optional: Add animated stars or other elements here -->
             </div>
             <p class="loading-quote">"Empowering Your Journey to Success"</p>
             <p class="copyright">© 2024 English Path. All rights reserved.</p>
         </div>
 
-        <!-- Include Header -->
-        {% include 'parts/header.html' %}
-
-        <div id="main-content" class="main-content">
+        {% include 'parts/header.html' with class="mb-5" %}
+        <main id="main-content" class="container my-5">
             {% block content %}
-            <!-- Child templates will insert their content here -->
             {% endblock %}
-        </div>
+        </main>
+        {% include 'parts/footer.html' with class="mt-5" %}
 
-        <!-- Include Footer -->
-        {% include 'parts/footer.html' %}
-        
         <!-- JavaScript Files -->
         <script src="{% static 'js/loading_screen.js' %}"></script>
         <script src="{% static 'js/token_refresh.js' %}"></script>
