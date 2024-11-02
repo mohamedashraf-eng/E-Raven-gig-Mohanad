@@ -1,0 +1,202 @@
+<!-- templates/pages/check_email.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Your Email</title>
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/sign_up.css' %}">
+    <link rel="stylesheet" href="{% static 'css/loading_screen.css' %}">
+    <style>
+        /* Additional styles for messages */
+        .success-show {
+            color: var(--success-color);
+            background-color: #d4edda;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 0.95em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-show {
+            color: var(--error-color);
+            background-color: var(--error-background);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 0.95em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .link-button {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 1em;
+            padding: 0;
+            font-family: inherit;
+        }
+
+        .link-button:hover {
+            color: var(--secondary-color);
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid var(--primary-color); /* Blue */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen (Optional) -->
+    <div id="loading-screen" class="loading-screen" style="display: none;">
+        <div class="loader">
+            <img src="{% static 'images/path_logo.png' %}" alt="Loading Logo" class="loading-logo">
+        </div>
+        <p class="loading-quote">"Empowering Your Journey to Success"</p>
+        <p class="copyright">© 2024 English Path. All rights reserved.</p>
+    </div>
+
+    <!-- Hidden Form for CSRF Token -->
+    <form id="resend-activation-form" style="display: none;">
+        {% csrf_token %}
+    </form>
+
+    <div class="container">
+        <div class="left-panel">
+            <div class="branding">
+                <img src="{% static 'images/path_logo.png' %}" alt="Company Logo" class="logo">
+                <p class="slogan">"Your Success Starts Here!"</p>
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="form-container">
+                <h2>Registration Successful!</h2>
+                <div id="resend-message" class="strength-indicator"></div> <!-- For success/error messages -->
+                <p class="message">Thank you for signing up. A verification email has been sent to <strong>{{ user_email }}</strong>.</p>
+                <p class="instructions">Please check your inbox to activate your account.</p>
+                <p class="hint">
+                    If you don’t see the email, check your spam folder or 
+                    <button id="resend-activation-btn" class="link-button">resend the activation email</button>.
+                </p>
+                <div class="btn-container">
+                    <a href="{% url 'sign-in' %}" class="btn">Go to Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Loading Screen and Password Strength -->
+    <script src="{% static 'js/loading_screen.js' %}"></script>
+    {% comment %} <script src="{% static 'js/sign_up.js' %}"></script> {% endcomment %}
+
+    <!-- JavaScript for Handling Resend Activation -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const resendButton = document.getElementById('resend-activation-btn');
+            const loadingScreen = document.getElementById('loading-screen');
+            const resendMessage = document.getElementById('resend-message');
+            const csrfToken = document.querySelector('#resend-activation-form [name=csrfmiddlewaretoken]').value;
+
+            resendButton.addEventListener('click', async function (event) {
+                event.preventDefault(); // Prevent any default behavior
+
+                // Clear previous messages
+                resendMessage.textContent = '';
+                resendMessage.classList.remove('error-show', 'success-show');
+
+                // Get the user's email from the template context
+                const userEmail = "{{ user_email }}";
+
+                if (!userEmail) {
+                    resendMessage.textContent = "Email address not found.";
+                    resendMessage.classList.add('error-show');
+                    return;
+                }
+
+                try {
+                    // Show loading screen
+                    loadingScreen.style.display = 'block';
+
+                    // Show a spinner and message in the resend message area
+                    resendMessage.innerHTML = '<span class="loading-spinner"></span> Resending activation email...';
+                    resendMessage.classList.remove('error-show', 'success-show');
+
+                    // Send POST request to resend activation email
+                    const response = await fetch("{% url 'resend-activation' %}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken, // Include CSRF token
+                        },
+                        body: JSON.stringify({ email: userEmail })
+                    });
+
+                    let result;
+                    try {
+                        result = await response.json();
+                    } catch (e) {
+                        result = {};
+                    }
+
+                    // Hide loading screen
+                    loadingScreen.style.display = 'none';
+
+                    if (response.ok) {
+                        resendMessage.textContent = result.detail || "Activation email has been resent. Please check your email.";
+                        resendMessage.classList.add('success-show');
+
+                        // Disable the resend button for 60 seconds
+                        resendButton.disabled = true;
+                        resendButton.textContent = "Resend Activation Email (60s)";
+                        let countdown = 60;
+                        const interval = setInterval(() => {
+                            countdown--;
+                            resendButton.textContent = `Resend Activation Email (${countdown}s)`;
+                            if (countdown <= 0) {
+                                clearInterval(interval);
+                                resendButton.disabled = false;
+                                resendButton.textContent = "Resend Activation Email";
+                            }
+                        }, 1000);
+                    } else {
+                        // Handle validation errors or other errors
+                        if (result.detail) {
+                            resendMessage.textContent = result.detail;
+                            resendMessage.classList.add('error-show');
+                        } else {
+                            resendMessage.textContent = "An error occurred while resending the activation email.";
+                            resendMessage.classList.add('error-show');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error during resending activation:', error);
+                    // Hide loading screen
+                    loadingScreen.style.display = 'none';
+                    // Show generic error message
+                    resendMessage.textContent = "An unexpected error occurred. Please try again later.";
+                    resendMessage.classList.add('error-show');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

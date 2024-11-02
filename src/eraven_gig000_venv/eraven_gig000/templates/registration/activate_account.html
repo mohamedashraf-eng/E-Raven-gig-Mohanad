@@ -1,0 +1,38 @@
+<!-- templates/registration/activate_account.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <title>Account Activated</title>
+    <!-- Include the same CSS file for consistent styling -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sign_up.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <div class="branding">
+                <img src="{% static 'images/path_logo.png' %}" alt="Company Logo" class="logo">
+                <p class="slogan">"Your Success Starts Here!"</p>
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="form-container">
+                <h2>Account Activated!</h2>
+                <p>Your account has been successfully activated. You will be redirected to the sign-in page shortly.</p>
+                <p>If you are not redirected automatically, <a href="{% url 'sign-in' %}">click here</a>.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Redirect to sign-in page after 5 seconds
+        setTimeout(function() {
+            window.location.href = "{% url 'sign-in' %}";
+        }, 5000);
+    </script>
+</body>
+</html>

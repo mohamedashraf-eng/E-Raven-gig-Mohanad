@@ -1,4 +1,4 @@
-/* static/css/sign_up.css */
+/* static/css/profile.css */
 
 /* CSS Variables for Easy Customization */
 :root {
@@ -68,7 +68,7 @@ body, html {
 
 /* Right Panel (Sign-Up Form) */
 .right-panel {
-    width: 400px; /* Fixed width */
+    flex: 1;
     background-color: var(--form-background);
     padding: 60px 40px;
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
@@ -82,13 +82,17 @@ body, html {
 
 .form-container {
     width: 100%;
-    max-width: 100%;
+    max-width: 450px;
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
+.form-container h2 {
+    text-align: center;
     margin-bottom: 30px;
     color: var(--text-color);
-    text-align: center;
     font-size: 2em;
     font-weight: 600;
     letter-spacing: 1px;
@@ -99,11 +103,16 @@ h2 {
     margin-bottom: 20px;
 }
 
-label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--label-color);
+.form-group label {
+    display: flex;
+    align-items: center;
     font-weight: 500;
+    color: var(--label-color);
+}
+
+.form-group label i {
+    margin-right: 8px;
+    color: var(--primary-color);
 }
 
 .form-control {
@@ -120,6 +129,22 @@ label {
     border-color: var(--primary-color);
     box-shadow: 0 0 8px rgba(11, 162, 178, 0.2); /* rgba of --primary-color */
     outline: none;
+}
+
+/* Phone Number Container */
+.phone-number-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.phone-code {
+    width: 60px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #f1f1f1;
+    cursor: not-allowed;
 }
 
 /* Submit Button */
@@ -162,65 +187,12 @@ label {
     text-decoration: underline;
 }
 
-/* Error Message */
-/* Update for error message style */
-.error {
-    background-color: var(--error-background);
-    color: var(--error-color);
-    padding: 8px 10px;
-    border-radius: 6px;
-    margin-top: 5px;
-    font-size: 0.9em;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: none; /* Hide by default */
-}
-
-/* Error class for input field styling */
-.form-control.error-active {
-    border-color: var(--error-color);
-    box-shadow: 0 0 8px rgba(114, 28, 36, 0.2); /* rgba of --error-color */
-}
-
-/* Only show error message when errors are present */
-.error-show {
-    display: block;
-}
-
-
-/* Password Strength Indicator */
-.strength-indicator {
-    margin-top: 5px;
-    font-size: 0.9em;
-    font-weight: 500;
-}
-
-/* Animations */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideInLeft {
-    from { transform: translateX(-50px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes slideInRight {
-    from { transform: translateX(50px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes logoFadeIn {
-    from { opacity: 0; transform: scale(0.8); }
-    to { opacity: 1; transform: scale(1); }
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
     }
-    
+
     .left-panel, .right-panel {
         width: 100%;
         height: 50vh;
@@ -228,12 +200,16 @@ label {
         padding: 40px 20px;
         animation: none;
     }
-    
+
     .right-panel {
         background-color: var(--form-background);
     }
-    
+
     .left-panel {
         background: linear-gradient(135deg, #5CC4B1 0%, #84D1DA 100%);
+    }
+
+    .form-container {
+        padding: 20px 25px;
     }
 }

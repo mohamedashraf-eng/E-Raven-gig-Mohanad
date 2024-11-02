@@ -147,3 +147,8 @@ class LogoutView(View):
         )
 
         return response
+    
+def check_email(request):
+    # Optionally, retrieve the user's email from the session or pass it via query parameters
+    user_email = request.GET.get('email', '')
+    return render(request, 'pages/check_email.html', {'user_email': user_email})

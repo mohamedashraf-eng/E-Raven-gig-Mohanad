@@ -1,0 +1,119 @@
+<!-- templates/registration/activation_invalid.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Activation Failed</title>
+    <link rel="stylesheet" href="{% static 'css/sign_up.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <div class="branding">
+                <img src="{% static 'images/path_logo.png' %}" alt="Company Logo" class="logo">
+                <p class="slogan">"Your Success Starts Here!"</p>
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="form-container">
+                <h2>Activation Failed</h2>
+                <p>The activation link is invalid or has expired. Please enter your email below to resend the activation link.</p>
+                
+                <form id="resend-activation-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="resend_email">Email</label>
+                        <input type="email" name="email" id="resend_email" class="form-control" placeholder="Enter your email" required>
+                        <div class="error" id="error_resend_email"></div>
+                    </div>
+                    <button type="submit" class="btn">Resend Activation Email</button>
+                </form>
+
+                <p class="signin-link">Already activated? <a href="{% url 'sign-in' %}">Sign in here</a>.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Handling Resend Activation -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const resendForm = document.getElementById('resend-activation-form');
+            const loadingScreen = document.getElementById('loading-screen');
+            const resendButton = resendForm.querySelector('button[type="submit"]');
+
+            resendForm.addEventListener('submit', async function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                // Clear previous errors and remove error styles
+                document.querySelectorAll('.error').forEach(el => {
+                    el.textContent = '';
+                    el.classList.remove('error-show');
+                });
+                document.querySelectorAll('.form-control').forEach(input => {
+                    input.classList.remove('error-active');
+                });
+
+                // Collect form data
+                const email = document.getElementById('resend_email').value.trim();
+
+                // Prepare data payload
+                const data = { email: email };
+
+                try {
+                    // Show loading screen and set button to processing state
+                    loadingScreen.style.display = 'block';
+                    resendButton.disabled = true;
+                    resendButton.textContent = "Processing..."; // Set button to "Processing..." during submission
+
+                    const response = await fetch("{% url 'resend-activation' %}", {
+                        method: 'POST', // Ensure method is POST
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value, // Include CSRF token
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    let result;
+                    try {
+                        result = await response.json();
+                    } catch (e) {
+                        result = {};
+                    }
+
+                    // Hide loading screen and reset button state
+                    loadingScreen.style.display = 'none';
+                    resendButton.disabled = false;
+                    resendButton.textContent = "Resend Activation Email"; // Reset button text
+
+                    if (response.ok) {
+                        alert("Activation email has been resent. Please check your email.");
+                        resendForm.reset(); // Clear the form
+                    } else {
+                        // Display validation errors
+                        for (const [field, errors] of Object.entries(result)) {
+                            const errorElement = document.getElementById(`error_resend_${field}`);
+                            const inputElement = document.getElementById(`resend_${field}`);
+                            if (errorElement && inputElement) {
+                                errorElement.textContent = errors.join(' ');
+                                errorElement.classList.add('error-show'); // Show the error message
+                                inputElement.classList.add('error-active'); // Add red border to input
+                            } else if (field === 'detail') {
+                                alert(errors.join(' ')); // General error
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error during resending activation:', error);
+                    // Hide loading screen and reset button state
+                    loadingScreen.style.display = 'none';
+                    resendButton.disabled = false;
+                    resendButton.textContent = "Resend Activation Email"; // Reset button text
+                    alert('An unexpected error occurred. Please try again later.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

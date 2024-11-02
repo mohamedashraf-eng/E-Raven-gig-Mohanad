@@ -1,0 +1,30 @@
+/* static/css/error_styles.css */
+
+/* Red Asterisk for Required Fields */
+.required-asterisk::after {
+    content: " *";
+    color: #e53e3e; /* Red color */
+    font-weight: bold;
+}
+
+/* Error Message Styling */
+.form-error {
+    color: var(--error-color);
+    font-size: 0.9em;
+    margin-top: 5px;
+    display: none; /* Hidden by default */
+}
+
+.form-group.error .form-error {
+    display: block;
+}
+
+/* Optional: Highlight the entire form group when there's an error */
+.form-group.error label {
+    color: var(--error-color);
+}
+
+.form-group.error .form-control {
+    border-color: var(--error-color);
+    box-shadow: 0 0 5px rgba(114, 28, 36, 0.5); /* rgba of --error-color */
+}

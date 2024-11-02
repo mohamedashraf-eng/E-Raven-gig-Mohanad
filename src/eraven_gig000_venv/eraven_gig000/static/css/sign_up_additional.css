@@ -1,4 +1,4 @@
-/* static/css/sign_up.css */
+/* static/css/sign_up_additional.css */
 
 /* CSS Variables for Easy Customization */
 :root {
@@ -68,7 +68,7 @@ body, html {
 
 /* Right Panel (Sign-Up Form) */
 .right-panel {
-    width: 400px; /* Fixed width */
+    flex: 1;
     background-color: var(--form-background);
     padding: 60px 40px;
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
@@ -82,13 +82,17 @@ body, html {
 
 .form-container {
     width: 100%;
-    max-width: 100%;
+    max-width: 450px;
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
+.form-container h2 {
+    text-align: center;
     margin-bottom: 30px;
     color: var(--text-color);
-    text-align: center;
     font-size: 2em;
     font-weight: 600;
     letter-spacing: 1px;
@@ -99,13 +103,25 @@ h2 {
     margin-bottom: 20px;
 }
 
-label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--label-color);
+.form-group label {
+    display: flex;
+    align-items: center;
     font-weight: 500;
+    color: var(--label-color);
 }
 
+.form-group label i {
+    margin-right: 8px;
+    color: var(--primary-color);
+}
+
+.required-asterisk {
+    color: #e53e3e; /* Red color for asterisk */
+    margin-left: 4px;
+    font-weight: bold;
+}
+
+/* Form Controls */
 .form-control {
     width: 100%;
     padding: 12px 15px;
@@ -120,6 +136,25 @@ label {
     border-color: var(--primary-color);
     box-shadow: 0 0 8px rgba(11, 162, 178, 0.2); /* rgba of --primary-color */
     outline: none;
+}
+
+/* Select2 Integration */
+.select2-container .select2-selection--single {
+    height: 45px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 45px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 45px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered span {
+    margin-right: 8px;
 }
 
 /* Submit Button */
@@ -162,36 +197,40 @@ label {
     text-decoration: underline;
 }
 
-/* Error Message */
-/* Update for error message style */
-.error {
-    background-color: var(--error-background);
+/* Error Message Styling */
+.form-error {
     color: var(--error-color);
-    padding: 8px 10px;
-    border-radius: 6px;
-    margin-top: 5px;
     font-size: 0.9em;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: none; /* Hide by default */
+    margin-top: 5px;
+    display: block; /* Always display if within error class */
 }
 
-/* Error class for input field styling */
-.form-control.error-active {
+.form-group.error label {
+    color: var(--error-color);
+}
+
+.form-group.error .form-control {
     border-color: var(--error-color);
-    box-shadow: 0 0 8px rgba(114, 28, 36, 0.2); /* rgba of --error-color */
+    box-shadow: 0 0 5px rgba(114, 28, 36, 0.5); /* rgba of --error-color */
 }
 
-/* Only show error message when errors are present */
-.error-show {
-    display: block;
-}
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
 
+    .left-panel, .right-panel {
+        width: 100%;
+        height: 50vh;
+        box-shadow: none;
+        padding: 40px 20px;
+        animation: none;
+    }
 
-/* Password Strength Indicator */
-.strength-indicator {
-    margin-top: 5px;
-    font-size: 0.9em;
-    font-weight: 500;
+    .form-container {
+        padding: 20px 25px;
+    }
 }
 
 /* Animations */
@@ -215,25 +254,42 @@ label {
     to { opacity: 1; transform: scale(1); }
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-    }
-    
-    .left-panel, .right-panel {
-        width: 100%;
-        height: 50vh;
-        box-shadow: none;
-        padding: 40px 20px;
-        animation: none;
-    }
-    
-    .right-panel {
-        background-color: var(--form-background);
-    }
-    
-    .left-panel {
-        background: linear-gradient(135deg, #5CC4B1 0%, #84D1DA 100%);
-    }
+/* Loading Screen Styles */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--background-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity var(--transition-speed), visibility var(--transition-speed);
+}
+
+.loading-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader {
+    margin-bottom: 20px;
+}
+
+.loading-logo {
+    width: 100px;
+    animation: logoFadeIn 2s ease-in;
+}
+
+.loading-quote {
+    font-size: 1.2em;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.loading-screen p {
+    margin: 5px 0;
 }

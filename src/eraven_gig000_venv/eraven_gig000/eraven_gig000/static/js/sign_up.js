@@ -1,35 +1,84 @@
-// static/js/sign_up.js
+document.addEventListener("DOMContentLoaded", function () {
+    const signUpForm = document.getElementById('sign-up-form');
+    const loadingScreen = document.getElementById('loading-screen');
+    const submitButton = signUpForm.querySelector('button[type="submit"]');
 
-document.addEventListener("DOMContentLoaded", function() {
-    const passwordInput = document.getElementById('id_password1');
-    const strengthIndicator = document.querySelector('.strength-indicator');
+    signUpForm.addEventListener('submit', async function (event) {
+        event.preventDefault(); // Prevent the default form submission
 
-    passwordInput.addEventListener('input', function() {
-        const strength = calculatePasswordStrength(passwordInput.value);
-        strengthIndicator.textContent = `Strength: ${strength.label}`;
-        strengthIndicator.style.color = strength.color;
-    });
+        // Clear previous errors and remove error styles
+        document.querySelectorAll('.error').forEach(el => {
+            el.textContent = '';
+            el.classList.remove('error-show');
+        });
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.classList.remove('error-active');
+        });
 
-    function calculatePasswordStrength(password) {
-        let score = 0;
-        if (password.length >= 8) score += 1;
-        if (/[A-Z]/.test(password)) score += 1;
-        if (/[a-z]/.test(password)) score += 1;
-        if (/[0-9]/.test(password)) score += 1;
-        if (/[\W_]/.test(password)) score += 1;
+        // Collect form data
+        const username = document.getElementById('id_username').value.trim();
+        const email = document.getElementById('id_email').value.trim();
+        const password1 = document.getElementById('id_password1').value;
+        const password2 = document.getElementById('id_password2').value;
 
-        switch(score) {
-            case 0:
-            case 1:
-            case 2:
-                return { label: 'Weak', color: '#d9534f' }; // Red
-            case 3:
-            case 4:
-                return { label: 'Moderate', color: '#f0ad4e' }; // Orange
-            case 5:
-                return { label: 'Strong', color: '#5cb85c' }; // Green
-            default:
-                return { label: 'Weak', color: '#d9534f' };
+        // Prepare data payload
+        const data = {
+            username: username,
+            email: email,
+            password1: password1,
+            password2: password2
+        };
+
+        try {
+            // Show loading screen and set button to processing state
+            loadingScreen.style.display = 'block';
+            submitButton.disabled = true;
+            submitButton.textContent = "Processing..."; // Set button to "Processing..." during submission
+
+            // Send POST request
+            const response = await fetch(signUpForm.action, {
+                method: 'POST', // Ensure method is POST
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value, // Include CSRF token
+                },
+                body: JSON.stringify(data)
+            });
+
+            let result;
+            try {
+                result = await response.json();
+            } catch (e) {
+                result = {};
+            }
+
+            // Hide loading screen and reset button state
+            loadingScreen.style.display = 'none';
+            submitButton.disabled = false;
+            submitButton.textContent = "Sign Up"; // Reset button text back to "Sign Up"
+
+            if (response.ok) {
+                // Redirect to 'check your email' page
+                window.location.href = signUpForm.dataset.redirectUrl;
+            } else {
+                // Display validation errors
+                for (const [field, errors] of Object.entries(result)) {
+                    const errorElement = document.getElementById(`error_${field}`);
+                    const inputElement = document.getElementById(`id_${field}`);
+                    if (errorElement && inputElement) {
+                        errorElement.textContent = errors.join(' ');
+                        errorElement.classList.add('error-show'); // Show the error message
+                        inputElement.classList.add('error-active'); // Add red border to input
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error during sign-up:', error);
+            // Hide loading screen and reset button state
+            loadingScreen.style.display = 'none';
+            submitButton.disabled = false;
+            submitButton.textContent = "Sign Up"; // Reset button text back to "Sign Up"
+            alert('An unexpected error occurred. Please try again later.');
         }
-    }
+    });
 });

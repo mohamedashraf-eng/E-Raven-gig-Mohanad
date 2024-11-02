@@ -5,7 +5,7 @@ from .views import (
     SignInView, SignUpView, LogoutView,
     landing_page_view, about_view, contact_view,
     terms_view, policy_view, payment_policy_view,
-    refund_policy_view, privacy_policy_view, info_view
+    refund_policy_view, privacy_policy_view, info_view, check_email
 )
 
 urlpatterns = [
@@ -21,4 +21,5 @@ urlpatterns = [
     path('sign-in/', SignInView.as_view(), name='sign-in'),
     path('sign-up/', SignUpView.as_view(), name='sign-up'),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path('check-email/', check_email, name='check-email'),
 ]

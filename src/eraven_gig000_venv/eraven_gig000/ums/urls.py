@@ -8,7 +8,7 @@ from .views import (
     UserViewSet, ProfileViewSet, RoleViewSet, PermissionViewSet,
     CustomTokenObtainPairView, CustomTokenRefreshView, LogoutView, UserRegistrationView,
     token_lifetime_view,
-    CustomPasswordResetView  # Import your custom view
+    CustomPasswordResetView, ActivateAccountView, ResendActivationEmailView
 )
 
 router = DefaultRouter()
@@ -25,6 +25,11 @@ urlpatterns = [
     path('register/', UserRegistrationView.as_view(), name='user-registration'),
     path('logout/', LogoutView.as_view(), name='logout'),
     
+    # Activation URL
+    # path('activate/<uidb64>/<token>/', ActivateAccountView.as_view(), name='activate'),
+    path('activate/<str:activation_id>/', ActivateAccountView.as_view(), name='activate'),
+    path('resend-activation/', ResendActivationEmailView.as_view(), name='resend-activation'),
+
     # Password Reset URLs using Custom View
     path('password-reset/', CustomPasswordResetView.as_view(
         template_name='registration/password_reset_form.html',

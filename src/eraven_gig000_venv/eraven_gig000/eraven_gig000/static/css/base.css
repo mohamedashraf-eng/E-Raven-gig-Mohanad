@@ -1,20 +1,225 @@
-/* static/css/style.css */
+/* static/css/base.css */
 
-body {
-    padding-top: 70px; /* Adjust based on header height */
-    padding-bottom: 70px; /* Adjust based on footer height */
+/* CSS Variables for Easy Customization */
+:root {
+    --primary-color: #0BA2B2; /* Primary actions and highlights */
+    --secondary-color: #5CC4B1; /* Secondary actions and hover states */
+    --accent-color: #84D1DA; /* Borders, focus states, and accents */
+    --success-color: #77D770; /* Success messages */
+    --warning-color: #C3FC47; /* Warning messages */
+    --background-color: #f4f6f9; /* General background */
+    --form-background: #ffffff; /* Form background */
+    --text-color: #333333; /* Main text color */
+    --label-color: #555555; /* Label text color */
+    --error-background: #f8d7da; /* Error message background */
+    --error-color: #721c24; /* Error message text color */
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --transition-speed: 0.3s;
 }
 
-/* Example header/footer if they are fixed */
-.navbar.fixed-top {
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 1030; /* Ensures the navbar stays above other elements */
+* {
+    box-sizing: border-box;
 }
 
-.footer.fixed-bottom {
-    position: fixed;
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    overflow: hidden; /* Prevent scroll during loading */
+}
+
+.container {
+    display: flex;
+    height: 100vh;
     width: 100%;
-    bottom: 0;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Left Panel (Branding) */
+.left-panel {
+    flex: 1;
+    background: linear-gradient(135deg, #5CC4B1 0%, #84D1DA 100%); /* Using your palette */
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    animation: slideInLeft 1s ease-out;
+}
+
+.branding {
+    text-align: center;
+}
+
+.logo {
+    max-width: 200px;
+    margin-bottom: 30px;
+    animation: logoFadeIn 2s ease-in;
+}
+
+.slogan {
+    font-size: 1.5em;
+    font-weight: 300;
+    line-height: 1.4;
+    letter-spacing: 0.5px;
+}
+
+/* Right Panel (Form or Content) */
+.right-panel {
+    width: 400px; /* Fixed width */
+    background-color: var(--form-background);
+    padding: 60px 40px;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: slideInRight 1s ease-out;
+    position: relative;
+    z-index: 1;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 100%;
+}
+
+h2 {
+    margin-bottom: 30px;
+    color: var(--text-color);
+    text-align: center;
+    font-size: 2em;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--label-color);
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+    font-size: 1em;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 8px rgba(11, 162, 178, 0.2); /* rgba of --primary-color */
+    outline: none;
+}
+
+/* Submit Button */
+.btn {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: var(--primary-color);
+    border: none;
+    color: #ffffff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+    box-shadow: 0 4px 6px rgba(11, 162, 178, 0.2); /* rgba of --primary-color */
+}
+
+.btn:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+/* Sign-In Link */
+.signin-link {
+    margin-top: 20px;
+    text-align: center;
+    color: #777777;
+    font-size: 0.95em;
+}
+
+.signin-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition-speed);
+}
+
+.signin-link a:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+/* Error Message */
+.error {
+    background-color: var(--error-background);
+    color: var(--error-color);
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin-top: 5px;
+    font-size: 0.9em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Password Strength Indicator */
+.strength-indicator {
+    margin-top: 5px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+    from { transform: translateX(-50px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(50px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes logoFadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .left-panel, .right-panel {
+        width: 100%;
+        height: 50vh;
+        box-shadow: none;
+        padding: 40px 20px;
+        animation: none;
+    }
+    
+    .right-panel {
+        background-color: var(--form-background);
+    }
+    
+    .left-panel {
+        background: linear-gradient(135deg, #5CC4B1 0%, #84D1DA 100%);
+    }
 }
