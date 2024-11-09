@@ -39,14 +39,17 @@
                 </li> {% endcomment %}
                 {% if request.COOKIES.access_token %}
                     <li class="nav-item">
+                        <a class="nav-link" href="#">Profile</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                     </li>
                 {% else %}
-                    <li class="nav-item">
-                        <button class="btn btn-brand-color-brightgreen" style="color:white;" href="{% url 'sign-in' %}">Get Started</button>
+                    <li class="nav-item px-1">
+                        <a class="btn btn-brand-color-brightgreen" style="color:white;" href="{% url 'sign-up' %}">Get Started</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'sign-up' %}">Sign Up</a>
+                    <li class="nav-item px-1">
+                        <a class="nav-link" href="{% url 'sign-in' %}">Sign in</a>
                     </li>
                 {% endif %}
             </ul>

@@ -17,3 +17,7 @@
     transform: translateY(-100%);
     box-shadow: inset 0px -10px 0 0 var(--bs-brand-color-brightgreen), 0px -5px 0 0 var(--bs-brand-color-blue) !important;
 }
+.navbar-toggler{
+    display: flex;
+    justify-content: end;
+}
