@@ -1,0 +1,19 @@
+#navbarNav{
+    justify-content: end;
+}
+.btn-brand-color-brightgreen{
+    color:white;
+}
+.navbar{
+    transition: transform 0.3s, box-shadow 1s ease;
+    box-shadow: inset 0px -5px 0 0 var(--bs-brand-color-brightgreen), 0px 5px 0 0 var(--bs-brand-color-blue) !important;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.d-grid{
+    grid-template-columns: 1fr auto 1fr;
+}
+.navbar-hidden {
+    transform: translateY(-100%);
+    box-shadow: inset 0px -10px 0 0 var(--bs-brand-color-brightgreen), 0px -5px 0 0 var(--bs-brand-color-blue) !important;
+}

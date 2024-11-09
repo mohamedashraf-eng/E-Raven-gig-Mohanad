@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Third-party apps
+    'django_bootstrap5',
     'rest_framework',
     'rest_framework_simplejwt',
     # 'ratelimit',
