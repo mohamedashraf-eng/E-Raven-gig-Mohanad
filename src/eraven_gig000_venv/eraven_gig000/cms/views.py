@@ -39,13 +39,20 @@ def article_list(request):
     return render(request, 'cms/article_list.html', {'articles': articles})
 
 
+@custom_login_required
 def article_detail(request, slug):
-    course = get_object_or_404(Course, slug=slug)
+    # Retrieve the Article by slug
+    article = get_object_or_404(Article, slug=slug)
+    
+    # Access the associated Course from the Article
+    course = article.course
+    
+    # Check if the user is enrolled in the Course
     is_enrolled = Enrollment.objects.filter(user=request.user, course=course).exists()
     if not is_enrolled:
         return render(request, 'cms/access_denied.html', {'course': course})
-
-    article = get_object_or_404(Article, slug=slug, course=course)
+    
+    # Render the article detail template
     return render(request, 'cms/article_detail.html', {'article': article})
 
 
