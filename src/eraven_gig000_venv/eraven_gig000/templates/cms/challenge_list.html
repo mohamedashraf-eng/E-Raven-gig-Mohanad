@@ -1,0 +1,24 @@
+<!-- cms/templates/cms/challenge_list.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Daily Challenges - ERaven Gigs{% endblock %}
+
+{% block content %}
+    <h1>Today's Challenges</h1>
+    <p><strong>Your Points:</strong> {{ user_points }}</p>
+    {% if challenges %}
+        <div class="list-group">
+            {% for challenge in challenges %}
+                <div class="list-group-item">
+                    <h5>{{ challenge.title }}</h5>
+                    <p>{{ challenge.description }}</p>
+                    <p><strong>Points:</strong> {{ challenge.points }}</p>
+                    <a href="{% url 'cms:challenge_detail' challenge.id %}" class="btn btn-success">Details</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No challenges available today.</p>
+    {% endif %}
+{% endblock %}

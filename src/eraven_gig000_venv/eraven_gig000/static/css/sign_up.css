@@ -163,6 +163,7 @@ label {
 }
 
 /* Error Message */
+/* Update for error message style */
 .error {
     background-color: var(--error-background);
     color: var(--error-color);
@@ -171,7 +172,20 @@ label {
     margin-top: 5px;
     font-size: 0.9em;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: none; /* Hide by default */
 }
+
+/* Error class for input field styling */
+.form-control.error-active {
+    border-color: var(--error-color);
+    box-shadow: 0 0 8px rgba(114, 28, 36, 0.2); /* rgba of --error-color */
+}
+
+/* Only show error message when errors are present */
+.error-show {
+    display: block;
+}
+
 
 /* Password Strength Indicator */
 .strength-indicator {

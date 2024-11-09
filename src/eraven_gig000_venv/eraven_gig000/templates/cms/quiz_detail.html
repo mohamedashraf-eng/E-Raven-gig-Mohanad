@@ -1,0 +1,34 @@
+<!-- cms/templates/cms/quiz_detail.html -->
+
+{% extends "base.html" %}
+
+{% block title %}{{ quiz.title }} - ERaven Gigs{% endblock %}
+
+{% block content %}
+    <h1>{{ quiz.title }}</h1>
+    <p><strong>Description:</strong> {{ quiz.description }}</p>
+    <p><strong>Created At:</strong> {{ quiz.created_at|date:"M d, Y H:i" }}</p>
+    <hr>
+    <h3>Your Submissions</h3>
+    {% if submissions %}
+        <ul class="list-group mb-3">
+            {% for submission in submissions %}
+                <li class="list-group-item">
+                    <p><strong>Submitted At:</strong> {{ submission.submitted_at|date:"M d, Y H:i" }}</p>
+                    <p><strong>Content:</strong> {{ submission.content|linebreaks }}</p>
+                    <p><strong>Grade:</strong> {{ submission.grade|default:"Not graded yet" }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have not taken this quiz yet.</p>
+    {% endif %}
+    <hr>
+    <h3>Take Quiz</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Submit Quiz</button>
+    </form>
+    <a href="{% url 'cms:quiz_list' course.slug %}" class="btn btn-primary mt-3">Back to Quizzes</a>
+{% endblock %}

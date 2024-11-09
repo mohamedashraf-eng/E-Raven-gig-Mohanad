@@ -1,0 +1,166 @@
+<!-- cms/templates/cms/user_profile.html -->
+
+{% extends "base.html" %}
+
+{% block title %}My Profile - ERaven Gigs{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">My Profile</h1>
+
+    <!-- User Information -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3>{{ user.username }}'s Profile</h3>
+            <!-- Edit Profile Button -->
+            <a href="{% url 'edit_user_profile' %}" class="btn btn-primary btn-sm">
+                <i class="fas fa-edit me-1"></i> Edit Profile
+            </a>
+        </div>
+        <div class="card-body">
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Role:</strong> 
+                {% if user.role %}
+                    {{ user.role.name }}
+                {% else %}
+                    No Role Assigned
+                {% endif %}
+            </p>
+            <p><strong>Total Points:</strong> {{ user.total_points }}</p>
+            <p><strong>Level:</strong> {{ user.level }}</p>
+            <!-- Add more user fields if necessary -->
+        </div>
+    </div>
+
+    <!-- Enrolled Courses -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Enrolled Courses</h3>
+        </div>
+        <div class="card-body">
+            {% if enrollments %}
+                <ul class="list-group">
+                    {% for enrollment in enrollments %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="{% url 'cms:course_detail' enrollment.course.slug %}">{{ enrollment.course.title }}</a>
+                            <span class="badge bg-primary rounded-pill">Enrolled on {{ enrollment.enrolled_at|date:"M d, Y" }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>You are not enrolled in any courses yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Course Progress</h3>
+        </div>
+        <div class="card-body">
+            {% if progresses %}
+                {% for progress in progresses %}
+                    <div class="mb-3">
+                        <h5>{{ progress.course.title }}</h5>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: {{ progress.progress_percentage }}%;" aria-valuenow="{{ progress.progress_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                {{ progress.progress_percentage }}%
+                            </div>
+                        </div>
+                        <p>Status: 
+                            {% if progress.completed %}
+                                <span class="badge bg-success">Completed</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">In Progress</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No progress available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Points and Transactions -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Points Overview</h3>
+        </div>
+        <div class="card-body">
+            {% if ranking %}
+                <p><strong>Current Points:</strong> {{ user.total_points }}</p>
+                <p><strong>Rank:</strong> {{ ranking.rank }}</p>
+            {% else %}
+                <p>You do not have a ranking yet.</p>
+            {% endif %}
+
+            <h4 class="mt-4">Point Transactions</h4>
+            {% if point_transactions %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Points</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in point_transactions %}
+                            <tr>
+                                <td>{{ transaction.get_transaction_type_display }}</td>
+                                <td>
+                                    {% if transaction.transaction_type == 'earn' %}
+                                        <span class="text-success">+{{ transaction.points }}</span>
+                                    {% else %}
+                                        <span class="text-danger">-{{ transaction.points }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ transaction.description }}</td>
+                                <td>{{ transaction.timestamp|date:"M d, Y H:i" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No point transactions found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Ranking -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Global Ranking</h3>
+        </div>
+        <div class="card-body">
+            {% if ranking %}
+                <h5>Your Rank: {{ ranking.rank }}</h5>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>User</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rank in rankings %}
+                            <tr {% if rank.user == user %}class="table-primary"{% endif %}>
+                                <td>{{ rank.rank }}</td>
+                                <td>{{ rank.user.username }}</td>
+                                <td>{{ rank.points }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Your ranking information is not available.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

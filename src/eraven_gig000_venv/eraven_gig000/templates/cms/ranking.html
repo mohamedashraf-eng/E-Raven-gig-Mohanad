@@ -1,0 +1,32 @@
+<!-- cms/templates/cms/ranking.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Rankings - ERaven Gigs{% endblock %}
+
+{% block content %}
+    <h1>User Rankings</h1>
+    <h3>Your Rank: {{ user_rank }}</h3>
+    {% if rankings %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>User</th>
+                    <th>Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ranking in rankings %}
+                    <tr>
+                        <td>{{ ranking.rank }}</td>
+                        <td>{{ ranking.user.username }}</td>
+                        <td>{{ ranking.points }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No rankings available.</p>
+    {% endif %}
+{% endblock %}

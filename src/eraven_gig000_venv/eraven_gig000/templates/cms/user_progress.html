@@ -1,0 +1,39 @@
+<!-- cms/templates/cms/user_progress.html -->
+
+{% extends "base.html" %}
+
+{% block title %}My Progress - ERaven Gigs{% endblock %}
+
+{% block content %}
+    <h1>My Progress</h1>
+    {% if progresses %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Progress (%)</th>
+                    <th>Completed</th>
+                    <th>Last Updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for progress in progresses %}
+                    <tr>
+                        <td><a href="{% url 'cms:course_detail' progress.course.slug %}">{{ progress.course.title }}</a></td>
+                        <td>{{ progress.progress_percentage }}</td>
+                        <td>
+                            {% if progress.completed %}
+                                <span class="badge bg-success">Yes</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">No</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ progress.last_updated|date:"M d, Y H:i" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You have not started any courses yet.</p>
+    {% endif %}
+{% endblock %}

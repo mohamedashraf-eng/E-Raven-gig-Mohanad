@@ -1,0 +1,17 @@
+<!-- cms/templates/cms/user_profile_edit.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - ERaven Gigs{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Edit Profile</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{% url 'user_profile' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

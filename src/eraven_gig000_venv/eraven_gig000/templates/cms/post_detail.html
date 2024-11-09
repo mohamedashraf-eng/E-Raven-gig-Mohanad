@@ -1,0 +1,36 @@
+<!-- cms/templates/cms/post_detail.html -->
+
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} - ERaven Gigs{% endblock %}
+
+{% block content %}
+    <h1>{{ post.title }}</h1>
+    <p class="text-muted">Proficiency: {{ post.get_proficiency_level_display }}</p>
+    <p><strong>Author:</strong> {{ post.author }}</p>
+    <hr>
+    <div>
+        <p>{{ post.short_content }}</p>
+        <div>
+            {{ post.content|linebreaks }}
+        </div>
+    </div>
+    <hr>
+    <div>
+        <strong>Categories:</strong>
+        {% for category in post.categories.all %}
+            <span class="badge bg-secondary">{{ category.name }}</span>
+        {% empty %}
+            <span>No categories.</span>
+        {% endfor %}
+    </div>
+    <div>
+        <strong>Tags:</strong>
+        {% for tag in post.tags.all %}
+            <span class="badge bg-info text-dark">{{ tag.name }}</span>
+        {% empty %}
+            <span>No tags.</span>
+        {% endfor %}
+    </div>
+    <a href="{% url 'cms:post_list' %}" class="btn btn-primary mt-3">Back to Posts</a>
+{% endblock %}

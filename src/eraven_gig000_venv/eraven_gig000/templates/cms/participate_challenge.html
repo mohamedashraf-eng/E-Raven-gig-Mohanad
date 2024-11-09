@@ -1,0 +1,16 @@
+<!-- cms/templates/cms/participate_challenge.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Participate in {{ challenge.title }} - ERaven Gigs{% endblock %}
+
+{% block content %}
+    <h1>Participate in {{ challenge.title }}</h1>
+    <p>{{ challenge.description }}</p>
+    <p><strong>Points Earned:</strong> {{ challenge.points }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Participate</button>
+    </form>
+    <a href="{% url 'cms:challenge_list' %}" class="btn btn-primary mt-3">Back to Challenges</a>
+{% endblock %}

@@ -10,7 +10,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User, Profile, Role, Permission
 from .serializers import (
     UserSerializer, UserCreateSerializer, ProfileSerializer,
-    RoleSerializer, PermissionSerializer, CustomTokenObtainPairSerializer
+    RoleSerializer, PermissionSerializer, CustomTokenObtainPairSerializer,
+    CustomTokenRefreshSerializer
 )
 from .permissions import IsAdminOrReadOnly
 from django.http import JsonResponse, HttpResponse, QueryDict
@@ -30,6 +31,16 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.cache import cache
 from uuid import uuid4
 from django.utils.encoding import force_str
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.views import View
+from cms.models import Enrollment, UserProgress, PointTransaction, Ranking, Course
+from django.views.generic.edit import UpdateView
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import get_user_model
+from .decorators import custom_login_required
 
 logger = logging.getLogger(__name__)
 
@@ -258,27 +269,58 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 class CustomTokenRefreshView(TokenRefreshView):
     """
-    Custom view for refreshing access tokens and updating the cookie.
+    Custom view for refreshing access tokens using the refresh token from cookies.
     """
+    serializer_class = CustomTokenRefreshSerializer
+
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
+
         if response.status_code == 200:
-            access_token = response.data['access']
+            # Access token was refreshed successfully
+            access_token = response.data.get('access')
+
+            # Set the new access token in the cookie
             response = set_auth_cookies(response, access_token=access_token)
+
+            # Remove the access token from the response body to avoid redundancy
             response.data.pop('access', None)
+        else:
+            # Refresh failed: possible invalid or expired refresh token
+            # Optionally, clear the refresh token cookie
+            response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
+            response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE'])
+            response = redirect('sign-in')  # Redirect to sign-in page
+            return response
+
         return response
 
+from django.http import HttpResponseRedirect
 class LogoutView(APIView):
     """
     Logs out the user by deleting the authentication cookies.
     """
     permission_classes = [IsAuthenticated]
 
+    def _delete_auth_cookies(self, response):
+        """
+        Helper method to delete authentication cookies.
+        """
+        response.delete_cookie(
+            key=settings.SIMPLE_JWT.get('AUTH_COOKIE', 'access_token')
+        )
+        response.delete_cookie(
+            key=settings.SIMPLE_JWT.get('AUTH_COOKIE_REFRESH', 'refresh_token')
+        )
+        return response
+
+    def get(self, request, *args, **kwargs):
+        response = HttpResponseRedirect(reverse('landing-page'))
+        return self._delete_auth_cookies(response)
+
     def post(self, request, *args, **kwargs):
         response = Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
-        response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE'])
-        response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
-        return response
+        return self._delete_auth_cookies(response)
 
 class CustomPasswordResetView(PasswordResetView):
     def form_valid(self, form):
@@ -334,3 +376,54 @@ def token_lifetime_view(request):
     access_token_lifetime = settings.SIMPLE_JWT.get('ACCESS_TOKEN_LIFETIME', timedelta(minutes=15)).total_seconds()
     return JsonResponse({'access_token_lifetime': access_token_lifetime})
 
+@method_decorator(login_required, name='dispatch')
+class UserProfileView(View):
+    """
+    Displays the authenticated user's profile, including enrollments, progress, points, and ranking.
+    """
+    template_name = 'cms/user_profile.html'  # Ensure this matches your template path
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        # Fetch Enrolled Courses
+        enrollments = Enrollment.objects.filter(user=user).select_related('course')
+
+        # Fetch Progress for each enrolled course
+        progresses = UserProgress.objects.filter(user=user).select_related('course')
+
+        # Fetch Point Transactions
+        point_transactions = PointTransaction.objects.filter(user=user).order_by('-timestamp')
+
+        # Fetch Ranking
+        ranking = getattr(user, 'ranking', None)
+
+        # Fetch Top Rankings (e.g., top 10)
+        rankings = Ranking.objects.select_related('user').order_by('-points')[:10]
+
+        context = {
+            'user': user,
+            'enrollments': enrollments,
+            'progresses': progresses,
+            'point_transactions': point_transactions,
+            'ranking': ranking,
+            'rankings': rankings,
+        }
+
+        return render(request, self.template_name, context)
+    
+class UserProfileEditView(LoginRequiredMixin, UpdateView):
+    model = User
+    template_name = 'cms/user_profile_edit.html'
+    fields = ['first_name', 'last_name', 'email']
+    success_url = reverse_lazy('user_profile')
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        return response
+
+    def form_invalid(self, form):
+        return super().form_invalid(form)

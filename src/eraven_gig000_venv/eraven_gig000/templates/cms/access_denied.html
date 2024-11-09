@@ -1,0 +1,13 @@
+<!-- cms/templates/cms/access_denied.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Access Denied - ERaven Gigs{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+        <h1 class="display-4">Access Denied</h1>
+        <p class="lead">You must be enrolled in the course "{{ course.title }}" to view this content.</p>
+        <a href="{% url 'cms:available_courses' %}" class="btn btn-primary">View Available Courses</a>
+    </div>
+{% endblock %}

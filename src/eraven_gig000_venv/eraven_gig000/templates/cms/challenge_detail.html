@@ -1,0 +1,12 @@
+<!-- templates/cms/challenge_detail.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>{{ challenge.title }}</h1>
+  <p>{{ challenge.description }}</p>
+  <p><strong>Points:</strong> {{ challenge.points }}</p>
+  <p><strong>Date:</strong> {{ challenge.date }}</p>
+  <a href="{% url 'cms:participate_challenge' challenge.id %}" class="btn btn-success">Participate</a>
+  
+{% endblock %}

@@ -1,0 +1,116 @@
+<!-- cms/templates/cms/course_detail.html -->
+
+{% extends "base.html" %}
+{% load custom_filters %}
+
+{% block title %}{{ course.title }} - ERaven Gigs{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1>{{ course.title }}</h1>
+        <p><strong>Description:</strong> {{ course.description }}</p>
+        <p><strong>Syllabus:</strong> {{ course.syllabus }}</p>
+        {% if course.prerequisites %}
+            <p><strong>Prerequisites:</strong> {{ course.prerequisites }}</p>
+        {% endif %}
+        <hr>
+        <div class="mb-3">
+            {% if user.is_authenticated %}
+                {% if user|is_enrolled:course %}
+                    <a href="{% url 'cms:course_detail' course.slug %}" class="btn btn-success">Enrolled</a>
+                {% else %}
+                    <a href="{% url 'cms:enroll_course' course.slug %}" class="btn btn-primary">Enroll Now</a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'api:sign-in' %}?next={% url 'cms:enroll_course' course.slug %}" class="btn btn-primary">Login to Enroll</a>
+            {% endif %}
+        </div>
+        <hr>
+
+        <!-- Articles Section -->
+        <h3>Articles</h3>
+        {% if articles %}
+            <ul class="list-group mb-3">
+                {% for article in articles %}
+                    <li class="list-group-item">
+                        <a href="{% url 'cms:article_detail' article.slug %}">{{ article.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No articles available for this course.</p>
+        {% endif %}
+
+        <!-- Videos Section -->
+        <h3>Videos</h3>
+        {% if videos %}
+            <ul class="list-group mb-3">
+                {% for video in videos %}
+                    <li class="list-group-item">
+                        <a href="{% url 'cms:video_detail' video.slug %}">{{ video.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No videos available for this course.</p>
+        {% endif %}
+
+        <!-- Assignments Section -->
+        <h3>Assignments</h3>
+        {% if assignments %}
+            <ul class="list-group mb-3">
+                {% for assignment in assignments %}
+                    <li class="list-group-item">
+                        <a href="{% url 'cms:assignment_detail' course.slug assignment.id %}">{{ assignment.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No assignments available for this course.</p>
+        {% endif %}
+
+        <!-- Quizzes Section -->
+        <h3>Quizzes</h3>
+        {% if quizzes %}
+            <ul class="list-group mb-3">
+                {% for quiz in quizzes %}
+                    <li class="list-group-item">
+                        <a href="{% url 'cms:quiz_detail' course.slug quiz.id %}">{{ quiz.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No quizzes available for this course.</p>
+        {% endif %}
+
+        <!-- Challenges Section -->
+        <h3>Challenges</h3>
+        {% if challenges %}
+            <ul class="list-group mb-3">
+                {% for challenge in challenges %}
+                    <li class="list-group-item">
+                        <a href="{% url 'cms:challenge_detail' challenge.id %}">{{ challenge.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No challenges available for this course.</p>
+        {% endif %}
+
+        <!-- Documentation Section -->
+        <h3>Documentation</h3>
+        {% if documentations %}
+            <ul class="list-group mb-3">
+                {% for doc in documentations %}
+                    <li class="list-group-item">
+                        <a href="{% url 'cms:documentation_detail' doc.slug %}">{{ doc.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No documentation available for this course.</p>
+        {% endif %}
+
+        <a href="{% url 'cms:course_list' %}" class="btn btn-primary mt-3">Back to Courses</a>
+    </div>
+{% endblock %}

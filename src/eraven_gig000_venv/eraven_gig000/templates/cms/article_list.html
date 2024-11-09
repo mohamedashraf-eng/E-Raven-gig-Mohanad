@@ -1,0 +1,32 @@
+<!-- cms/templates/cms/article_list.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Articles - ERaven Gigs{% endblock %}
+
+{% block content %}
+    <h1>Articles</h1>
+    <div class="mb-3">
+        <form method="get" class="d-flex">
+            <select name="proficiency" class="form-select me-2" aria-label="Proficiency Level">
+                <option value="">All Proficiency Levels</option>
+                <option value="beginner" {% if request.GET.proficiency == 'beginner' %}selected{% endif %}>Beginner</option>
+                <option value="intermediate" {% if request.GET.proficiency == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                <option value="advanced" {% if request.GET.proficiency == 'advanced' %}selected{% endif %}>Advanced</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
+    </div>
+    {% if articles %}
+        <div class="list-group">
+            {% for article in articles %}
+                <a href="{% url 'cms:article_detail' article.slug %}" class="list-group-item list-group-item-action">
+                    <h5 class="mb-1">{{ article.title }}</h5>
+                    <small>Proficiency: {{ article.get_proficiency_level_display }}</small>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No articles found.</p>
+    {% endif %}
+{% endblock %}

@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import User, Profile, Role, Permission
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import authenticate
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from django.conf import settings
 
 class PermissionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -53,19 +55,31 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ['user', 'bio', 'phone_number']
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['user_id'] = user.id
+        token['username'] = user.username
+        # Add more claims if needed
+
+        return token
+
+class CustomTokenRefreshSerializer(TokenRefreshSerializer):
+    """
+    Custom serializer that reads the refresh token from a cookie instead of the request body.
+    """
+
     def validate(self, attrs):
-        # Override the default validate method to check if the user is active
-        credentials = {
-            self.username_field: attrs.get(self.username_field),
-            'password': attrs.get('password')
-        }
+        request = self.context.get("request")
+        refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
 
-        user = authenticate(**credentials)
+        if not refresh_token:
+            raise serializers.ValidationError(
+                {"detail": "Refresh token cookie not found."},
+                code='authorization'
+            )
 
-        if user is None:
-            raise serializers.ValidationError('Invalid login credentials.')
-
-        if not user.is_active:
-            raise serializers.ValidationError('Account is not activated. Please check your email.')
-
+        attrs['refresh'] = refresh_token
         return super().validate(attrs)
