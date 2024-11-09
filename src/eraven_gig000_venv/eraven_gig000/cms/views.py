@@ -236,28 +236,31 @@ def challenge_detail_view(request, id):
 def participate_challenge(request, challenge_id):
     challenge = get_object_or_404(Challenge, id=challenge_id)
     
+    # Optional: Check if the challenge is available today
     # if challenge.date != timezone.now().date():
     #     messages.error(request, 'This challenge is not available today.')
     #     return redirect('cms:challenge_list')
     
-    PointTransaction.objects.create(
+    # Check if the user has already participated in the challenge
+    existing_submission = Submission.objects.filter(user=request.user, challenge=challenge).first()
+    if existing_submission:
+        messages.warning(request, 'You have already participated in this challenge.')
+        return redirect('cms:challenge_list')
+    
+    # Create a submission for the challenge
+    submission = Submission.objects.create(
         user=request.user,
-        transaction_type='earn',
-        points=challenge.points,
-        description=f'Earned {challenge.points} points for completing challenge "{challenge.title}"'
+        challenge=challenge,
+        content="Participated in the challenge",
+        grade=100 
     )
-    
-    request.user.ranking.points += challenge.points
-    request.user.ranking.save()
-    
-    messages.success(request, f'You earned {challenge.points} points for completing the challenge!')
-    return redirect('cms:challenge_list')
 
+    messages.success(request, f'You participated in the challenge and earned {challenge.points} points!')
+    return redirect('cms:challenge_list')
 
 @custom_login_required
 def user_progress_view(request):
     return render(request, 'cms/user_progress.html', {'progresses': request.user.progresses.all()})
-
 
 @custom_login_required
 def ranking_view(request):

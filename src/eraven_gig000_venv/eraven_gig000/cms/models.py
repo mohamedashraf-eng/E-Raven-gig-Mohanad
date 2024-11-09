@@ -207,7 +207,6 @@ class Quiz(models.Model):
     def __str__(self):
         return f"{self.title} ({self.course.title})"
 
-
 class Challenge(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
@@ -222,7 +221,6 @@ class Challenge(models.Model):
     def __str__(self):
         return f"{self.title} on {self.date}"
 
-
 class Submission(models.Model):
     user = models.ForeignKey(
         User,
@@ -230,14 +228,21 @@ class Submission(models.Model):
         related_name='submissions'
     )
     assignment = models.ForeignKey(
-        Assignment,
+        'Assignment',
         on_delete=models.CASCADE,
         related_name='submissions',
         null=True,
         blank=True
     )
     quiz = models.ForeignKey(
-        Quiz,
+        'Quiz',
+        on_delete=models.CASCADE,
+        related_name='submissions',
+        null=True,
+        blank=True
+    )
+    challenge = models.ForeignKey(
+        'Challenge',
         on_delete=models.CASCADE,
         related_name='submissions',
         null=True,
@@ -256,6 +261,8 @@ class Submission(models.Model):
             return f"Submission by {self.user.username} for {self.assignment.title}"
         elif self.quiz:
             return f"Submission by {self.user.username} for {self.quiz.title}"
+        elif self.challenge:
+            return f"Submission by {self.user.username} for {self.challenge.title}"
         return f"Submission by {self.user.username}"
 
 

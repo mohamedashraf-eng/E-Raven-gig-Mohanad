@@ -8,6 +8,34 @@
 <div class="container mt-4">
     <h1 class="mb-4">My Profile</h1>
 
+    <!-- Dashboard Summary -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Quizzes Completed</h5>
+                    <p class="card-text fs-3">{{ quiz_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Assignments Submitted</h5>
+                    <p class="card-text fs-3">{{ assignment_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Challenges Participated</h5>
+                    <p class="card-text fs-3">{{ challenge_count }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- User Information -->
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -29,7 +57,6 @@
             </p>
             <p><strong>Total Points:</strong> {{ user.total_points }}</p>
             <p><strong>Level:</strong> {{ user.level }}</p>
-            <!-- Add more user fields if necessary -->
         </div>
     </div>
 
@@ -56,8 +83,11 @@
 
     <!-- Progress -->
     <div class="card mb-4">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center">
             <h3>Course Progress</h3>
+            <a href="{% url 'cms:user_progress' %}" class="btn btn-primary btn-sm">
+                View Detailed Progress
+            </a>
         </div>
         <div class="card-body">
             {% if progresses %}

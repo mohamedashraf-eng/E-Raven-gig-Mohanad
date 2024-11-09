@@ -41,6 +41,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from .decorators import custom_login_required
+from cms.models import Quiz, Assignment, Challenge
 
 logger = logging.getLogger(__name__)
 
@@ -376,7 +377,7 @@ def token_lifetime_view(request):
     access_token_lifetime = settings.SIMPLE_JWT.get('ACCESS_TOKEN_LIFETIME', timedelta(minutes=15)).total_seconds()
     return JsonResponse({'access_token_lifetime': access_token_lifetime})
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(custom_login_required, name='dispatch')
 class UserProfileView(View):
     """
     Displays the authenticated user's profile, including enrollments, progress, points, and ranking.
@@ -401,6 +402,11 @@ class UserProfileView(View):
         # Fetch Top Rankings (e.g., top 10)
         rankings = Ranking.objects.select_related('user').order_by('-points')[:10]
 
+        # Calculate dashboard summary counts
+        quiz_count = Quiz.objects.filter(submissions__user=user, submissions__grade__isnull=False).count()
+        assignment_count = Assignment.objects.filter(submissions__user=user).count()
+        challenge_count = Challenge.objects.filter(submissions__user=user, submissions__grade__isnull=False).count()
+
         context = {
             'user': user,
             'enrollments': enrollments,
@@ -408,6 +414,9 @@ class UserProfileView(View):
             'point_transactions': point_transactions,
             'ranking': ranking,
             'rankings': rankings,
+            'quiz_count': quiz_count,
+            'assignment_count': assignment_count,
+            'challenge_count': challenge_count,
         }
 
         return render(request, self.template_name, context)

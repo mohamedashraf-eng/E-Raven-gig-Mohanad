@@ -80,8 +80,8 @@ class ChallengeAdmin(admin.ModelAdmin):
 
 @admin.register(Submission)
 class SubmissionAdmin(admin.ModelAdmin):
-    list_display = ('user', 'assignment', 'quiz', 'submitted_at', 'grade')
-    search_fields = ('user__username', 'assignment__title', 'quiz__title')
+    list_display = ('user', 'assignment', 'quiz', 'challenge', 'submitted_at', 'grade')
+    search_fields = ('user__username', 'assignment__title', 'challenge__title', 'quiz__title')
     list_filter = ('submitted_at', 'grade')
 
 
