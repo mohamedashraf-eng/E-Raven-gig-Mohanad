@@ -231,9 +231,15 @@ label {
     
     .right-panel {
         background-color: var(--form-background);
+        padding-top: 150px !important;
+        overflow-y: scroll;
     }
     
     .left-panel {
         background: linear-gradient(135deg, #5CC4B1 0%, #84D1DA 100%);
+        padding-top: 85px;
+    }
+    h2{
+        padding-top: 65px;
     }
 }

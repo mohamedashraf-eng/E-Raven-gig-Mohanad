@@ -1,23 +1,120 @@
-#navbarNav{
+/* templates/partials/navbar_custom.css */
+
+:root {
+    --color-1: #84D1DA; /* Light Blue */
+    --color-2: #5CC4B1; /* Turquoise */
+    --color-3: #0BA2B2; /* Darker Turquoise */
+    --color-4: #77D770; /* Green */
+    --color-5: #C3FC47; /* Bright Yellow-Green */
+}
+
+#navbarNav {
     justify-content: end;
 }
-.btn-brand-color-brightgreen{
-    color:white;
+
+.btn-brand-color-brightgreen {
+    background-color: var(--color-4);
+    color: white;
 }
-.navbar{
+
+.navbar {
     transition: transform 0.3s, box-shadow 1s ease;
-    box-shadow: inset 0px -5px 0 0 var(--bs-brand-color-brightgreen), 0px 5px 0 0 var(--bs-brand-color-blue) !important;
+    box-shadow: inset 0px -5px 0 0 var(--color-4), 0px 5px 0 0 var(--color-3) !important;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
+    background-color: var(--color-1);
 }
-.d-grid{
+
+.d-grid {
+    display: grid;
     grid-template-columns: 1fr auto 1fr;
 }
+
 .navbar-hidden {
     transform: translateY(-100%);
-    box-shadow: inset 0px -10px 0 0 var(--bs-brand-color-brightgreen), 0px -5px 0 0 var(--bs-brand-color-blue) !important;
+    box-shadow: inset 0px -10px 0 0 var(--color-4), 0px -5px 0 0 var(--color-3) !important;
 }
-.navbar-toggler{
+
+.navbar-toggler {
     display: flex;
     justify-content: end;
+}
+
+.navbar-brand img {
+    border-radius: 50%; /* Make the logo circular */
+}
+
+/* Dropdown Menu Customization */
+.dropdown-menu {
+    background-color: var(--color-2);
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Dropdown Animation */
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown.show .dropdown-menu {
+    opacity: 1;
+    transform: translateY(0);
+    animation: dropdownFadeIn 0.3s forwards;
+}
+
+.dropdown-item {
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.dropdown-item:hover {
+    background-color: var(--color-3);
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--color-5);
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.profile-pic:hover {
+    transform: scale(1.1);
+}
+
+/* Customize the caret icon */
+.dropdown-toggle::after {
+    display: none; /* Remove the default caret */
+}
+
+/* Add a custom caret using pseudo-elements */
+.nav-item.dropdown .nav-link::after {
+    content: '\25BE'; /* Downwards triangle */
+    margin-left: 5px;
+    font-size: 0.6rem;
+    transition: transform 0.3s ease;
+}
+
+.nav-item.dropdown.show .nav-link::after {
+    transform: rotate(180deg);
+}
+
+/* Ensure the dropdown menu aligns correctly */
+.dropdown-menu-end {
+    right: 0;
+    left: auto;
 }

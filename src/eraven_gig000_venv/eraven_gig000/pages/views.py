@@ -52,7 +52,7 @@ class SignInView(View):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             refresh = RefreshToken.for_user(user)
-            response = redirect('landing-page')  # Change to your desired redirect URL
+            response = redirect('user_profile')  # Change to your desired redirect URL
             # Set the access token in a cookie
             response.set_cookie(
                 settings.SIMPLE_JWT['AUTH_COOKIE'],

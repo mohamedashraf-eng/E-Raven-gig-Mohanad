@@ -20,8 +20,8 @@ class Role(models.Model):
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
-    role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, blank=True, related_name='users')
-
+    role = models.ForeignKey('Role', on_delete=models.SET_NULL, null=True, blank=True, related_name='users')
+    
     # LMS-specific fields
     total_points = models.PositiveIntegerField(default=0)  # Accumulated points from all activities
     level = models.PositiveIntegerField(default=1)  # Level based on points or achievements
@@ -35,7 +35,7 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['email']
 
     def __str__(self):
-        return self.username
+        return f"{self.first_name} {self.last_name} ({self.username})" if self.first_name and self.last_name else self.username
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')

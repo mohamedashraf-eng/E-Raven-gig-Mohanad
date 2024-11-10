@@ -6,8 +6,6 @@
 </head>
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
     <div class="container d-grid">
-        
-        {% comment %} Our Story {% endcomment %}
         <ul class="navbar-nav">
             <li class="nav-item"><a href="#" class="nav-link">Our Story</a></li>
         </ul>
@@ -27,19 +25,9 @@
         <!-- Navbar Links -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav align-items-center">
-                {% comment %} Items below were removed in design change {% endcomment %}
-                {% comment %} <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{% url 'landing-page' %}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'about' %}">About</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'contact' %}">Contact</a>
-                </li> {% endcomment %}
                 {% if request.COOKIES.access_token %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Profile</a>
+                        <a class="nav-link" href="{% url 'user_profile' %}">Profile</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
@@ -55,4 +43,8 @@
             </ul>
         </div>
     </div>
-</nav>
+</nav>         </div>
+        </div>
+    </nav>
+</body>
+</html>
