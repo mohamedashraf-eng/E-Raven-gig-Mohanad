@@ -1,0 +1,23 @@
+<!-- cms/templates/cms/assignment_list.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Assignments - {{ course.title }} - ERaven Gigs{% endblock %}
+
+{% block content %}
+    <h1>Assignments for {{ course.title }}</h1>
+    <p>Progress: {{ user_progress.progress_percentage }}% {% if user_progress.completed %}(Completed){% endif %}</p>
+    {% if assignments %}
+        <ul class="list-group">
+            {% for assignment in assignments %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a href="{% url 'cms:assignment_detail' course.slug assignment.id %}">{{ assignment.title }}</a>
+                    <span>Due: {{ assignment.due_date|date:"M d, Y H:i" }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No assignments available for this course.</p>
+    {% endif %}
+    <a href="{% url 'cms:course_detail' course.slug %}" class="btn btn-primary mt-3">Back to Course</a>
+{% endblock %}

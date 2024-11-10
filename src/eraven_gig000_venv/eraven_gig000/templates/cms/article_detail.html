@@ -1,0 +1,34 @@
+<!-- cms/templates/cms/article_detail.html -->
+
+{% extends "base.html" %}
+
+{% block title %}{{ article.title }} - ERaven Gigs{% endblock %}
+
+{% block content %}
+    <h1>{{ article.title }}</h1>
+    <p class="text-muted">Proficiency: {{ article.get_proficiency_level_display }}</p>
+    <p><strong>Author:</strong> {{ article.author }}</p>
+    <p><strong>Course:</strong> <a href="{% url 'cms:course_detail' article.course.slug %}">{{ article.course.title }}</a></p>
+    <hr>
+    <div>
+        {{ article.content|linebreaks }}
+    </div>
+    <hr>
+    <div>
+        <strong>Categories:</strong>
+        {% for category in article.categories.all %}
+            <span class="badge bg-secondary">{{ category.name }}</span>
+        {% empty %}
+            <span>No categories.</span>
+        {% endfor %}
+    </div>
+    <div>
+        <strong>Tags:</strong>
+        {% for tag in article.tags.all %}
+            <span class="badge bg-info text-dark">{{ tag.name }}</span>
+        {% empty %}
+            <span>No tags.</span>
+        {% endfor %}
+    </div>
+    <a href="{% url 'cms:article_list' %}" class="btn btn-primary mt-3">Back to Articles</a>
+{% endblock %}

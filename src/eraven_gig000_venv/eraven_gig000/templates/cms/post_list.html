@@ -1,0 +1,32 @@
+<!-- cms/templates/cms/post_list.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Posts - ERaven Gigs{% endblock %}
+
+{% block content %}
+    <h1>Posts</h1>
+    <div class="mb-3">
+        <form method="get" class="d-flex">
+            <select name="proficiency" class="form-select me-2" aria-label="Proficiency Level">
+                <option value="">All Proficiency Levels</option>
+                <option value="beginner" {% if request.GET.proficiency == 'beginner' %}selected{% endif %}>Beginner</option>
+                <option value="intermediate" {% if request.GET.proficiency == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                <option value="advanced" {% if request.GET.proficiency == 'advanced' %}selected{% endif %}>Advanced</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
+    </div>
+    {% if posts %}
+        <div class="list-group">
+            {% for post in posts %}
+                <a href="{% url 'cms:post_detail' post.slug %}" class="list-group-item list-group-item-action">
+                    <h5 class="mb-1">{{ post.title }}</h5>
+                    <small>Proficiency: {{ post.get_proficiency_level_display }}</small>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No posts found.</p>
+    {% endif %}
+{% endblock %}

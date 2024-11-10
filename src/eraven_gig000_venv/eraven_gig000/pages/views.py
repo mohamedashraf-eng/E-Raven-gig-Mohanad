@@ -8,6 +8,9 @@ from django.contrib import messages
 import logging
 from django.urls import reverse
 import requests
+from django.contrib.auth.decorators import login_required
+from cms.models import Enrollment
+from ums.decorators import custom_login_required
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -152,3 +155,16 @@ def check_email(request):
     # Optionally, retrieve the user's email from the session or pass it via query parameters
     user_email = request.GET.get('email', '')
     return render(request, 'pages/check_email.html', {'user_email': user_email})
+
+@custom_login_required
+def enrolled_courses_view(request):
+    user = request.user
+    # Retrieve all enrollment instances for the current user
+    enrollments = Enrollment.objects.filter(user=user).select_related('course')
+    # Extract the courses from the enrollments
+    courses = [enrollment.course for enrollment in enrollments]
+    
+    context = {
+        'courses': courses
+    }
+    return render(request, 'pages/enrolled_courses.html', context)

@@ -1,0 +1,15 @@
+<!-- cms/templates/cms/enroll_course.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Enroll in {{ course.title }} - ERaven Gigs{% endblock %}
+
+{% block content %}
+    <h1>Enroll in {{ course.title }}</h1>
+    <p><strong>Description:</strong> {{ course.description }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Enroll</button>
+    </form>
+    <a href="{% url 'cms:course_list' %}" class="btn btn-secondary mt-3">Back to Courses</a>
+{% endblock %}

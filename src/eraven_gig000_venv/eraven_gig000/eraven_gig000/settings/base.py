@@ -3,30 +3,23 @@
 from pathlib import Path
 import os
 from datetime import timedelta
+import environ
 
-# Base directory path
+# Initialize environment variables
+env = environ.Env()
+environ.Env.read_env()
+
+# Base Directory
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+# Define the URL to redirect unauthenticated users
+LOGIN_URL = '/api/v1/sign-in'  # Replace with your desired URL
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        'OPTIONS': {
-            'min_length': 8,  # Minimum length
-        }
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+# Optionally, define a `LOGIN_REDIRECT_URL` for post-login redirection
+LOGIN_REDIRECT_URL = 'api/v1/user-profile/'  # Replace as needed
 
-# Installed applications
+# Installed Applications
 INSTALLED_APPS = [
+    # Django Apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -37,13 +30,18 @@ INSTALLED_APPS = [
     'django_bootstrap5',
     'rest_framework',
     'rest_framework_simplejwt',
-    # 'ratelimit',
-    # Custom applications
-    'ums.apps.UmsConfig',
+    'rest_framework.authtoken',
+    'crispy_forms',
+    'django_extensions',
+    # 'ratelimit',  # Uncomment if rate limiting is needed
+
+    # Custom Apps
     'pages.apps.PagesConfig',
+    'ums.apps.UmsConfig',
+    'cms.apps.CmsConfig',
 ]
 
-# Middleware configuration
+# Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -52,14 +50,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # ... any custom middleware
+    'ums.middleware.JWTAuthenticationMiddleware', 
 ]
 
-# URL and WSGI settings
+# URL Configuration
 ROOT_URLCONF = 'eraven_gig000.urls'
 WSGI_APPLICATION = 'eraven_gig000.wsgi.application'
 
-# Templates configuration
+# Template Configuration
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -76,39 +74,56 @@ TEMPLATES = [
     },
 ]
 
-# Authentication model
+# Custom User Model
 AUTH_USER_MODEL = 'ums.User'
 
-# REST framework configuration
+# Authentication and Authorization
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'ums.authentication.CookieJWTAuthentication',  # Custom authentication
+        'ums.authentication.CookieJWTAuthentication',  # Custom authentication for JWT cookies
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
 }
 
+# JWT Settings for Authentication
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'AUTH_COOKIE': 'access_token',                # Cookie name for the access token
-    'AUTH_COOKIE_REFRESH': 'refresh_token',       # Cookie name for the refresh token
-    'AUTH_COOKIE_HTTP_ONLY': True,                # HTTP-only cookies for security
-    'AUTH_COOKIE_SECURE': False,                  # Set to True in production with HTTPS
-    'AUTH_COOKIE_SAMESITE': 'Lax',                # 'Strict' or 'Lax' for CSRF protection
+    'SIGNING_KEY': 'mowx',  # Use your project's secret key from environment
+    'ALGORITHM': 'HS256',
+    'AUTH_COOKIE': 'access_token',  # Name of the access token cookie
+    'AUTH_COOKIE_REFRESH': 'refresh_token',  # Name of the refresh token cookie
+    'AUTH_COOKIE_SECURE': False,  # Set to True in production
+    'AUTH_COOKIE_HTTP_ONLY': True,
+    'AUTH_COOKIE_SAMESITE': 'Lax',  # Adjust as needed
 }
 
-# Internationalization
+# Password Validators
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 8},
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+# Internationalization and Localization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static and media files
+# Static and Media Files
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'eraven_gig000/static')]
@@ -116,5 +131,5 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'eraven_gig000/static')]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Default auto field type
+# Default Primary Key Field Type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

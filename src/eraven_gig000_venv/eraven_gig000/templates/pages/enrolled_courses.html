@@ -1,0 +1,20 @@
+<!-- templates/cms/enrolled_courses.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>My Enrolled Courses</h1>
+  
+  {% if courses %}
+    <ul>
+      {% for course in courses %}
+        <li>
+          <a href="{% url 'cms:course_detail' course.slug %}">{{ course.title }}</a>
+          <p>{{ course.description|truncatechars:100 }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You are not enrolled in any courses yet.</p>
+  {% endif %}
+{% endblock %}

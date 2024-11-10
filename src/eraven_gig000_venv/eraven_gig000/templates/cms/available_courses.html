@@ -1,0 +1,28 @@
+<!-- cms/templates/cms/available_courses.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Available Courses - ERaven Gigs{% endblock %}
+
+{% block content %}
+    <h1>Available Courses</h1>
+    {% if available_courses %}
+        <div class="row">
+            {% for course in available_courses %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ course.title }}</h5>
+                            <p class="card-text">{{ course.description|truncatewords:20 }}</p>
+                            <p><strong>Proficiency Level:</strong> {{ course.proficiency_level }}</p>
+                            <a href="{% url 'cms:course_detail' course.slug %}" class="btn btn-primary">View Course</a>
+                            <a href="{% url 'cms:enroll_course' course.slug %}" class="btn btn-success">Enroll</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>You are enrolled in all available courses.</p>
+    {% endif %}
+{% endblock %}
