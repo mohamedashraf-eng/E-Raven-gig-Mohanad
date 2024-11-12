@@ -8,6 +8,6 @@
     <div class="text-center">
         <h1 class="display-4">Access Denied</h1>
         <p class="lead">You must be enrolled in the course "{{ course.title }}" to view this content.</p>
-        <a href="{% url 'cms:available_courses' %}" class="btn btn-primary">View Available Courses</a>
+        <a href="{% url 'cms:course_list' %}" class="btn btn-primary">View Available Courses</a>
     </div>
 {% endblock %}

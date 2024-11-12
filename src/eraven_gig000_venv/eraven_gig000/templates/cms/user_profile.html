@@ -1,16 +1,26 @@
 <!-- cms/templates/cms/user_profile.html -->
 
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}My Profile - ERaven Gigs{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <h1 class="mb-4">My Profile</h1>
 
+    <!-- Timeline Calendar Section (Moved to Top) -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Timeline Calendar</h3>
+        </div>
+        <div class="card-body">
+            <div id="calendar"></div>
+        </div>
+    </div>
+
     <!-- Dashboard Summary -->
     <div class="row mb-4">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card text-white bg-info mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Quizzes Completed</h5>
@@ -18,7 +28,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card text-white bg-success mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Assignments Submitted</h5>
@@ -26,11 +36,19 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-primary mb-3">
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Challenges Participated</h5>
                     <p class="card-text fs-3">{{ challenge_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-secondary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Workshops Attended</h5>
+                    <p class="card-text fs-3">{{ workshop_count }}</p>
                 </div>
             </div>
         </div>
@@ -94,7 +112,7 @@
                 {% for progress in progresses %}
                     <div class="mb-3">
                         <h5>{{ progress.course.title }}</h5>
-                        <div class="progress">
+                        <div class="progress mb-2">
                             <div class="progress-bar" role="progressbar" style="width: {{ progress.progress_percentage }}%;" aria-valuenow="{{ progress.progress_percentage }}" aria-valuemin="0" aria-valuemax="100">
                                 {{ progress.progress_percentage }}%
                             </div>
@@ -193,4 +211,70 @@
         </div>
     </div>
 </div>
+
+<!-- Include FullCalendar CSS & JS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+<!-- Optional: Include Bootstrap JS for tooltips (if not already included) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Initialize FullCalendar -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',  // Options: 'dayGridMonth', 'timeGridWeek', 'timeGridDay'
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: [
+                {% for event in timeline_events %}
+                {
+                    title: "{{ event.get_event_type_display }}: {{ event.content_object.title }}",
+                    start: "{{ event.event_date|date:"Y-m-d\TH:i:s" }}",  // ISO format required by FullCalendar
+                    color: "{% if event.event_type == 'assignment' %}#28a745{% elif event.event_type == 'quiz' %}#007bff{% elif event.event_type == 'workshop' %}#ffc107{% else %}#6c757d{% endif %}",  // Green, Blue, Yellow, Grey
+                    url: "{% if event.event_type == 'workshop' and event.content_object.meeting_link %}{{ event.content_object.meeting_link }}{% else %}#{% endif %}"
+                },
+                {% endfor %}
+            ],
+            eventClick: function (info) {
+                if (info.event.url && info.event.url !== '#') {
+                    window.open(info.event.url, "_blank");
+                    info.jsEvent.preventDefault();  // Prevent browser from navigating to the link
+                }
+            },
+            eventDidMount: function(info) {
+                // Optional: Add tooltips or additional event details
+                if (info.event.extendedProps.description) {
+                    var tooltip = new bootstrap.Tooltip(info.el, {
+                        title: info.event.extendedProps.description,
+                        placement: 'top',
+                        trigger: 'hover',
+                        container: 'body'
+                    });
+                }
+            }
+        });
+
+        calendar.render();
+    });
+</script>
+
+<!-- Custom CSS for Calendar -->
+<style>
+    /* FullCalendar container adjustments */
+    #calendar {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    /* Optional: Adjust event titles or other styles */
+    .fc-event {
+        cursor: pointer;
+    }
+</style>
 {% endblock %}

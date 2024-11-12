@@ -2,11 +2,30 @@
 
 {% extends "base.html" %}
 
+{% block title %}Challenge - {{ challenge.title }}{% endblock %}
+
 {% block content %}
-  <h1>{{ challenge.title }}</h1>
-  <p>{{ challenge.description }}</p>
-  <p><strong>Points:</strong> {{ challenge.points }}</p>
-  <p><strong>Date:</strong> {{ challenge.date }}</p>
-  <a href="{% url 'cms:participate_challenge' challenge.id %}" class="btn btn-success">Participate</a>
-  
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">{{ challenge.title }}</h2>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ challenge.description }}</p>
+                    <p><strong>Points:</strong> {{ challenge.points }}</p>
+                    <p><strong>Date:</strong> {{ challenge.date|date:"F j, Y" }}</p>
+
+                    <!-- Show different buttons based on registration status -->
+                    {% if registered %}
+                        <button class="btn btn-secondary" disabled>Already Registered</button>
+                    {% else %}
+                        <a href="{% url 'cms:participate_challenge' challenge.id %}" class="btn btn-success">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -7,8 +7,6 @@ from django.conf import settings
 from django.contrib import messages
 import logging
 from django.urls import reverse
-import requests
-from django.contrib.auth.decorators import login_required
 from cms.models import Enrollment
 from ums.decorators import custom_login_required
 
@@ -162,9 +160,9 @@ def enrolled_courses_view(request):
     # Retrieve all enrollment instances for the current user
     enrollments = Enrollment.objects.filter(user=user).select_related('course')
     # Extract the courses from the enrollments
-    courses = [enrollment.course for enrollment in enrollments]
+    enrolled_courses = [enrollment.course for enrollment in enrollments]
     
     context = {
-        'courses': courses
+        'enrolled_courses': enrolled_courses
     }
     return render(request, 'pages/enrolled_courses.html', context)

@@ -5,30 +5,50 @@
 {% block title %}{{ quiz.title }} - ERaven Gigs{% endblock %}
 
 {% block content %}
-    <h1>{{ quiz.title }}</h1>
-    <p><strong>Description:</strong> {{ quiz.description }}</p>
-    <p><strong>Created At:</strong> {{ quiz.created_at|date:"M d, Y H:i" }}</p>
-    <hr>
-    <h3>Your Submissions</h3>
-    {% if submissions %}
-        <ul class="list-group mb-3">
-            {% for submission in submissions %}
-                <li class="list-group-item">
-                    <p><strong>Submitted At:</strong> {{ submission.submitted_at|date:"M d, Y H:i" }}</p>
-                    <p><strong>Content:</strong> {{ submission.content|linebreaks }}</p>
-                    <p><strong>Grade:</strong> {{ submission.grade|default:"Not graded yet" }}</p>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>You have not taken this quiz yet.</p>
-    {% endif %}
-    <hr>
-    <h3>Take Quiz</h3>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success">Submit Quiz</button>
-    </form>
-    <a href="{% url 'cms:quiz_list' course.slug %}" class="btn btn-primary mt-3">Back to Quizzes</a>
+    <div class="container mt-4">
+        <h1>{{ quiz.title }}</h1>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Quiz Details</h5>
+                <p><strong>Description:</strong> {{ quiz.description }}</p>
+                {% if quiz.link %}
+                    <p><strong>Quiz Link:</strong> <a href="{{ quiz.link }}" target="_blank">{{ quiz.link }}</a></p>
+                {% else %}
+                    <p><em>No specific link provided for this quiz.</em></p>
+                {% endif %}
+                <p><strong>Created At:</strong> {{ quiz.created_at|date:"M d, Y H:i" }}</p>
+            </div>
+        </div>
+
+        <hr>
+
+        <h3>Your Submission</h3>
+        {% if submissions %}
+            <div class="alert alert-success" role="alert">
+                <p>You have already submitted this quiz. You cannot submit it again.</p>
+            </div>
+            <ul class="list-group mb-3">
+                {% for submission in submissions %}
+                    <li class="list-group-item">
+                        <p><strong>Submitted At:</strong> {{ submission.submitted_at|date:"M d, Y H:i" }}</p>
+                        <p><strong>Grade:</strong> {{ submission.grade|default:"Not graded yet" }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="alert alert-warning" role="alert">
+                <p><strong>Note:</strong> Please make sure to complete any required steps in the quiz link above before submitting.</p>
+            </div>
+            <hr>
+            <h3>Take Quiz</h3>
+            <p>Please complete the quiz and submit your answers below.</p>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}  <!-- Render the form fields correctly -->
+                <button type="submit" class="btn btn-primary">Submit Quiz</button>
+            </form>
+        {% endif %}
+
+        <a href="{% url 'cms:quiz_list' course.slug %}" class="btn btn-secondary mt-4">Back to Quizzes</a>
+    </div>
 {% endblock %}

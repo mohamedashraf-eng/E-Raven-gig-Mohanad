@@ -35,9 +35,12 @@ urlpatterns = [
     path('courses/<slug:course_slug>/quizzes/<int:quiz_id>/', views.quiz_detail, name='quiz_detail'),
 
     # Enrollment and available courses
-    path('available-courses/', views.available_courses_view, name='available_courses'),
+    # path('available-courses/', views.available_courses_view, name='available_courses'),
     path('enroll/<slug:course_slug>/', views.enroll_course_view, name='enroll_course'),
 
+    path('workshop/<int:workshop_id>/attend/', views.attend_workshop, name='attend_workshop'),
+    path('workshop/<int:workshop_id>/join/', views.join_workshop, name='join_workshop'),
+    
     # Article, video, post, and documentation views
     path('articles/', views.article_list, name='article_list'),
     path('articles/<slug:slug>/', views.article_detail, name='article_detail'),
@@ -47,10 +50,12 @@ urlpatterns = [
     path('posts/<slug:slug>/', views.post_detail, name='post_detail'),
     path('documentations/', views.documentation_list, name='documentation_list'),
     path('documentations/<slug:slug>/', views.documentation_detail, name='documentation_detail'),
-
+    path('articles/<int:article_id>/read/', views.read_article, name='read_article'),
+    path('documentations/<int:documentation_id>/read/', views.read_documentation, name='read_documentation'),
+    
     # Challenge-related views
     path('challenges/', views.challenge_list, name='challenge_list'),
-    path('challenges/<int:id>/', views.challenge_detail_view, name='challenge_detail'),
+    path('challenges/<int:challenge_id>/', views.challenge_detail_view, name='challenge_detail'),
     path('challenges/<int:challenge_id>/participate/', views.participate_challenge, name='participate_challenge'),
 
     # User progress and rankings

@@ -30,5 +30,12 @@
             <span>No tags.</span>
         {% endfor %}
     </div>
+
+    <!-- Read Article Button -->
+    <form action="{% url 'cms:read_article' article.id %}" method="post" class="mt-3">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Mark as Read</button>
+    </form>
+
     <a href="{% url 'cms:article_list' %}" class="btn btn-primary mt-3">Back to Articles</a>
 {% endblock %}

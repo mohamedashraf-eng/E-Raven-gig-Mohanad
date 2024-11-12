@@ -7,9 +7,9 @@ from django.shortcuts import render
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/pages/', include('pages.urls')),
-    path('api/v1/ums/', include('ums.urls')),
-    path('api/v1/cms/', include('cms.urls')),
+    path('api/v1/pages/', include(('pages.urls', 'pages'), namespace='pages')),  # Unique namespace 'pages'
+    path('api/v1/ums/', include(('ums.urls', 'ums'), namespace='ums')),          # Unique namespace 'ums'
+    path('api/v1/cms/', include(('cms.urls', 'cms'), namespace='cms')),          # Unique namespace 'cms'
 ]
 
 # Define custom error handlers

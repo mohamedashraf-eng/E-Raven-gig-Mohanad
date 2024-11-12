@@ -1,28 +1,38 @@
-<!-- cms/templates/cms/available_courses.html -->
+<!-- cms/templates/cms/enrolled_courses.html -->
 
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Available Courses - ERaven Gigs{% endblock %}
+{% block title %}Enrolled Courses - ERaven Gigs{% endblock %}
 
 {% block content %}
-    <h1>Available Courses</h1>
-    {% if available_courses %}
-        <div class="row">
-            {% for course in available_courses %}
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ course.title }}</h5>
-                            <p class="card-text">{{ course.description|truncatewords:20 }}</p>
-                            <p><strong>Proficiency Level:</strong> {{ course.proficiency_level }}</p>
-                            <a href="{% url 'cms:course_detail' course.slug %}" class="btn btn-primary">View Course</a>
-                            <a href="{% url 'cms:enroll_course' course.slug %}" class="btn btn-success">Enroll</a>
+    <div class="container mt-4">
+        <h1>Enrolled Courses</h1>
+        
+        {% if enrolled_courses %}
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for course in enrolled_courses %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm border-0">
+                            {% if course.picture %}
+                                <img src="{{ course.picture.url }}" class="card-img-top" alt="{{ course.title }} Image" style="max-height: 200px; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'images/default_course.png' %}" class="card-img-top" alt="Default Course Image" style="max-height: 200px; object-fit: cover;">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ course.title }}</h5>
+                                <p class="card-text">{{ course.description|truncatewords:20 }}</p>
+                                <p><strong>Proficiency Level:</strong> {{ course.proficiency_level|title }}</p>
+                            </div>
+                            <div class="card-footer bg-transparent border-0">
+                                <a href="{% url 'cms:course_detail' course.slug %}" class="btn btn-primary w-100">View Course</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p>You are enrolled in all available courses.</p>
-    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>You are not enrolled in any courses yet.</p>
+        {% endif %}
+    </div>
 {% endblock %}

@@ -1,38 +1,52 @@
 <!-- cms/templates/cms/course_list.html -->
 
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Courses - ERaven Gigs{% endblock %}
 
 {% block content %}
-    <h1>Courses</h1>
-    <div class="mb-3">
-        <form method="get" class="d-flex">
-            <select name="proficiency" class="form-select me-2" aria-label="Proficiency Level">
-                <option value="">All Proficiency Levels</option>
-                <option value="beginner" {% if request.GET.proficiency == 'beginner' %}selected{% endif %}>Beginner</option>
-                <option value="intermediate" {% if request.GET.proficiency == 'intermediate' %}selected{% endif %}>Intermediate</option>
-                <option value="advanced" {% if request.GET.proficiency == 'advanced' %}selected{% endif %}>Advanced</option>
-            </select>
-            <button type="submit" class="btn btn-primary">Filter</button>
-        </form>
-    </div>
-    {% if courses %}
-        <div class="row">
-            {% for course in courses %}
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ course.title }}</h5>
-                            <p class="card-text">{{ course.description|truncatewords:20 }}</p>
-                            <p><strong>Proficiency Level:</strong> {{ course.progression_level }}</p>
-                            <a href="{% url 'cms:course_detail' course.slug %}" class="btn btn-primary">View Course</a>
+    <div class="container mt-4">
+        <h1 class="mb-4">Courses</h1>
+
+        <!-- Filter Form -->
+        <div class="mb-3">
+            <form method="get" class="d-flex">
+                <select name="proficiency" class="form-select me-2" aria-label="Proficiency Level">
+                    <option value="">All Proficiency Levels</option>
+                    <option value="beginner" {% if request.GET.proficiency == 'beginner' %}selected{% endif %}>Beginner</option>
+                    <option value="intermediate" {% if request.GET.proficiency == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                    <option value="advanced" {% if request.GET.proficiency == 'advanced' %}selected{% endif %}>Advanced</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
+        </div>
+
+        <!-- Course Cards -->
+        {% if courses %}
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for course in courses %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm border-0">
+                            {% if course.picture %}
+                                <img src="{{ course.picture.url }}" class="card-img-top" alt="{{ course.title }} Image" style="max-height: 200px; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'images/default_course.png' %}" class="card-img-top" alt="Default Course Image" style="max-height: 200px; object-fit: cover;">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ course.title }}</h5>
+                                <p class="card-text">{{ course.description|truncatewords:20 }}</p>
+                                <p><strong>Proficiency Level:</strong> {{ course.proficiency_level|title }}</p>
+                            </div>
+                            <div class="card-footer bg-transparent border-0">
+                                <a href="{% url 'cms:course_detail' course.slug %}" class="btn btn-primary w-100">View Course</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p>No courses available.</p>
-    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No courses available.</p>
+        {% endif %}
+    </div>
 {% endblock %}

@@ -1,7 +1,6 @@
 # cms/views.py
 
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from django.urls import reverse
@@ -14,7 +13,7 @@ from rest_framework.response import Response
 from .models import (
     Article, Video, Post, Documentation, Course, Enrollment,
     Assignment, Quiz, Challenge, Submission,
-    UserProgress, PointTransaction, Ranking
+    UserProgress, PointTransaction, Ranking, Workshop, ArticleRead, DocumentationRead
 )
 from .serializers import (
     ArticleSerializer, VideoSerializer, PostSerializer,
@@ -23,9 +22,11 @@ from .serializers import (
     SubmissionSerializer, UserProgressSerializer,
     PointTransactionSerializer, RankingSerializer, UserSerializer
 )
-from .forms import AssignmentSubmissionForm, QuizSubmissionForm
+from .forms import DocumentationReadForm, ArticleReadForm, QuizSubmissionForm, AssignmentSubmissionForm
 from .permissions import IsAuthorOrReadOnly
 from ums.decorators import custom_login_required
+from django.db import transaction
+from django.contrib.contenttypes.models import ContentType
 
 User = get_user_model()
 
@@ -94,17 +95,20 @@ def course_list(request):
     courses = Course.objects.filter(proficiency_level=proficiency) if proficiency else Course.objects.all()
     return render(request, 'cms/course_list.html', {'courses': courses})
 
-
-@custom_login_required
 def course_detail_view(request, slug):
     course = get_object_or_404(Course, slug=slug)
-    articles = Article.objects.filter(course=course)
-    videos = Video.objects.filter(course=course)
-    assignments = Assignment.objects.filter(course=course)
-    quizzes = Quiz.objects.filter(course=course)
-    challenges = Challenge.objects.filter(course=course)
-    documentations = Documentation.objects.filter(course=course)
-
+    
+    # Fetch related content
+    articles = course.articles.all()
+    videos = course.videos.all()
+    assignments = course.assignments.all()
+    quizzes = course.quizzes.all()
+    challenges = course.challenges.all()
+    documentations = course.documentations.all()
+    workshops = course.workshops.all()
+    sessions = course.sessions.all()  # Fetch related sessions
+    related_courses = Course.objects.filter(categories__in=course.categories.all()).exclude(id=course.id).distinct()[:6]
+    
     context = {
         'course': course,
         'articles': articles,
@@ -113,8 +117,11 @@ def course_detail_view(request, slug):
         'quizzes': quizzes,
         'challenges': challenges,
         'documentations': documentations,
+        'workshops': workshops,
+        'sessions': sessions,  # Add sessions to context
+        'related_courses': related_courses,
     }
-
+    
     return render(request, 'cms/course_detail.html', context)
 
 # =======================
@@ -139,16 +146,26 @@ def assignment_list(request, course_slug):
 def assignment_detail(request, course_slug, assignment_id):
     course = get_object_or_404(Course, slug=course_slug)
     assignment = get_object_or_404(Assignment, id=assignment_id, course=course)
-    submissions = assignment.submissions.filter(user=request.user)
+    submissions = Submission.objects.filter(user=request.user, assignment=assignment)
     
     if request.method == 'POST':
-        form = AssignmentSubmissionForm(request.POST)
+        if not request.user.is_authenticated:
+            messages.error(request, "You must be logged in to submit assignments.")
+            return redirect('api:sign-in')
+        
+        if submissions.exists():
+            messages.warning(request, "You have already submitted this assignment.")
+            return redirect('cms:assignment_detail', course_slug=course.slug, assignment_id=assignment.id)
+        
+        form = AssignmentSubmissionForm(request.POST, request.FILES)
         if form.is_valid():
+            # Create the submission with form data
             submission = form.save(commit=False)
             submission.user = request.user
             submission.assignment = assignment
             submission.save()
-            messages.success(request, 'Assignment submitted successfully!')
+            
+            messages.success(request, "Assignment submitted successfully!")
             update_user_progress(request.user, course)
             return redirect('cms:assignment_detail', course_slug=course.slug, assignment_id=assignment.id)
     else:
@@ -161,7 +178,6 @@ def assignment_detail(request, course_slug, assignment_id):
         'form': form,
     }
     return render(request, 'cms/assignment_detail.html', context)
-
 
 @custom_login_required
 def quiz_list(request, course_slug):
@@ -179,27 +195,32 @@ def quiz_list(request, course_slug):
 
 @custom_login_required
 def quiz_detail(request, course_slug, quiz_id):
-    # Ensure course and quiz are retrieved successfully
     course = get_object_or_404(Course, slug=course_slug)
     quiz = get_object_or_404(Quiz, id=quiz_id, course=course)
     submissions = quiz.submissions.filter(user=request.user)
     
     if request.method == 'POST':
+        if not request.user.is_authenticated:
+            messages.error(request, "You must be logged in to submit quizzes.")
+            return redirect('api:sign-in')
+        
+        if submissions.exists():
+            messages.warning(request, "You have already submitted this quiz.")
+            return redirect('cms:quiz_detail', course_slug=course.slug, quiz_id=quiz.id)
+        
         form = QuizSubmissionForm(request.POST)
         if form.is_valid():
-            submission = form.save(commit=False)
-            submission.user = request.user
-            submission.quiz = quiz
-            submission.save()
-            # Grade submission with a safeguard
-            if quiz and course:
-                submission.grade = grade_submission(submission)
-                submission.save()
-                messages.success(request, 'Quiz submitted and graded successfully!')
-                update_user_progress(request.user, course)
-                return redirect('cms:quiz_detail', course_slug=course.slug, quiz_id=quiz.id)
-            else:
-                messages.error(request, 'Quiz or course data is missing.')
+            # Create the submission without any form fields
+            Submission.objects.create(
+                user=request.user,
+                quiz=quiz,
+                content="",  # Empty content as no form fields are filled
+                # 'grade' can remain null until graded
+                # 'points_awarded' can be handled separately based on grading
+            )
+            messages.success(request, "Quiz submitted successfully!")
+            update_user_progress(request.user, course)
+            return redirect('cms:quiz_detail', course_slug=course.slug, quiz_id=quiz.id)
     else:
         form = QuizSubmissionForm()
     
@@ -223,23 +244,6 @@ def challenge_list(request):
     })
 
 @custom_login_required
-def challenge_detail_view(request, id):
-    challenge = get_object_or_404(Challenge, id=id)
-    course = challenge.course
-
-    # Check if the user is enrolled in the course
-    is_enrolled = Enrollment.objects.filter(user=request.user, course=course).exists()
-    if not is_enrolled:
-        messages.error(request, "You must be enrolled in the course to view this challenge.")
-        return redirect('cms:enrolled_courses')
-
-    context = {
-        'challenge': challenge,
-        'course': course,
-    }
-    return render(request, 'cms/challenge_detail.html', context)
-
-@custom_login_required
 def participate_challenge(request, challenge_id):
     challenge = get_object_or_404(Challenge, id=challenge_id)
     
@@ -248,22 +252,51 @@ def participate_challenge(request, challenge_id):
     #     messages.error(request, 'This challenge is not available today.')
     #     return redirect('cms:challenge_list')
     
+    # Get the ContentType for Challenge
+    challenge_content_type = ContentType.objects.get_for_model(Challenge)
+    
     # Check if the user has already participated in the challenge
-    existing_submission = Submission.objects.filter(user=request.user, challenge=challenge).first()
+    existing_submission = Submission.objects.filter(
+        user=request.user,
+        content_type=challenge_content_type,
+        object_id=challenge.id
+    ).exists()
+    
     if existing_submission:
         messages.warning(request, 'You have already participated in this challenge.')
         return redirect('cms:challenge_list')
     
     # Create a submission for the challenge
-    submission = Submission.objects.create(
+    Submission.objects.create(
         user=request.user,
-        challenge=challenge,
-        content="Participated in the challenge",
-        grade=100 
+        content_type=challenge_content_type,
+        object_id=challenge.id,
+        grade=100  # Assuming full marks for participation
     )
-
+    
     messages.success(request, f'You participated in the challenge and earned {challenge.points} points!')
-    return redirect('cms:challenge_list')
+    return redirect('cms:challenge_detail', challenge_id=challenge.id)
+
+@custom_login_required
+def challenge_detail_view(request, challenge_id):
+    challenge = get_object_or_404(Challenge, id=challenge_id)
+    
+    # Get the ContentType for Challenge
+    challenge_content_type = ContentType.objects.get_for_model(Challenge)
+    
+    # Determine if the user has already participated
+    registered = Submission.objects.filter(
+        user=request.user,
+        content_type=challenge_content_type,
+        object_id=challenge.id
+    ).exists()
+    
+    context = {
+        'challenge': challenge,
+        'registered': registered,
+    }
+    
+    return render(request, 'cms/challenge_detail.html', context)
 
 @custom_login_required
 def user_progress_view(request):
@@ -309,10 +342,19 @@ def grade_submission(submission):
 @custom_login_required
 def enroll_course_view(request, course_slug):
     course = get_object_or_404(Course, slug=course_slug)
-    _, created = Enrollment.objects.get_or_create(user=request.user, course=course)
-    messages.success(request, f"Successfully enrolled in {course.title}." if created else f"You are already enrolled in {course.title}.")
-    return redirect(reverse('cms:enrolled_courses'))
-
+    # Create enrollment record
+    enrollment, created = Enrollment.objects.get_or_create(user=request.user, course=course)
+    
+    # Create or get UserProgress for the user and course
+    UserProgress.objects.get_or_create(user=request.user, course=course)
+    
+    # Feedback message for enrollment
+    if created:
+        messages.success(request, f"Successfully enrolled in {course.title}.")
+    else:
+        messages.info(request, f"You are already enrolled in {course.title}.")
+    
+    return redirect(reverse('enrolled_courses'))
 
 @custom_login_required
 def available_courses_view(request):
@@ -320,3 +362,146 @@ def available_courses_view(request):
     available_courses = Course.objects.exclude(id__in=enrolled_courses)
     return render(request, 'cms/available_courses.html', {'available_courses': available_courses})
 
+@custom_login_required
+def attend_workshop(request, workshop_id):
+    """
+    View to handle attending a workshop by spending points.
+    """
+    workshop = get_object_or_404(Workshop, id=workshop_id)
+    user = request.user
+
+    # Get the ContentType for Workshop
+    workshop_content_type = ContentType.objects.get_for_model(Workshop)
+
+    # Check if the user has already attended the workshop
+    already_attended = Submission.objects.filter(
+        user=user,
+        content_type=workshop_content_type,
+        object_id=workshop.id
+    ).exists()
+
+    if already_attended:
+        messages.info(request, "You have already attended this workshop.")
+        return redirect('cms:course_detail', slug=workshop.course.slug)
+
+    # Check if the user has enough points
+    if user.total_points < workshop.points_cost:
+        messages.error(request, f"You do not have enough points to attend this workshop. Required: {workshop.points_cost}, Available: {user.total_points}.")
+        return redirect('cms:course_detail', slug=workshop.course.slug)
+
+    # Proceed to deduct points and create a Submission
+    try:
+        # Create a Submission to record attendance
+        Submission.objects.create(
+            user=user,
+            content_type=workshop_content_type,
+            object_id=workshop.id,
+            grade=100  # Assuming full marks for attendance
+        )
+
+        messages.success(request, f"You have successfully attended the workshop and earned {workshop.points_cost} points!")
+
+    except Exception as e:
+        messages.error(request, f"An error occurred while attending the workshop: {str(e)}")
+        return redirect('cms:course_detail', slug=workshop.course.slug)
+
+    return redirect('cms:course_detail', slug=workshop.course.slug)
+
+@custom_login_required
+def join_workshop(request, workshop_id):
+    """
+    View to redirect the user to the workshop's meeting link if they have attended.
+    """
+    workshop = get_object_or_404(Workshop, id=workshop_id)
+    user = request.user
+
+    # Get the ContentType for Workshop
+    workshop_content_type = ContentType.objects.get_for_model(Workshop)
+
+    # Check if the user has attended the workshop
+    attended = Submission.objects.filter(
+        user=user,
+        content_type=workshop_content_type,
+        object_id=workshop.id
+    ).exists()
+
+    if not attended:
+        messages.error(request, "You need to attend the workshop before joining.")
+        return redirect('cms:course_detail', slug=workshop.course.slug)
+
+    if not workshop.meeting_link:
+        messages.error(request, "No meeting link is available for this workshop.")
+        return redirect('cms:course_detail', slug=workshop.course.slug)
+
+    return redirect(workshop.meeting_link)
+
+@custom_login_required
+def read_article(request, article_id):
+    article = get_object_or_404(Article, id=article_id)
+    user = request.user
+
+    # Check if the user has already read the article
+    already_read = ArticleRead.objects.filter(user=user, article=article).exists()
+
+    if already_read:
+        messages.info(request, "You have already read this article.")
+        return redirect('cms:course_detail', slug=article.course.slug)
+
+    if request.method == 'POST':
+        form = ArticleReadForm(request.POST)
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    # Create ArticleRead record
+                    points = article.points  # Assuming points are defined per article
+                    ArticleRead.objects.create(
+                        user=user,
+                        article=article,
+                        points_awarded=points
+                    )
+                    messages.success(request, f"Successfully read '{article.title}'. Earned {points} points.")
+            except Exception as e:
+                messages.error(request, f"An error occurred while reading the article: {str(e)}")
+                return redirect('cms:course_detail', slug=article.course.slug)
+
+            return redirect('cms:course_detail', slug=article.course.slug)
+    else:
+        form = ArticleReadForm()
+
+    return render(request, 'cms/read_article_confirm.html', {'form': form, 'article': article})
+
+
+@custom_login_required
+def read_documentation(request, documentation_id):
+    documentation = get_object_or_404(Documentation, id=documentation_id)
+    user = request.user
+
+    # Check if the user has already read the documentation
+    already_read = DocumentationRead.objects.filter(user=user, documentation=documentation).exists()
+
+    if already_read:
+        messages.info(request, "You have already read this documentation.")
+        return redirect('cms:course_detail', slug=documentation.course.slug)
+
+    if request.method == 'POST':
+        form = DocumentationReadForm(request.POST)
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    # Create DocumentationRead record
+                    points = documentation.points  # Assuming points are defined per documentation
+                    DocumentationRead.objects.create(
+                        user=user,
+                        documentation=documentation,
+                        points_awarded=points
+                    )
+                    messages.success(request, f"Successfully read '{documentation.title}'. Earned {points} points.")
+            except Exception as e:
+                messages.error(request, f"An error occurred while reading the documentation: {str(e)}")
+                return redirect('cms:course_detail', slug=documentation.course.slug)
+
+            return redirect('cms:course_detail', slug=documentation.course.slug)
+    else:
+        form = DocumentationReadForm()
+
+    return render(request, 'cms/read_documentation_confirm.html', {'form': form, 'documentation': documentation})

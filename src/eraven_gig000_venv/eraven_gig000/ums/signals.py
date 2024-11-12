@@ -9,21 +9,13 @@ from cms.models import PointTransaction, Ranking
 def update_user_points_and_level(sender, instance, created, **kwargs):
     if created:
         user = instance.user
-        if instance.transaction_type == 'earn':
-            user.total_points += instance.points
-        elif instance.transaction_type == 'spend':
-            user.total_points -= instance.points
-            if user.total_points < 0:
-                user.total_points = 0  # Prevent negative points
 
-        # Update user level based on total points (example logic)
-        user.level = (user.total_points // 100) + 1  # Each 100 points = new level
+        # Update ranking points if not tied directly to total points
+        ranking, _ = Ranking.objects.get_or_create(user=user)
+        
+        # Example user level logic: 1 level per 100 total points
+        user.level = (ranking.points // 100) + 1
+        user.save(update_fields=['level'])
 
-        user.save()
-
-        # Update or create ranking
-        ranking, created = Ranking.objects.get_or_create(user=user)
-        # 
-        # User points will be separated from ranking points (Total points earned by user)
-        # ranking.points = user.total_points
+        # Save updated ranking, keeping points separate from user.total_points if needed
         ranking.save()

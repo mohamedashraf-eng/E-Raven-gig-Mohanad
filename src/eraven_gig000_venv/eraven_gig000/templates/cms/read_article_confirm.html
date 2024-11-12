@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Read Article - {{ article.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Read Article: {{ article.title }}</h2>
+    <p>{{ article.content }}</p>
+    <p><strong>Points Awarded:</strong> {{ article.points }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Confirm Read</button>
+        <a href="{% url 'cms:course_detail' slug=article.course.slug %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

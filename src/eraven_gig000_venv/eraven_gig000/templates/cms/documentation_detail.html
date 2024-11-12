@@ -11,6 +11,7 @@
     <hr>
     <div>
         <a href="{{ document.file.url }}" class="btn btn-success">Download Documentation</a>
+        <a href="{% url 'cms:read_documentation' document.id %}" class="btn btn-primary ms-2">Mark As Read</a>
     </div>
     <hr>
     <div>

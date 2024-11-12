@@ -1,116 +1,350 @@
 <!-- cms/templates/cms/course_detail.html -->
 
 {% extends "base.html" %}
+{% load static %}
 {% load custom_filters %}
 
 {% block title %}{{ course.title }} - ERaven Gigs{% endblock %}
 
 {% block content %}
     <div class="container mt-4">
-        <h1>{{ course.title }}</h1>
-        <p><strong>Description:</strong> {{ course.description }}</p>
-        <p><strong>Syllabus:</strong> {{ course.syllabus }}</p>
-        {% if course.prerequisites %}
-            <p><strong>Prerequisites:</strong> {{ course.prerequisites }}</p>
-        {% endif %}
-        <hr>
-        <div class="mb-3">
-            {% if user.is_authenticated %}
-                {% if user|is_enrolled:course %}
-                    <a href="{% url 'cms:course_detail' course.slug %}" class="btn btn-success">Enrolled</a>
-                {% else %}
-                    <a href="{% url 'cms:enroll_course' course.slug %}" class="btn btn-primary">Enroll Now</a>
+        <!-- Course Header -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1>{{ course.title }}</h1>
+                {% if course.instructor %}
+                    <p class="text-muted">Instructor: {{ course.instructor.get_full_name }}</p>
                 {% endif %}
-            {% else %}
-                <a href="{% url 'api:sign-in' %}?next={% url 'cms:enroll_course' course.slug %}" class="btn btn-primary">Login to Enroll</a>
-            {% endif %}
+            </div>
+            <div class="col-md-4 text-md-end">
+                {% if user.is_authenticated %}
+                    {% if user|is_enrolled:course %}
+                        <a href="{% url 'enrolled_courses' %}" class="btn btn-success">Enrolled</a>
+                    {% else %}
+                        <a href="{% url 'cms:enroll_course' course.slug %}" class="btn btn-primary">Enroll Now</a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'api:sign-in' %}?next={% url 'cms:enroll_course' course.slug %}" class="btn btn-primary">Login to Enroll</a>
+                {% endif %}
+            </div>
         </div>
+
+        <!-- Course Image -->
+        {% if course.picture %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <img src="{{ course.picture.url }}" alt="{{ course.title }} Image" class="img-fluid rounded shadow-sm" style="max-height: 400px; object-fit: cover; width: 100%;">
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Course Details -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                {% if course.description %}
+                    <div class="mb-3">
+                        <h4>Description</h4>
+                        <p>{{ course.description }}</p>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                {% if course.syllabus %}
+                    <div class="mb-3">
+                        <h4>Syllabus</h4>
+                        <p>{{ course.syllabus }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                {% if course.prerequisites %}
+                    <div class="mb-3">
+                        <h4>Prerequisites</h4>
+                        <p>{{ course.prerequisites }}</p>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                {% if course.meeting_link or course.date_time %}
+                    <div class="mb-3">
+                        <h4>Course Details</h4>
+                        {% if course.meeting_link %}
+                            <p><strong>Meeting Link:</strong> <a href="{{ course.meeting_link }}" target="_blank">{{ course.meeting_link }}</a></p>
+                        {% endif %}
+                        {% if course.date_time %}
+                            <p><strong>Date & Time:</strong> {{ course.date_time|date:"F j, Y, g:i a" }}</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
         <hr>
 
-        <!-- Articles Section -->
-        <h3>Articles</h3>
-        {% if articles %}
-            <ul class="list-group mb-3">
-                {% for article in articles %}
-                    <li class="list-group-item">
-                        <a href="{% url 'cms:article_detail' article.slug %}">{{ article.title }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No articles available for this course.</p>
-        {% endif %}
+        <!-- Related Content Sections -->
+        <div class="row">
+            <!-- Articles Section -->
+            {% if articles %}
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="mb-0">Articles</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for article in articles %}
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body d-flex flex-column">
+                                                <h5 class="card-title">{{ article.title }}</h5>
+                                                <p class="card-text">{{ article.content|truncatewords:15 }}</p>
+                                                <a href="{% url 'cms:article_detail' article.slug %}" class="btn btn-outline-primary mt-auto">View Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
 
-        <!-- Videos Section -->
-        <h3>Videos</h3>
-        {% if videos %}
-            <ul class="list-group mb-3">
-                {% for video in videos %}
-                    <li class="list-group-item">
-                        <a href="{% url 'cms:video_detail' video.slug %}">{{ video.title }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No videos available for this course.</p>
-        {% endif %}
+            <!-- Videos Section -->
+            {% if videos %}
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h3 class="mb-0">Videos</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for video in videos %}
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body d-flex flex-column">
+                                                <h5 class="card-title">{{ video.title }}</h5>
+                                                <p class="card-text">{{ video.description|truncatewords:15 }}</p>
+                                                <a href="{% url 'cms:video_detail' video.slug %}" class="btn btn-outline-primary mt-auto">View Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
 
-        <!-- Assignments Section -->
-        <h3>Assignments</h3>
-        {% if assignments %}
-            <ul class="list-group mb-3">
-                {% for assignment in assignments %}
-                    <li class="list-group-item">
-                        <a href="{% url 'cms:assignment_detail' course.slug assignment.id %}">{{ assignment.title }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No assignments available for this course.</p>
-        {% endif %}
+            <!-- Assignments Section -->
+            {% if assignments %}
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-warning text-white">
+                            <h3 class="mb-0">Assignments</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for assignment in assignments %}
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body d-flex flex-column">
+                                                <h5 class="card-title">{{ assignment.title }}</h5>
+                                                <p class="card-text">Due Date: {{ assignment.due_date|date:"F j, Y" }}</p>
+                                                <a href="{% url 'cms:assignment_detail' course.slug assignment.id %}" class="btn btn-outline-primary mt-auto">View Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
 
-        <!-- Quizzes Section -->
-        <h3>Quizzes</h3>
-        {% if quizzes %}
-            <ul class="list-group mb-3">
-                {% for quiz in quizzes %}
-                    <li class="list-group-item">
-                        <a href="{% url 'cms:quiz_detail' course.slug quiz.id %}">{{ quiz.title }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No quizzes available for this course.</p>
-        {% endif %}
+            <!-- Quizzes Section -->
+            {% if quizzes %}
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h3 class="mb-0">Quizzes</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for quiz in quizzes %}
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body d-flex flex-column">
+                                                <h5 class="card-title">{{ quiz.title }}</h5>
+                                                <p class="card-text">Created On: {{ quiz.created_at|date:"F j, Y" }}</p>
+                                                <a href="{% url 'cms:quiz_detail' course.slug quiz.id %}" class="btn btn-outline-primary mt-auto">View Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
 
-        <!-- Challenges Section -->
-        <h3>Challenges</h3>
-        {% if challenges %}
-            <ul class="list-group mb-3">
-                {% for challenge in challenges %}
-                    <li class="list-group-item">
-                        <a href="{% url 'cms:challenge_detail' challenge.id %}">{{ challenge.title }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No challenges available for this course.</p>
-        {% endif %}
+            <!-- Challenges Section -->
+            {% if challenges %}
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-danger text-white">
+                            <h3 class="mb-0">Challenges</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for challenge in challenges %}
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body d-flex flex-column">
+                                                <h5 class="card-title">{{ challenge.title }}</h5>
+                                                <p class="card-text">Date: {{ challenge.date|date:"F j, Y" }}</p>
+                                                <a href="{% url 'cms:challenge_detail' challenge.id %}" class="btn btn-outline-primary mt-auto">View Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
 
-        <!-- Documentation Section -->
-        <h3>Documentation</h3>
-        {% if documentations %}
-            <ul class="list-group mb-3">
-                {% for doc in documentations %}
-                    <li class="list-group-item">
-                        <a href="{% url 'cms:documentation_detail' doc.slug %}">{{ doc.title }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No documentation available for this course.</p>
-        {% endif %}
+            <!-- Documentation Section -->
+            {% if documentations %}
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h3 class="mb-0">Documentation</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for doc in documentations %}
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body d-flex flex-column">
+                                                <h5 class="card-title">{{ doc.title }}</h5>
+                                                <a href="{% url 'cms:documentation_detail' doc.slug %}" class="btn btn-outline-primary mt-auto">View Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
 
-        <a href="{% url 'cms:course_list' %}" class="btn btn-primary mt-3">Back to Courses</a>
-    </div>
-{% endblock %}
+            <!-- Workshops Section -->
+            {% if workshops %}
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h3 class="mb-0">Workshops</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for workshop in workshops %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            {% if workshop.picture %}
+                                                <img src="{{ workshop.picture.url }}" alt="{{ workshop.title }} Image" class="card-img-top" style="max-height: 200px; object-fit: cover;">
+                                            {% endif %}
+                                            <div class="card-body d-flex flex-column">
+                                                <h5 class="card-title">{{ workshop.title }}</h5>
+                                                <p class="card-text">{{ workshop.description|truncatewords:20 }}</p>
+                                                
+                                                {% if workshop.points_cost %}
+                                                    <p class="mb-1"><strong>Cost:</strong> {{ workshop.points_cost }} Points</p>
+                                                {% endif %}
+                                                
+                                                {% if user.is_authenticated %}
+                                                    {% if user|has_attended_workshop:workshop %}
+                                                        <!-- Join Workshop Button -->
+                                                        <a href="{% url 'cms:join_workshop' workshop.id %}" class="btn btn-success mt-auto">Join Workshop</a>
+                                                    {% else %}
+                                                        <!-- Attend Workshop Button -->
+                                                        <a href="{% url 'cms:attend_workshop' workshop.id %}" class="btn btn-primary mt-auto">Attend Workshop</a>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <!-- Prompt to Login -->
+                                                    <a href="{% url 'api:sign-in' %}?next={% url 'cms:attend_workshop' workshop.id %}" class="btn btn-primary mt-auto">Login to Attend</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Sessions Section -->
+            {% if sessions %}
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-purple text-white">
+                            <h3 class="mb-0">Sessions</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for session in sessions %}
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body d-flex flex-column">
+                                                <h5 class="card-title">{{ session.title }}</h5>
+                                                {% if session.date_time %}
+                                                    <p class="card-text">Date & Time: {{ session.date_time|date:"F j, Y, g:i a" }}</p>
+                                                {% endif %}
+                                                {% if session.meeting_link %}
+                                                    <p class="card-text"><strong>Meeting Link:</strong> <a href="{{ session.meeting_link }}" target="_blank">Join Session</a></p>
+                                                {% endif %}
+                                                <p class="card-text">{{ session.content|truncatewords:15 }}</p>
+                                                {% comment %} <a href="{% url 'cms:session_detail' session.slug %}" class="btn btn-outline-primary mt-auto">View Details</a> {% endcomment %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Related Courses Section -->
+            {% if related_courses %}
+                <hr>
+                <h3>Related Courses</h3>
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    {% for related in related_courses %}
+                        <div class="col">
+                            <div class="card h-100 shadow-sm border-0">
+                                {% if related.picture %}
+                                    <img src="{{ related.picture.url }}" class="card-img-top" alt="{{ related.title }} Image" style="max-height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'images/default_course.png' %}" class="card-img-top" alt="Default Course Image" style="max-height: 200px; object-fit: cover;">
+                                {% endif %}
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">{{ related.title }}</h5>
+                                    <p class="card-text">{{ related.description|truncatewords:15 }}</p>
+                                    <a href="{% url 'cms:course_detail' related.slug %}" class="btn btn-outline-primary mt-auto">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Back to Courses Button -->
+            <div class="mt-4">
+                <a href="{% url 'cms:course_list' %}" class="btn btn-secondary">Back to Courses</a>
+            </div>
+        </div>
+    {% endblock %}

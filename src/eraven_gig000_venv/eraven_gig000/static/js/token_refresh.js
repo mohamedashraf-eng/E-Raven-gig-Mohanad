@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 // Refresh failed; redirect to sign-in page
                 console.error('Failed to refresh access token.');
-                window.location.href = '/sign-in/'; // Adjust URL as needed
+                window.location.href = 'api/v1/pages/sign-in/'; // Adjust URL as needed
                 throw new Error('Failed to refresh access token.');
             }
         })

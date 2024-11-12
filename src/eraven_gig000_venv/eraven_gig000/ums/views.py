@@ -32,7 +32,6 @@ from django.core.cache import cache
 from uuid import uuid4
 from django.utils.encoding import force_str
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import View
 from cms.models import Enrollment, UserProgress, PointTransaction, Ranking, Course
@@ -41,7 +40,9 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from .decorators import custom_login_required
-from cms.models import Quiz, Assignment, Challenge
+from cms.models import Quiz, Assignment, Challenge, Course, Workshop, Article, Video, Assignment, Quiz, Challenge, Documentation, TimelineEvent, Submission
+from django.utils import timezone
+from django.contrib.contenttypes.models import ContentType
 
 logger = logging.getLogger(__name__)
 
@@ -380,46 +381,74 @@ def token_lifetime_view(request):
 @method_decorator(custom_login_required, name='dispatch')
 class UserProfileView(View):
     """
-    Displays the authenticated user's profile, including enrollments, progress, points, and ranking.
+    Displays the authenticated user's profile, including enrollments, progress, points, ranking, and timeline events.
     """
-    template_name = 'cms/user_profile.html'  # Ensure this matches your template path
+
+    def get_submission_count(self, user, model):
+        """
+        Helper method to count submissions for a specific content type.
+        """
+        try:
+            ct = ContentType.objects.get_for_model(model)
+            return Submission.objects.filter(user=user, content_type=ct).count()
+        except ContentType.DoesNotExist:
+            logger.error(f"ContentType for model {model.__name__} does not exist.")
+            return 0
 
     def get(self, request, *args, **kwargs):
         user = request.user
 
-        # Fetch Enrolled Courses
+        # **1. Dashboard Counts**
+        quiz_count = self.get_submission_count(user, Quiz)
+        assignment_count = self.get_submission_count(user, Assignment)
+        challenge_count = self.get_submission_count(user, Challenge)
+        workshop_count = self.get_submission_count(user, Workshop)
+
+        # **2. Enrolled Courses**
         enrollments = Enrollment.objects.filter(user=user).select_related('course')
 
-        # Fetch Progress for each enrolled course
+        # **3. Progress**
         progresses = UserProgress.objects.filter(user=user).select_related('course')
 
-        # Fetch Point Transactions
-        point_transactions = PointTransaction.objects.filter(user=user).order_by('-timestamp')
+        # **4. Points and Ranking**
+        ranking = Ranking.objects.filter(user=user).first()
+        point_transactions = PointTransaction.objects.filter(user=user).order_by('-timestamp')[:10]  # Latest 10 transactions
 
-        # Fetch Ranking
-        ranking = getattr(user, 'ranking', None)
+        # **5. Global Rankings**
+        top_rankings = Ranking.objects.order_by('-points')[:10]  # Top 10 users
 
-        # Fetch Top Rankings (e.g., top 10)
-        rankings = Ranking.objects.select_related('user').order_by('-points')[:10]
+        # **6. Timeline Events**
+        timeline_events = TimelineEvent.objects.filter(
+            user=user,
+            event_date__gte=timezone.now()
+        ).order_by('event_date')
 
-        # Calculate dashboard summary counts
-        quiz_count = Quiz.objects.filter(submissions__user=user, submissions__grade__isnull=False).count()
-        assignment_count = Assignment.objects.filter(submissions__user=user).count()
-        challenge_count = Challenge.objects.filter(submissions__user=user, submissions__grade__isnull=False).count()
+        # **7. Validate Timeline Events**
+        valid_timeline_events = []
+        for event in timeline_events:
+            try:
+                obj = event.content_object
+                valid_timeline_events.append(event)
+            except Exception as e:
+                logger.error(f"Faulty TimelineEvent ID: {event.id}, Error: {e}")
+                # Optionally, handle the faulty event (e.g., notify admin, skip, etc.)
+                # event.delete()  # Be cautious with deletions
 
+        # **8. Context Dictionary**
         context = {
-            'user': user,
-            'enrollments': enrollments,
-            'progresses': progresses,
-            'point_transactions': point_transactions,
-            'ranking': ranking,
-            'rankings': rankings,
             'quiz_count': quiz_count,
             'assignment_count': assignment_count,
             'challenge_count': challenge_count,
+            'workshop_count': workshop_count,  # Added workshop count
+            'enrollments': enrollments,
+            'progresses': progresses,
+            'ranking': ranking,
+            'point_transactions': point_transactions,
+            'rankings': top_rankings,
+            'timeline_events': valid_timeline_events,
         }
 
-        return render(request, self.template_name, context)
+        return render(request, 'cms/user_profile.html', context)
     
 class UserProfileEditView(LoginRequiredMixin, UpdateView):
     model = User

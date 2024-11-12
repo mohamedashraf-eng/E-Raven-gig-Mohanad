@@ -89,7 +89,7 @@ REST_FRAMEWORK = {
 
 # JWT Settings for Authentication
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'SIGNING_KEY': 'mowx',  # Use your project's secret key from environment
     'ALGORITHM': 'HS256',

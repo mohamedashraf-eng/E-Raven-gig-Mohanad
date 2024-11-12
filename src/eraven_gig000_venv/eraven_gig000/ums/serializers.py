@@ -83,3 +83,4 @@ class CustomTokenRefreshSerializer(TokenRefreshSerializer):
 
         attrs['refresh'] = refresh_token
         return super().validate(attrs)
+    

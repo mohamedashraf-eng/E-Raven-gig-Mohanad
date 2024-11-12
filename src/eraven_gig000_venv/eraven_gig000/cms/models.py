@@ -5,9 +5,10 @@ from django.conf import settings
 from django.utils.text import slugify
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 User = settings.AUTH_USER_MODEL
-
 
 # =======================
 # CMS Models
@@ -79,13 +80,30 @@ class ContentBase(models.Model):
         super().save(*args, **kwargs)
 
 class Course(models.Model):
+    PROFICIENCY_LEVEL_CHOICES = [
+        ('beginner', 'Beginner'),
+        ('intermediate', 'Intermediate'),
+        ('advanced', 'Advanced'),
+    ]
+
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
     description = models.TextField()
     syllabus = models.TextField()
     prerequisites = models.TextField(blank=True, null=True)
+    proficiency_level = models.CharField(max_length=50, default=1, choices=PROFICIENCY_LEVEL_CHOICES)
     categories = models.ManyToManyField(Category)
     tags = models.ManyToManyField(Tag)
+    picture = models.ImageField(upload_to='course_pics/', blank=True, null=True, help_text="Image for the course")
+    instructor = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='courses_instructed',
+        help_text="Instructor responsible for the course"
+    )
+    points = models.PositiveIntegerField(help_text="Points awarded for completing the course", default=0)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -94,16 +112,107 @@ class Course(models.Model):
 
     def __str__(self):
         return self.title
-    
+
+
+class Session(models.Model):
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='sessions',
+        help_text="The course that this session belongs to"
+    )
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True, blank=True)
+    meeting_link = models.URLField(blank=True, null=True, help_text="URL for the session meeting (e.g., Zoom link)")
+    date_time = models.DateTimeField(blank=True, null=True, help_text="Date and time of the session")
+    instructor = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='sessions_instructed',
+        help_text="Instructor responsible for the session"
+    )
+    content = models.TextField(help_text="Content or description of the session")
+    categories = models.ManyToManyField(Category)
+    tags = models.ManyToManyField(Tag, blank=True)
+    points = models.PositiveIntegerField(help_text="Points awarded for attending the session", default=0)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.title} - {self.course.title}"
+
+class Workshop(models.Model):
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True, blank=True)
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='workshops'
+    )
+    points_cost = models.PositiveIntegerField(
+        help_text="Points required to attend the workshop",
+        default=25
+    )
+    description = models.TextField()
+    meeting_link = models.URLField(
+        help_text="URL for the workshop meeting (e.g., Zoom link)"
+    )
+    date_time = models.DateTimeField(help_text="Date and time of the workshop")
+    instructor = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='workshops_instructed',
+        help_text="Instructor responsible for the workshop"
+    )
+    duration = models.DurationField(
+        default=60,
+        help_text="Duration of the workshop (e.g., 2 hours)"
+    )
+    picture = models.ImageField(
+        upload_to='workshop_pics/', blank=True, null=True,
+        help_text="Image for the workshop"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    categories = models.ManyToManyField(Category)
+    tags = models.ManyToManyField(Tag, blank=True)
+    points = models.PositiveIntegerField(
+        help_text="Points awarded for attending the workshop",
+        default=0
+    )
+
+    class Meta:
+        ordering = ['date_time']
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.title} ({self.course.title})"
+
+
 class Article(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()
-    proficiency_level = models.CharField(max_length=50)
+    proficiency_level = models.CharField(max_length=50, choices=ContentBase.PROFICIENCY_LEVEL_CHOICES)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='articles', default=1)  # Default value for migration
     categories = models.ManyToManyField(Category)
     tags = models.ManyToManyField(Tag)
+    points = models.PositiveIntegerField(
+        help_text="Points awarded for reading the article",
+        default=0
+    )
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -112,6 +221,7 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
+
 
 class Video(models.Model):
     title = models.CharField(max_length=200)
@@ -119,11 +229,15 @@ class Video(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     video_url = models.URLField()
     description = models.TextField()
-    proficiency_level = models.CharField(max_length=50)
+    proficiency_level = models.CharField(max_length=50, choices=ContentBase.PROFICIENCY_LEVEL_CHOICES)
     categories = models.ManyToManyField(Category)
     tags = models.ManyToManyField(Tag)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='videos', default=1)  # Default value for migration
-    
+    points = models.PositiveIntegerField(
+        help_text="Points awarded for watching the video",
+        default=0
+    )
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -132,10 +246,15 @@ class Video(models.Model):
     def __str__(self):
         return self.title
 
+
 class Post(ContentBase):
     slug = models.SlugField(unique=True, blank=True)  # Ensure slug is defined
     short_content = models.TextField()
     content = models.TextField()
+    points = models.PositiveIntegerField(
+        help_text="Points awarded for reading the post",
+        default=0
+    )
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -153,7 +272,11 @@ class Documentation(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='documentations', default=1)  # Default value for migration
     categories = models.ManyToManyField(Category)
     tags = models.ManyToManyField(Tag)
-    
+    points = models.PositiveIntegerField(
+        help_text="Points awarded for reading the documentation",
+        default=0
+    )
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -161,6 +284,7 @@ class Documentation(models.Model):
 
     def __str__(self):
         return self.title
+
 
 class Enrollment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -172,10 +296,37 @@ class Enrollment(models.Model):
 
     def __str__(self):
         return f"{self.user.username} enrolled in {self.course.title}"
-    
+
+
 # =======================
 # LMS Models
 # =======================
+
+class TimelineEvent(models.Model):
+    EVENT_TYPES = [
+        ('course', 'Course Meeting'),
+        ('session', 'Session Meeting'),
+        ('assignment', 'Assignment Deadline'),
+        ('quiz', 'Quiz Deadline'),
+        ('workshop', 'Workshop Meeting'),
+        ('challenge_start', 'Challenge Start'),
+        ('challenge_deadline', 'Challenge Deadline'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='timeline_events')
+    event_type = models.CharField(max_length=50, choices=EVENT_TYPES)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    event_date = models.DateTimeField()
+
+    class Meta:
+        ordering = ['event_date']
+        unique_together = ('user', 'event_type', 'content_type', 'object_id')
+
+    def __str__(self):
+        return f"{self.get_event_type_display()} - {self.content_object.title} on {self.event_date}"
+    
 
 class Assignment(models.Model):
     course = models.ForeignKey(
@@ -187,11 +338,19 @@ class Assignment(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     due_date = models.DateTimeField()
+    link = models.URLField(
+        blank=True,
+        null=True,
+        help_text="URL to access or submit the assignment form"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
+    points = models.PositiveIntegerField(
+        help_text="Points awarded for completing the assignment",
+        default=0
+    )
 
     def __str__(self):
         return f"{self.title} ({self.course.title})"
-
 
 class Quiz(models.Model):
     course = models.ForeignKey(
@@ -202,15 +361,28 @@ class Quiz(models.Model):
     )
     title = models.CharField(max_length=200)
     description = models.TextField()
+    due_date = models.DateTimeField(default=timezone.now)  # Set default to timezone.now
+    link = models.URLField(
+        blank=True,
+        null=True,
+        help_text="URL to access or submit the quiz form"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
+    points = models.PositiveIntegerField(
+        help_text="Points awarded for completing the quiz",
+        default=0
+    )
 
     def __str__(self):
         return f"{self.title} ({self.course.title})"
 
+
 class Challenge(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
+    picture = models.ImageField(upload_to='challenge_pics/', blank=True, null=True, help_text="Image for the course")
     date = models.DateField(default=timezone.now)
+    due_date = models.DateTimeField(default=timezone.now)  # Set default to timezone.now
     points = models.PositiveIntegerField(default=10)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='challenges', default=1)  # Default value for migration
     created_at = models.DateTimeField(auto_now_add=True)
@@ -222,49 +394,20 @@ class Challenge(models.Model):
         return f"{self.title} on {self.date}"
 
 class Submission(models.Model):
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='submissions'
-    )
-    assignment = models.ForeignKey(
-        'Assignment',
-        on_delete=models.CASCADE,
-        related_name='submissions',
-        null=True,
-        blank=True
-    )
-    quiz = models.ForeignKey(
-        'Quiz',
-        on_delete=models.CASCADE,
-        related_name='submissions',
-        null=True,
-        blank=True
-    )
-    challenge = models.ForeignKey(
-        'Challenge',
-        on_delete=models.CASCADE,
-        related_name='submissions',
-        null=True,
-        blank=True
-    )
-    content = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    grade = models.IntegerField(null=True, blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
-    grade = models.PositiveIntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
-        null=True,
-        blank=True
-    )
+
+    # GenericForeignKey fields
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
 
     def __str__(self):
-        if self.assignment:
-            return f"Submission by {self.user.username} for {self.assignment.title}"
-        elif self.quiz:
-            return f"Submission by {self.user.username} for {self.quiz.title}"
-        elif self.challenge:
-            return f"Submission by {self.user.username} for {self.challenge.title}"
-        return f"Submission by {self.user.username}"
+        return f"Submission by {self.user} for {self.content_object}"
 
+    class Meta:
+        unique_together = ('user', 'content_type', 'object_id')
 
 class UserProgress(models.Model):
     user = models.ForeignKey(
@@ -329,19 +472,52 @@ class Ranking(models.Model):
     def update_rank(self):
         rankings = Ranking.objects.order_by('-points')
         for idx, ranking in enumerate(rankings, start=1):
-            ranking.rank = idx
-            super(Ranking, ranking).save()
+            if ranking.rank != idx:
+                Ranking.objects.filter(pk=ranking.pk).update(rank=idx)
+
+class ArticleRead(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='articles_read'
+    )
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE,
+        related_name='reads'
+    )
+    read_at = models.DateTimeField(auto_now_add=True)
+    points_awarded = models.PositiveIntegerField(
+        help_text="Points awarded for reading the article",
+        default=0
+    )
+
+    class Meta:
+        unique_together = ('user', 'article')  # Prevent multiple reads awarding points multiple times
+
+    def __str__(self):
+        return f"{self.user.username} read {self.article.title}"
 
 
-# =======================
-# Signals
-# =======================
+class DocumentationRead(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='documentations_read'
+    )
+    documentation = models.ForeignKey(
+        Documentation,
+        on_delete=models.CASCADE,
+        related_name='reads'
+    )
+    read_at = models.DateTimeField(auto_now_add=True)
+    points_awarded = models.PositiveIntegerField(
+        help_text="Points awarded for reading the documentation",
+        default=0
+    )
 
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+    class Meta:
+        unique_together = ('user', 'documentation')  # Prevent multiple reads awarding points multiple times
 
-
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_user_ranking(sender, instance, created, **kwargs):
-    if created:
-        Ranking.objects.create(user=instance)
+    def __str__(self):
+        return f"{self.user.username} read {self.documentation.title}"

@@ -4,13 +4,13 @@ from .models import User, Profile, Role, Permission
 
 class UserAdmin(BaseUserAdmin):
     model = User
-    list_display = ('username', 'email', 'role', 'is_staff', 'is_active', 'total_points', 'level')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'is_staff', 'is_active', 'total_points', 'level')
     list_filter = ('role', 'is_staff', 'is_active', 'level')
     
     fieldsets = (
         (None, {'fields': ('username', 'email', 'password', 'role')}),
         ('Personal Information', {
-            'fields': ('profile_picture', 'phone_number', 'address', 'date_of_birth')
+            'fields': ('first_name', 'last_name', 'profile_picture', 'phone_number', 'address', 'date_of_birth')
         }),
         ('LMS Information', {'fields': ('total_points', 'level')}),
         ('Permissions', {'fields': ('is_staff', 'is_active', 'groups', 'user_permissions')}),
@@ -20,12 +20,12 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'email', 'role', 'password1', 'password2', 'is_staff', 'is_active', 'profile_picture', 
-                       'phone_number', 'address', 'date_of_birth', 'total_points', 'level')
+            'fields': ('username', 'email', 'first_name', 'last_name', 'role', 'password1', 'password2', 'is_staff', 'is_active', 
+                       'profile_picture', 'phone_number', 'address', 'date_of_birth', 'total_points', 'level')
         }),
     )
     
-    search_fields = ('email', 'username', 'phone_number')
+    search_fields = ('email', 'username', 'first_name', 'last_name', 'phone_number')
     ordering = ('email',)
 
 # Register the models in the admin site
