@@ -1,0 +1,49 @@
+/* static/css/orders.css */
+
+.checkout-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.order-summary {
+    margin-bottom: 30px;
+}
+
+.order-summary table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.order-summary th, .order-summary td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.order-summary th {
+    background-color: #f2f2f2;
+}
+
+.total {
+    text-align: right;
+    margin-top: 10px;
+    font-size: 1.2em;
+}
+
+.checkout-form {
+    text-align: center;
+}
+
+.btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}

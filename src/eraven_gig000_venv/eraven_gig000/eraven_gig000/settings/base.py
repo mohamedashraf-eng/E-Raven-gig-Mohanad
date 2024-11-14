@@ -17,6 +17,15 @@ LOGIN_URL = '/api/v1/sign-in'  # Replace with your desired URL
 # Optionally, define a `LOGIN_REDIRECT_URL` for post-login redirection
 LOGIN_REDIRECT_URL = 'api/v1/user-profile/'  # Replace as needed
 
+# Fetch values from environment variables
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+
+PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID')
+PAYPAL_CLIENT_SECRET = os.getenv('PAYPAL_CLIENT_SECRET')
+
+SITE_URL = os.getenv('SITE_URL', 'http://localhost:8000')  # Default to localhost if not set
+
 # Installed Applications
 INSTALLED_APPS = [
     # Django Apps
@@ -27,18 +36,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Third-party apps
-    'django_bootstrap5',
+    # 'django_bootstrap5',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
     'crispy_forms',
     'django_extensions',
     # 'ratelimit',  # Uncomment if rate limiting is needed
-
     # Custom Apps
     'pages.apps.PagesConfig',
     'ums.apps.UmsConfig',
     'cms.apps.CmsConfig',
+    'products.apps.ProductsConfig',
+    'orders.apps.OrdersConfig',
+    'payments.apps.PaymentsConfig',
 ]
 
 # Middleware
