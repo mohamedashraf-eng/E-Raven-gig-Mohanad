@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.utils.deprecation import MiddlewareMixin
 from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import redirect
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 import logging
 
@@ -19,6 +20,17 @@ class JWTAuthenticationMiddleware(MiddlewareMixin):
     """
 
     def process_request(self, request):
+        # List of paths to exclude from authentication
+        excluded_paths = [
+            reverse('sign-in'),  # Adjust 'pages:sign_in' to your sign-in URL name
+            reverse('sign-up'),  # If you have a sign-up page
+        ]
+
+        # Allow access to excluded paths without authentication
+        if request.path in excluded_paths:
+            request.user = AnonymousUser()
+            return
+
         access_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE'])
 
         if access_token:
@@ -47,8 +59,7 @@ class JWTAuthenticationMiddleware(MiddlewareMixin):
                 request.user = AnonymousUser()
                 logger.warning("JWT token has expired.")
                 # Redirect to custom endpoint
-                if not request.path.startswith('/api/v1/pages/sign-in'):
-                    return redirect('/api/v1/pages/sign-in')
+                return redirect(reverse('sign-in'))
             except jwt.InvalidTokenError:
                 # Invalid token
                 request.user = AnonymousUser()
