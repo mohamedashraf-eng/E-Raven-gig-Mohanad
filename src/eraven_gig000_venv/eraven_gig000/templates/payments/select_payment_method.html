@@ -1,0 +1,131 @@
+<!-- payments/templates/payments/select_payment_method.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="payment-selection-container container my-5 animate__animated animate__fadeIn">
+  <h1 class="page-title text-center mb-5">Select Payment Method</h1>
+  
+  <div class="row">
+    <!-- Order Summary Panel -->
+    <div class="col-lg-6 mb-4">
+      <div class="order-summary bg-white p-4 rounded shadow-sm">
+        <h2 class="mb-4 text-secondary">Order Summary</h2>
+        <div class="table-responsive">
+            <tbody>
+              {% for item in order.items.all %}
+                <tr class="cart-item animate__animated animate__fadeInUp">
+                  <td>
+                    <div class="d-flex align-items-center">
+                      {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-thumbnail me-3 product-image" width="60" height="60" loading="lazy">
+                      {% else %}
+                        <img src="{% static 'images/placeholder.png' %}" alt="No image available" class="img-thumbnail me-3 product-image" width="60" height="60" loading="lazy">
+                      {% endif %}
+                      <a href="{{ item.product.get_absolute_url }}" class="text-decoration-none text-dark product-link">
+                        {{ item.product.name }}
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+        </div>
+        <div class="d-flex justify-content-end mt-4">
+          <h4 class="mb-0">Total: <span class="text-success">${{ order.total_cost }}</span></h4>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Payment Method Panel -->
+    <div class="col-lg-6">
+      <div class="payment-method-selection bg-white p-4 rounded shadow-sm">
+        {% if error %}
+          <div class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+        {% endif %}
+        
+        <form method="post" class="payment-form">
+          {% csrf_token %}
+          <div class="mb-4">
+            <label class="form-label">Choose a Payment Method</label>
+            <div class="payment-options">
+              <!-- Stripe Card -->
+              <div class="payment-card" data-gateway="stripe">
+                <div class="card-content">
+                  <i class="fab fa-stripe-s fa-3x text-primary mb-3"></i>
+                  <h5>Stripe</h5>
+                </div>
+              </div>
+              
+              <!-- PayPal Card -->
+              <div class="payment-card" data-gateway="paypal">
+                <div class="card-content">
+                  <i class="fab fa-paypal fa-3x text-primary mb-3"></i>
+                  <h5>PayPal</h5>
+                </div>
+              </div>
+              
+              <!-- Google Pay Card -->
+              <div class="payment-card" data-gateway="googlepay">
+                <div class="card-content">
+                  <i class="fab fa-google-pay fa-3x text-success mb-3"></i>
+                  <h5>Google Pay</h5>
+                </div>
+              </div>
+              
+              <!-- Apple Pay Card -->
+              <div class="payment-card" data-gateway="applepay">
+                <div class="card-content">
+                  <i class="fab fa-apple-pay fa-3x text-secondary mb-3"></i>
+                  <h5>Apple Pay</h5>
+                </div>
+              </div>
+              
+              <!-- Bank Transfer Card -->
+              <div class="payment-card" data-gateway="banktransfer">
+                <div class="card-content">
+                  <i class="fas fa-university fa-3x text-primary mb-3"></i>
+                  <h5>Bank Transfer</h5>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" name="gateway" id="gateway-input" required>
+          </div>
+          
+          <button type="submit" class="btn btn-primary w-100 btn-lg">Proceed to Payment</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Trust Badges Section -->
+  <div class="trust-badges mt-5 d-flex justify-content-center flex-wrap">
+    <div class="badge-item p-3 m-2 bg-white rounded shadow-sm d-flex align-items-center">
+      <i class="bi bi-shield-check text-success me-2 fs-3" aria-hidden="true"></i>
+      <span>Secure Checkout</span>
+    </div>
+    <div class="badge-item p-3 m-2 bg-white rounded shadow-sm d-flex align-items-center">
+      <i class="bi bi-coin text-success me-2 fs-3" aria-hidden="true"></i>
+      <span>Money-Back Guarantee</span>
+    </div>
+    <div class="badge-item p-3 m-2 bg-white rounded shadow-sm d-flex align-items-center">
+      <i class="bi bi-chat-dots text-success me-2 fs-3" aria-hidden="true"></i>
+      <span>24/7 Support</span>
+    </div>
+  </div>
+  
+  <!-- Payment Verification Icons -->
+  <div class="payment-icons mt-4 d-flex justify-content-center">
+    <i class="fab fa-cc-visa fa-2x text-secondary me-3" aria-label="Visa"></i>
+    <i class="fab fa-cc-mastercard fa-2x text-secondary me-3" aria-label="MasterCard"></i>
+    <i class="fab fa-paypal fa-2x text-secondary me-3" aria-label="PayPal"></i>
+    <i class="fas fa-lock fa-2x text-secondary" aria-label="SSL Secure"></i>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/payment_selection.js' %}"></script>
+{% endblock %}

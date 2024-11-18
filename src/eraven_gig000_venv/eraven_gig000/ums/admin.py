@@ -12,7 +12,7 @@ class UserAdmin(BaseUserAdmin):
         ('Personal Information', {
             'fields': ('first_name', 'last_name', 'profile_picture', 'phone_number', 'address', 'date_of_birth')
         }),
-        ('LMS Information', {'fields': ('total_points', 'level')}),
+        ('LMS Information', {'fields': ('total_points', 'level', 'bundles')}),
         ('Permissions', {'fields': ('is_staff', 'is_active', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
@@ -25,6 +25,7 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
     
+    filter_horizontal = ('bundles',)
     search_fields = ('email', 'username', 'first_name', 'last_name', 'phone_number')
     ordering = ('email',)
 

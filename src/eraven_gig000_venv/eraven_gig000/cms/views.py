@@ -141,18 +141,28 @@ def assignment_list(request, course_slug):
     }
     return render(request, 'cms/assignment_list.html', context)
 
-
 @custom_login_required
 def assignment_detail(request, course_slug, assignment_id):
+    # Retrieve course and assignment objects
     course = get_object_or_404(Course, slug=course_slug)
     assignment = get_object_or_404(Assignment, id=assignment_id, course=course)
-    submissions = Submission.objects.filter(user=request.user, assignment=assignment)
     
+    # Define content_type for assignment submissions if using GenericForeignKey
+    assignment_content_type = ContentType.objects.get_for_model(Assignment)
+    
+    # Adjust submission filter based on whether 'assignment' is a direct foreign key or GenericForeignKey
+    submissions = Submission.objects.filter(
+        user=request.user,
+        content_type=assignment_content_type,
+        object_id=assignment.id
+    )
+
     if request.method == 'POST':
         if not request.user.is_authenticated:
             messages.error(request, "You must be logged in to submit assignments.")
             return redirect('api:sign-in')
         
+        # Check if submission already exists
         if submissions.exists():
             messages.warning(request, "You have already submitted this assignment.")
             return redirect('cms:assignment_detail', course_slug=course.slug, assignment_id=assignment.id)
@@ -162,7 +172,8 @@ def assignment_detail(request, course_slug, assignment_id):
             # Create the submission with form data
             submission = form.save(commit=False)
             submission.user = request.user
-            submission.assignment = assignment
+            submission.content_type = assignment_content_type
+            submission.object_id = assignment.id
             submission.save()
             
             messages.success(request, "Assignment submitted successfully!")
@@ -316,19 +327,35 @@ def ranking_view(request):
 
 def update_user_progress(user, course):
     user_progress, created = UserProgress.objects.get_or_create(user=user, course=course)
+
+    # Calculate completed assignments by filtering Submission objects related to assignments
+    completed_assignments = Submission.objects.filter(
+        content_type__model='assignment',
+        object_id__in=course.assignments.values_list('id', flat=True),
+        user=user,
+        grade__gte=75
+    ).distinct().count()
+    
+    # Calculate completed quizzes by filtering Submission objects related to quizzes
+    completed_quizzes = Submission.objects.filter(
+        content_type__model='quiz',
+        object_id__in=course.quizzes.values_list('id', flat=True),
+        user=user,
+        grade__gte=75
+    ).distinct().count()
+    
+    # Calculate totals
     total_assignments = course.assignments.count()
-    completed_assignments = course.assignments.filter(submissions__user=user, submissions__grade__gte=75).distinct().count()
     total_quizzes = course.quizzes.count()
-    completed_quizzes = course.quizzes.filter(submissions__user=user, submissions__grade__gte=75).distinct().count()
     
     total_tasks = total_assignments + total_quizzes
     completed_tasks = completed_assignments + completed_quizzes
     
+    # Calculate progress percentage
     progress_percentage = (completed_tasks / total_tasks) * 100 if total_tasks > 0 else 0
     user_progress.progress_percentage = progress_percentage
     user_progress.completed = progress_percentage >= 100
     user_progress.save()
-
 
 def grade_submission(submission):
     if submission.quiz:

@@ -6,11 +6,17 @@
 {% block title %}Courses - ERaven Gigs{% endblock %}
 
 {% block content %}
-    <div class="container mt-4">
-        <h1 class="mb-4">Courses</h1>
+<div class="container mt-4">
+    <!-- Page Header -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h1 class="text-primary">Courses</h1>
+        </div>
+    </div>
 
-        <!-- Filter Form -->
-        <div class="mb-3">
+    <!-- Filter and Search Bar -->
+    <div class="row mb-4">
+        <div class="col-md-8 mb-2">
             <form method="get" class="d-flex">
                 <select name="proficiency" class="form-select me-2" aria-label="Proficiency Level">
                     <option value="">All Proficiency Levels</option>
@@ -18,35 +24,113 @@
                     <option value="intermediate" {% if request.GET.proficiency == 'intermediate' %}selected{% endif %}>Intermediate</option>
                     <option value="advanced" {% if request.GET.proficiency == 'advanced' %}selected{% endif %}>Advanced</option>
                 </select>
-                <button type="submit" class="btn btn-primary">Filter</button>
+                <select name="category" class="form-select me-2" aria-label="Category">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.slug }}" {% if request.GET.category == category.slug %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-filter me-1"></i> Filter
+                </button>
             </form>
         </div>
+        <div class="col-md-4 mb-2">
+            <form method="get" class="d-flex">
+                {% if request.GET.proficiency %}
+                    <input type="hidden" name="proficiency" value="{{ request.GET.proficiency }}">
+                {% endif %}
+                {% if request.GET.category %}
+                    <input type="hidden" name="category" value="{{ request.GET.category }}">
+                {% endif %}
+                <input type="text" name="search" class="form-control me-2" placeholder="Search Courses" value="{{ request.GET.search }}">
+                <button type="submit" class="btn btn-outline-secondary">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
 
-        <!-- Course Cards -->
-        {% if courses %}
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                {% for course in courses %}
-                    <div class="col">
-                        <div class="card h-100 shadow-sm border-0">
-                            {% if course.picture %}
-                                <img src="{{ course.picture.url }}" class="card-img-top" alt="{{ course.title }} Image" style="max-height: 200px; object-fit: cover;">
-                            {% else %}
-                                <img src="{% static 'images/default_course.png' %}" class="card-img-top" alt="Default Course Image" style="max-height: 200px; object-fit: cover;">
-                            {% endif %}
-                            <div class="card-body">
-                                <h5 class="card-title">{{ course.title }}</h5>
-                                <p class="card-text">{{ course.description|truncatewords:20 }}</p>
-                                <p><strong>Proficiency Level:</strong> {{ course.proficiency_level|title }}</p>
-                            </div>
-                            <div class="card-footer bg-transparent border-0">
-                                <a href="{% url 'cms:course_detail' course.slug %}" class="btn btn-primary w-100">View Course</a>
+    <!-- Course Cards -->
+    {% if courses %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for course in courses %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0 course-card">
+                        {% if course.picture %}
+                            <img src="{{ course.picture.url }}" class="card-img-top course-image" alt="{{ course.title }} Image">
+                        {% else %}
+                            <img src="{% static 'images/default_course.png' %}" class="card-img-top course-image" alt="Default Course Image">
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ course.title }}</h5>
+                            <p class="card-text">{{ course.description|truncatewords:15 }}</p>
+                            <div class="mt-auto">
+                                <span class="badge bg-secondary">{{ course.proficiency_level|title }}</span>
+                                <span class="badge bg-info">{{ course.category.name }}</span>
                             </div>
                         </div>
+                        <div class="card-footer bg-transparent border-0">
+                            <a href="{% url 'cms:course_detail' course.slug %}" class="btn btn-primary w-100">
+                                <i class="fas fa-eye me-2"></i> View Course
+                            </a>
+                        </div>
                     </div>
-                {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="row mt-4">
+            <div class="col-12 d-flex justify-content-center">
+                {% if courses.has_other_pages %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            {% if courses.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% if request.GET.proficiency %}proficiency={{ request.GET.proficiency }}&amp;{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&amp;{% endif %}{% if request.GET.search %}search={{ request.GET.search }}&amp;{% endif %}page={{ courses.previous_page_number }}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link" aria-hidden="true">&laquo;</span>
+                                </li>
+                            {% endif %}
+                            {% for num in courses.paginator.page_range %}
+                                {% if courses.number == num %}
+                                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                                {% elif num > courses.number|add:'-3' and num < courses.number|add:'3' %}
+                                    <li class="page-item"><a class="page-link" href="?{% if request.GET.proficiency %}proficiency={{ request.GET.proficiency }}&amp;{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&amp;{% endif %}{% if request.GET.search %}search={{ request.GET.search }}&amp;{% endif %}page={{ num }}">{{ num }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if courses.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% if request.GET.proficiency %}proficiency={{ request.GET.proficiency }}&amp;{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&amp;{% endif %}{% if request.GET.search %}search={{ request.GET.search }}&amp;{% endif %}page={{ courses.next_page_number }}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link" aria-hidden="true">&raquo;</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
             </div>
-        {% else %}
-            <p>No courses available.</p>
-        {% endif %}
-    </div>
+        </div>
+    {% else %}
+        <p class="text-muted">No courses available.</p>
+    {% endif %}
+</div>
+
+<!-- Include Font Awesome for Icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<!-- Include Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Link to External CSS -->
+<link href="{% static 'css/course_list.css' %}" rel="stylesheet" />
 {% endblock %}

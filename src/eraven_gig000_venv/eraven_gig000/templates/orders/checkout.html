@@ -1,0 +1,148 @@
+<!-- orders/templates/orders/checkout.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="checkout-container container my-5 animate__animated animate__fadeIn">
+  <h1 class="page-title text-center mb-5">Checkout</h1>
+  
+  <div class="row">
+    <!-- Order Summary Section -->
+    <div class="col-md-6">
+      <div class="order-summary bg-white p-4 rounded shadow-sm">
+        <h2 class="mb-4 text-secondary">Order Summary</h2>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in order_items %}
+                <tr class="cart-item animate__animated animate__fadeInUp">
+                  <td>
+                    <div class="d-flex align-items-center">
+                      {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-thumbnail me-3 product-image" width="60" height="60" loading="lazy">
+                      {% else %}
+                        <img src="{% static 'images/placeholder.png' %}" alt="No image available" class="img-thumbnail me-3 product-image" width="60" height="60" loading="lazy">
+                      {% endif %}
+                      <a href="{{ item.product.get_absolute_url }}" class="text-decoration-none text-dark product-link">
+                        {{ item.product.name }}
+                      </a>
+                    </div>
+                  </td>
+                  <td>${{ item.cost }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        
+        {% if coupon %}
+          <div class="applied-coupon alert alert-success d-flex justify-content-between align-items-center" role="alert">
+            <div>
+              <strong>Coupon Applied:</strong> "{{ coupon.code }}" 
+              {% if discount_amount %}
+                - Discount: {{ discount_amount }}
+              {% endif %}
+            </div>
+            <button type="button" class="btn-close" aria-label="Close" id="remove-coupon-btn"></button>
+          </div>
+        {% endif %}
+        
+        <div class="d-flex justify-content-end mt-4">
+          <h4 class="mb-0">Total: <span class="text-success" id="total-cost">${{ total_cost }}</span></h4>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Checkout Form Section -->
+    <div class="col-md-6">
+      <div class="checkout-form-section bg-white p-4 rounded shadow-sm">
+        <form method="post" class="checkout-form">
+          {% csrf_token %}
+          
+          <!-- Coupon Section -->
+          <div class="coupon-section mt-4">
+            <h3 class="mb-3 text-secondary">Apply Coupon</h3>
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" placeholder="Enter coupon code" aria-label="Coupon Code" aria-describedby="coupon-button" name="coupon_code" id="coupon_code" {% if coupon %} value="{{ coupon.code }}" disabled {% endif %}>
+              <button class="btn btn-outline-secondary apply-coupon-btn" type="button" id="coupon-button" {% if coupon %} disabled {% endif %}>
+                <i class="bi bi-tag"></i> Apply
+              </button>
+            </div>
+            <!-- Feedback Messages -->
+            <div id="coupon-feedback"></div>
+          </div>
+          
+          <!-- Proceed to Payment Button -->
+          <button type="submit" name="place_order" class="btn btn-primary btn-lg w-100 proceed-btn mt-3">
+            <i class="bi bi-cart-check"></i> Proceed to Payment
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Trust Badges Section -->
+  <div class="trust-badges mt-5 d-flex justify-content-center flex-wrap">
+    <div class="badge-item p-3 m-2 bg-white rounded shadow-sm d-flex align-items-center">
+      <i class="bi bi-shield-check text-success me-2 fs-3" aria-hidden="true"></i>
+      <span>Secure Checkout</span>
+    </div>
+    <div class="badge-item p-3 m-2 bg-white rounded shadow-sm d-flex align-items-center">
+      <i class="bi bi-coin text-success me-2 fs-3" aria-hidden="true"></i>
+      <span>Money-Back Guarantee</span>
+    </div>
+    <div class="badge-item p-3 m-2 bg-white rounded shadow-sm d-flex align-items-center">
+      <i class="bi bi-chat-dots text-success me-2 fs-3" aria-hidden="true"></i>
+      <span>24/7 Support</span>
+    </div>
+  </div>
+  
+  <!-- Payment Verification Icons -->
+  <div class="payment-icons mt-4 d-flex justify-content-center">
+    <i class="fab fa-cc-visa fa-2x text-secondary me-3" aria-label="Visa"></i>
+    <i class="fab fa-cc-mastercard fa-2x text-secondary me-3" aria-label="MasterCard"></i>
+    <i class="fab fa-paypal fa-2x text-secondary me-3" aria-label="PayPal"></i>
+    <i class="fas fa-lock fa-2x text-secondary" aria-label="SSL Secure"></i>
+  </div>
+  
+  <!-- Optional: Customer Testimonials Carousel -->
+  {% if testimonials %}
+    <div id="testimonialsCarousel" class="carousel slide mt-5" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        {% for testimonial in testimonials %}
+          <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <div class="testimonial p-4 bg-white rounded shadow-sm">
+              <p class="mb-3">"{{ testimonial.comment }}"</p>
+              <h6 class="mb-0">{{ testimonial.user.username }}</h6>
+              <small class="text-muted">{{ testimonial.user.position }}</small>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Pass URLs to JavaScript -->
+<script>
+  const applyCouponUrl = "{% url 'orders:apply_coupon' %}";
+  const removeCouponUrl = "{% url 'orders:remove_coupon' %}";
+</script>
+<script src="{% static 'js/checkout.js' %}"></script>
+{% endblock %}

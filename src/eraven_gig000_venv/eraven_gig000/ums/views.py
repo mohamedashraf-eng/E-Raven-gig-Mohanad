@@ -103,13 +103,18 @@ class UserRegistrationView(APIView):
         password2 = data.get('password2')
 
         if password1 != password2:
-            return Response({"detail": "Passwords do not match."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"password2": ["Passwords do not match."]}, status=status.HTTP_400_BAD_REQUEST)
 
         # Add 'password' field with the value of password1 to satisfy serializer
         data['password'] = password1
 
         serializer = UserCreateSerializer(data=data)
         if serializer.is_valid():
+            try:
+                user = serializer.save()
+            except IntegrityError as e:
+                return Response({"detail": "Username or email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
             # Generate a unique activation ID
             activation_id = str(uuid4())
 
@@ -146,7 +151,6 @@ class UserRegistrationView(APIView):
             fail_silently=False,
         )
         logger.debug(f"Activation email sent to {email}")
-
 
 class ActivateAccountView(APIView):
     permission_classes = [AllowAny]
@@ -381,7 +385,7 @@ def token_lifetime_view(request):
 @method_decorator(custom_login_required, name='dispatch')
 class UserProfileView(View):
     """
-    Displays the authenticated user's profile, including enrollments, progress, points, ranking, and timeline events.
+    Displays the authenticated user's profile, including courses, progress, points, and timeline events.
     """
 
     def get_submission_count(self, user, model):
@@ -395,6 +399,54 @@ class UserProfileView(View):
             logger.error(f"ContentType for model {model.__name__} does not exist.")
             return 0
 
+    def get_accessible_courses(self, user):
+        """
+        Retrieves all courses the user can access via enrollments or purchased bundles.
+        """
+        # Courses via explicit enrollments
+        enrolled_courses = set(
+            Enrollment.objects.filter(user=user).values_list('course_id', flat=True)
+        )
+
+        # Courses via purchased bundles
+        bundle_courses = set(
+            Course.objects.filter(products__users=user).values_list('id', flat=True)
+        )
+
+        # Combine both sets
+        accessible_course_ids = enrolled_courses.union(bundle_courses)
+
+        # Retrieve all accessible courses
+        return Course.objects.filter(id__in=accessible_course_ids)
+
+    def ensure_enrollments(self, user, courses):
+        """
+        Ensures that an Enrollment exists for all accessible courses.
+        """
+        existing_enrollments = Enrollment.objects.filter(user=user, course__in=courses)
+        existing_course_ids = set(existing_enrollments.values_list('course_id', flat=True))
+
+        # Find courses without enrollments
+        unenrolled_courses = [course for course in courses if course.id not in existing_course_ids]
+
+        # Bulk create enrollments for unenrolled courses
+        Enrollment.objects.bulk_create(
+            [Enrollment(user=user, course=course) for course in unenrolled_courses]
+        )
+
+    def create_user_progress_for_enrollments(self, user, enrollments):
+        """
+        Ensures that a UserProgress entry exists for each enrollment.
+        """
+        for enrollment in enrollments:
+            # Check if UserProgress already exists for this user and course
+            UserProgress.objects.get_or_create(
+                user=user,
+                course=enrollment.course,
+                progress_percentage=0.0,  # Default progress
+                completed=False            # Default not completed
+            )
+
     def get(self, request, *args, **kwargs):
         user = request.user
 
@@ -404,26 +456,33 @@ class UserProfileView(View):
         challenge_count = self.get_submission_count(user, Challenge)
         workshop_count = self.get_submission_count(user, Workshop)
 
-        # **2. Enrolled Courses**
-        enrollments = Enrollment.objects.filter(user=user).select_related('course')
+        # **2. Accessible Courses**
+        accessible_courses = self.get_accessible_courses(user)
 
-        # **3. Progress**
+        # **3. Ensure Enrollments**
+        self.ensure_enrollments(user, accessible_courses)
+
+        # **4. Create UserProgress for each Enrollment**
+        enrollments = Enrollment.objects.filter(user=user)
+        self.create_user_progress_for_enrollments(user, enrollments)
+
+        # **5. Progress**
         progresses = UserProgress.objects.filter(user=user).select_related('course')
 
-        # **4. Points and Ranking**
+        # **6. Points and Ranking**
         ranking = Ranking.objects.filter(user=user).first()
         point_transactions = PointTransaction.objects.filter(user=user).order_by('-timestamp')[:10]  # Latest 10 transactions
 
-        # **5. Global Rankings**
+        # **7. Global Rankings**
         top_rankings = Ranking.objects.order_by('-points')[:10]  # Top 10 users
 
-        # **6. Timeline Events**
+        # **8. Timeline Events**
         timeline_events = TimelineEvent.objects.filter(
             user=user,
             event_date__gte=timezone.now()
         ).order_by('event_date')
 
-        # **7. Validate Timeline Events**
+        # **9. Validate Timeline Events**
         valid_timeline_events = []
         for event in timeline_events:
             try:
@@ -431,16 +490,17 @@ class UserProfileView(View):
                 valid_timeline_events.append(event)
             except Exception as e:
                 logger.error(f"Faulty TimelineEvent ID: {event.id}, Error: {e}")
-                # Optionally, handle the faulty event (e.g., notify admin, skip, etc.)
-                # event.delete()  # Be cautious with deletions
-
-        # **8. Context Dictionary**
+                
+        enrollments = {enrollment.course_id: enrollment for enrollment in Enrollment.objects.filter(user=user)}
+        
+        # **10. Context Dictionary**
         context = {
             'quiz_count': quiz_count,
             'assignment_count': assignment_count,
             'challenge_count': challenge_count,
-            'workshop_count': workshop_count,  # Added workshop count
-            'enrollments': enrollments,
+            'workshop_count': workshop_count,
+            'courses': accessible_courses,  # Accessible courses (from enrollments and bundles)
+            'enrollments': enrollments,     # Dictionary of enrollments for quick lookup
             'progresses': progresses,
             'ranking': ranking,
             'point_transactions': point_transactions,

@@ -6,4 +6,4 @@ class UmsConfig(AppConfig):
     name = 'ums'
 
     def ready(self):
-        import ums.signals  # Ensure signals are imported
+        import ums.signals  # Ensure the signals are connected

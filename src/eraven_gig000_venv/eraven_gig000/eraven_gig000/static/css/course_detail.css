@@ -1,0 +1,109 @@
+/* static/css/course_detail.css */
+
+/* Section Titles */
+.section-title {
+    color: #0BA2B2;
+    border-bottom: 2px solid #0BA2B2;
+    display: inline-block;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* Course Image */
+.course-image {
+    max-height: 400px;
+    object-fit: cover;
+    width: 100%;
+    transition: transform 0.3s;
+}
+
+.course-image:hover {
+    transform: scale(1.02);
+}
+
+/* Workshop Image */
+.workshop-image {
+    max-height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.workshop-image:hover {
+    transform: scale(1.02);
+}
+
+/* Related Course Image */
+.related-course-image {
+    max-height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.related-course-image:hover {
+    transform: scale(1.02);
+}
+
+/* Meeting Links */
+.meeting-link {
+    color: #0BA2B2;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.meeting-link:hover {
+    color: #5CC4B1;
+    text-decoration: underline;
+}
+
+/* Card Hover Effects */
+.card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(11, 162, 178, 0.2);
+}
+
+/* Badge Styling */
+.badge.bg-light {
+    color: #0BA2B2;
+    font-weight: bold;
+}
+
+/* Button Icons */
+.btn .fa-eye {
+    margin-right: 5px;
+}
+
+.btn .fa-user-plus,
+.btn .fa-user-check,
+.btn .fa-sign-in-alt,
+.btn .fa-check-circle,
+.btn .fa-user-plus,
+.btn .fa-chalkboard-teacher,
+.btn .fa-lock,
+.btn .fa-chart-line,
+.btn .fa-arrow-left {
+    margin-right: 5px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 1.25rem;
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+    }
+
+    .card-text {
+        font-size: 0.95rem;
+    }
+
+    .btn-lg {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+}

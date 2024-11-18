@@ -31,6 +31,19 @@
         <div class="right-panel">
             <div class="form-container">
                 <h2>Sign Up</h2>
+
+                <!-- Display Django Messages -->
+                {% if messages %}
+                <div class="messages-container">
+                    {% for message in messages %}
+                        <div class="message {{ message.tags }}">
+                            <span class="message-content">{{ message }}</span>
+                            <span class="close-btn">&times;</span>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
                 <form id="sign-up-form" method="POST" action="{% url 'user-registration' %}" data-redirect-url="{% url 'check-email' %}">
                     {% csrf_token %}
                     <div class="form-group">
@@ -66,8 +79,9 @@
         </div>
     </div>
 
-    <!-- JavaScript for Loading Screen and Password Strength -->
+    <!-- JavaScript for Loading Screen, Password Strength, and Messages -->
     <script src="{% static 'js/loading_screen.js' %}"></script>
+    <script src="{% static 'js/message_dismiss.js' %}"></script>
     <script src="{% static 'js/sign_up.js' %}"></script>
 </body>
 </html>

@@ -1,0 +1,128 @@
+/* static/css/user_profile.css */
+
+/* Navbar Tabs Styling */
+.nav-tabs .nav-link {
+    color: #0BA2B2;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #0BA2B2;
+    color: white;
+    border-color: #0BA2B2;
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: #5CC4B1;
+    color: white;
+}
+
+/* Card Shadows and Transitions */
+.card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+/* Statistic Cards */
+.statistic-card {
+    border: none;
+}
+
+.statistic-card .card-title {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.statistic-card .fs-3 {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Table Styling */
+.table thead th {
+    vertical-align: middle;
+    text-align: center;
+}
+
+.table tbody td {
+    vertical-align: middle;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+/* Accordion Styling */
+.accordion-button:not(.collapsed) {
+    color: #fff;
+    background-color: #0BA2B2;
+}
+
+.accordion-button {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Calendar Styling */
+#calendar {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.fc-event {
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.fc-event:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .nav-tabs .nav-link {
+        font-size: 14px;
+    }
+
+    .statistic-card .card-title {
+        font-size: 0.9rem;
+    }
+
+    .statistic-card .fs-3 {
+        font-size: 1.5rem;
+    }
+
+    .table th, .table td {
+        font-size: 12px;
+    }
+
+    .accordion-button {
+        font-size: 0.9rem;
+    }
+}
+
+form input {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s;
+}
+
+form input:focus {
+    border-color: #0BA2B2;
+    outline: none;
+    box-shadow: 0 0 5px rgba(11, 162, 178, 0.5);
+}
+
+/* Submit and Cancel Buttons */
+form .btn {
+    padding: 10px 20px;
+    font-size: 16px;
+}

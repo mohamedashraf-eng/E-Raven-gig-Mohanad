@@ -1,0 +1,377 @@
+/* static/css/payment_selection.css */
+
+/* Root Variables for Color Palette */
+:root {
+    --primary-light-blue: #84D1DA; /* Light Blue */
+    --secondary-blue-green: #5CC4B1; /* Blue-Green */
+    --dark-blue-green: #0BA2B2; /* Dark Blue-Green */
+    --green: #77D770; /* Green */
+    --yellow-green: #C3FC47; /* Yellow-Green */
+    --text-dark: #333333;
+    --text-light: #ffffff;
+    --border-radius: 8px;
+    --transition-speed: 0.3s;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* General Styles */
+  body {
+    background-color: #f8f9fa;
+    color: var(--text-dark);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .container {
+    max-width: 1200px;
+  }
+  
+  /* Page Title */
+  .page-title {
+    color: var(--dark-blue-green);
+    font-weight: 700;
+  }
+  
+  /* Order Summary Table */
+  .order-summary {
+    background-color: #ffffff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+  }
+  
+  .order-summary h2 {
+    color: var(--secondary-blue-green);
+    font-weight: 600;
+  }
+  
+  .order-summary table th {
+    background-color: var(--secondary-blue-green);
+    color: var(--text-light);
+    text-align: center;
+  }
+  
+  .order-summary table td {
+    vertical-align: middle;
+  }
+  
+  .order-summary table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .product-image {
+    border-radius: var(--border-radius);
+    transition: transform var(--transition-speed);
+  }
+  
+  .product-image:hover {
+    transform: scale(1.05);
+  }
+  
+  .product-link {
+    font-size: 1.1rem;
+    transition: color var(--transition-speed);
+  }
+  
+  .product-link:hover {
+    color: var(--primary-light-blue);
+    text-decoration: underline;
+  }
+  
+  /* Payment Method Selection */
+  .payment-method-selection {
+    background-color: #ffffff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 20px;
+  }
+  
+  .payment-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: space-between;
+  }
+  
+  .payment-card {
+    flex: 1 1 calc(50% - 15px);
+    background-color: #f9f9f9;
+    border: 2px solid transparent;
+    border-radius: var(--border-radius);
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
+  }
+  
+  .payment-card:hover {
+    border-color: var(--secondary-blue-green);
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow);
+  }
+  
+  .payment-card.selected {
+    border-color: var(--secondary-blue-green);
+    box-shadow: var(--box-shadow);
+    background-color: #e0f7fa;
+  }
+  
+  .payment-card .card-content i {
+    transition: color var(--transition-speed), transform var(--transition-speed);
+  }
+  
+  .payment-card:hover .card-content i,
+  .payment-card.selected .card-content i {
+    color: var(--dark-blue-green);
+    transform: scale(1.1);
+  }
+  
+  .payment-card h5 {
+    margin-top: 10px;
+    color: var(--text-dark);
+  }
+  
+  /* Hidden Input */
+  #gateway-input {
+    display: none;
+  }
+  
+  /* Trust Badges */
+  .trust-badges .badge-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    margin: 10px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+  }
+  
+  .trust-badges .badge-item:hover {
+    background-color: var(--secondary-blue-green);
+    transform: translateY(-5px);
+  }
+  
+  .trust-badges .badge-item i {
+    transition: color var(--transition-speed), transform var(--transition-speed);
+  }
+  
+  .trust-badges .badge-item:hover i {
+    color: var(--text-light);
+    transform: scale(1.1);
+  }
+  
+  .trust-badges .badge-item span {
+    font-size: 1rem;
+    color: var(--text-dark);
+    transition: color var(--transition-speed);
+  }
+  
+  .trust-badges .badge-item:hover span {
+    color: var(--text-light);
+  }
+  
+  /* Payment Verification Icons */
+  .payment-icons i {
+    transition: color var(--transition-speed), transform var(--transition-speed);
+  }
+  
+  .payment-icons i:hover {
+    color: var(--dark-blue-green);
+    transform: scale(1.1);
+  }
+  
+  /* Animations */
+  .animate__animated.animate__fadeIn {
+    animation: fadeIn 0.6s ease forwards;
+  }
+  
+  .animate__animated.animate__fadeInUp {
+    animation: fadeInUp 0.6s ease forwards;
+  }
+  
+  .animate__animated.animate__fadeInRight {
+    animation: fadeInRight 0.6s ease forwards;
+  }
+  
+  /* Keyframes */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeInRight {
+    from {
+      opacity: 0;
+      transform: translateX(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 767.98px) {
+    .payment-options {
+      flex-direction: column;
+    }
+  
+    .payment-card {
+      flex: 1 1 100%;
+    }
+    
+    .trust-badges .badge-item {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .trust-badges .badge-item span {
+      margin-top: 5px;
+    }
+  
+    .payment-icons {
+      flex-wrap: wrap;
+    }
+  
+    .payment-icons i {
+      margin-bottom: 10px;
+    }
+  
+    .payment-form .proceed-btn {
+      width: 100%;
+    }
+  }
+  
+  /* Order Summary Card */
+.order-summary {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+}
+
+.order-summary h2 {
+  color: #0BA2B2; /* Dark Blue-Green */
+}
+
+.order-summary table th {
+  background-color: #f8f9fa;
+  color: #333333;
+}
+
+.order-summary table td {
+  vertical-align: middle;
+}
+
+.applied-coupon {
+  border: 1px solid #c3e6cb;
+  border-radius: 5px;
+}
+
+.order-summary .table-responsive {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Coupon Section */
+.coupon-section h3 {
+  color: #0BA2B2; /* Dark Blue-Green */
+}
+
+.coupon-section .input-group .form-control {
+  border-right: none;
+  border-radius: 5px 0 0 5px;
+}
+
+.coupon-section .input-group .btn {
+  border-radius: 0 5px 5px 0;
+}
+
+/* Proceed Button */
+.proceed-btn {
+  background-color: #0BA2B2; /* Dark Blue-Green */
+  border-color: #0BA2B2;
+}
+
+.proceed-btn:hover {
+  background-color: #077a7a;
+  border-color: #077a7a;
+}
+
+/* Applied Coupon Alert */
+.applied-coupon {
+  background-color: #d4edda; /* Light Green */
+  border-color: #c3e6cb; /* Green Border */
+  color: #155724; /* Dark Green Text */
+}
+
+/* Feedback Messages */
+#coupon-feedback .alert {
+  margin-top: 10px;
+}
+
+/* Product Image Thumbnail */
+.product-image {
+  border-radius: 5px;
+}
+
+/* Trust Badges */
+.trust-badges .badge-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  margin: 10px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.trust-badges .badge-item:hover {
+  transform: translateY(-5px);
+  background-color: #0BA2B2; /* Dark Blue-Green */
+  color: #ffffff;
+}
+
+.trust-badges .badge-item i {
+  margin-right: 10px;
+}
+
+/* Payment Verification Icons */
+.payment-icons i {
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.payment-icons i:hover {
+  color: #0BA2B2; /* Dark Blue-Green */
+  transform: scale(1.1);
+}
+
+/* Testimonials Carousel */
+.testimonial {
+  border-left: 5px solid #0BA2B2; /* Dark Blue-Green */
+}
+
+.testimonial p {
+  font-style: italic;
+}
+
+.testimonial h6 {
+  margin-top: 10px;
+  color: #0BA2B2; /* Dark Blue-Green */
+}

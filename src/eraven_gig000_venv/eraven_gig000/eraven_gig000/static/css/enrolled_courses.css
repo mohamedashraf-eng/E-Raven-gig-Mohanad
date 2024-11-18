@@ -1,0 +1,135 @@
+/* static/css/enrolled_courses.css */
+
+/* Section Titles */
+.section-title {
+    color: #0BA2B2;
+    border-bottom: 2px solid #0BA2B2;
+    display: inline-block;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* Statistic Cards */
+.statistic-card {
+    border: none;
+}
+
+.statistic-card .card-title {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.statistic-card .fs-3 {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Course Card Styling */
+.course-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(11, 162, 178, 0.2);
+}
+
+/* Course Image */
+.course-image {
+    max-height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.course-image:hover {
+    transform: scale(1.05);
+}
+
+/* Badge Styling */
+.badge.bg-secondary {
+    background-color: #77D770;
+}
+
+.badge.bg-info {
+    background-color: #5CC4B1;
+}
+
+.badge.bg-secondary, .badge.bg-info {
+    color: #fff;
+}
+
+/* Meeting Links */
+.meeting-link {
+    color: #0BA2B2;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.meeting-link:hover {
+    color: #5CC4B1;
+    text-decoration: underline;
+}
+
+/* Pagination Styling */
+.pagination .page-link {
+    color: #0BA2B2;
+    border-color: #0BA2B2;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination .page-link:hover {
+    background-color: #0BA2B2;
+    color: #fff;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #0BA2B2;
+    border-color: #0BA2B2;
+    color: #fff;
+}
+
+/* Button Icons */
+.btn .fa-eye,
+.btn .fa-arrow-left,
+.btn .fa-user-check,
+.btn .fa-coins,
+.btn .fa-filter,
+.btn .fa-search,
+.btn .fa-plus-circle,
+.btn .fa-user-plus,
+.btn .fa-sign-in-alt,
+.btn .fa-arrow-left {
+    margin-right: 5px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 1.25rem;
+    }
+
+    .statistic-card .card-title {
+        font-size: 0.9rem;
+    }
+
+    .statistic-card .fs-3 {
+        font-size: 1.5rem;
+    }
+
+    .course-card .card-title {
+        font-size: 1.1rem;
+    }
+
+    .course-card .card-text {
+        font-size: 0.95rem;
+    }
+
+    .pagination .page-link {
+        font-size: 0.9rem;
+    }
+
+    .btn-lg {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+}

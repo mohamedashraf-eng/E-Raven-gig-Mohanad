@@ -1,0 +1,119 @@
+<!-- orders/templates/orders/cart_detail.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="cart-container container my-5 animate__animated animate__fadeIn">
+  <h1 class="page-title text-center mb-5">Your Shopping Cart</h1>
+  
+  <!-- Limited-Time Offer -->
+  <div class="limited-offer alert alert-warning d-flex align-items-center" role="alert">
+    <i class="bi bi-hourglass-split me-2"></i>
+    <span>Limited-Time Offer: 20% off! Hurry up before it's gone.</span>
+  </div>
+
+  {% if cart_items %}
+    <div class="table-responsive">
+      <table class="table table-modern align-middle">
+        <thead>
+          <tr>
+            <th scope="col">Product</th>
+            <th scope="col">Price</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in cart_items %}
+            <tr class="cart-item animate__animated animate__fadeInUp">
+              <td>
+                <div class="d-flex align-items-center">
+                  {% if item.product.image %}
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-thumbnail me-3 product-image" width="60" height="60" loading="lazy">
+                  {% else %}
+                    <img src="{% static 'images/placeholder.png' %}" alt="No image available" class="img-thumbnail me-3 product-image" width="60" height="60" loading="lazy">
+                  {% endif %}
+                  <a href="{{ item.product.get_absolute_url }}" class="text-decoration-none text-dark product-link">
+                    {{ item.product.name }}
+                  </a>
+                </div>
+              </td>
+              <td class="price-cell">${{ item.product.price }}</td>
+              <td>
+                <a href="{% url 'orders:cart_remove' item.product.id %}" class="btn btn-danger btn-sm remove-btn" aria-label="Remove {{ item.product.name }} from cart">
+                  <i class="bi bi-trash"></i> Remove
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-end align-items-center mt-4">
+      <div class="me-3">
+        <h4 class="mb-0">Total: <span class="text-success">${{ total }}</span></h4>
+      </div>
+      <a href="{% url 'orders:checkout' %}" class="btn btn-primary btn-lg proceed-btn">
+        <i class="bi bi-cart-check"></i> Proceed to Checkout
+      </a>
+    </div>
+
+    <!-- Trust Badges Section -->
+    <div class="trust-badges mt-5 d-flex justify-content-center flex-wrap">
+      <div class="badge-item p-3 m-2 bg-white rounded shadow-sm d-flex align-items-center">
+        <i class="bi bi-shield-check text-success me-2 fs-3" aria-hidden="true"></i>
+        <span>Secure Checkout</span>
+      </div>
+      <div class="badge-item p-3 m-2 bg-white rounded shadow-sm d-flex align-items-center">
+        <i class="bi bi-coin text-success me-2 fs-3" aria-hidden="true"></i>
+        <span>Money-Back Guarantee</span>
+      </div>
+      <div class="badge-item p-3 m-2 bg-white rounded shadow-sm d-flex align-items-center">
+        <i class="bi bi-chat-dots text-success me-2 fs-3" aria-hidden="true"></i>
+        <span>24/7 Support</span>
+      </div>
+    </div>
+
+    <!-- Payment Verification Icons -->
+    <div class="payment-icons mt-4 d-flex justify-content-center">
+      <i class="fab fa-cc-visa fa-2x text-secondary me-3" aria-label="Visa"></i>
+      <i class="fab fa-cc-mastercard fa-2x text-secondary me-3" aria-label="MasterCard"></i>
+      <i class="fab fa-cc-paypal fa-2x text-secondary me-3" aria-label="PayPal"></i>
+      <i class="fas fa-lock fa-2x text-secondary" aria-label="SSL Secure"></i>
+    </div>
+
+    <!-- Customer Testimonials Carousel (Optional) -->
+    {% if testimonials %}
+      <div id="testimonialsCarousel" class="carousel slide mt-5" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          {% for testimonial in testimonials %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              <div class="testimonial p-4 bg-white rounded shadow-sm">
+                <p class="mb-3">"{{ testimonial.comment }}"</p>
+                <h6 class="mb-0">{{ testimonial.user.username }}</h6>
+                <small class="text-muted">{{ testimonial.user.position }}</small>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+    {% endif %}
+
+  {% else %}
+    <div class="text-center">
+      <p class="fs-4">Your cart is currently empty.</p>
+      <a href="{% url 'products:product_list' %}" class="btn btn-secondary btn-lg">
+        <i class="bi bi-arrow-left-circle"></i> Discover our services?
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

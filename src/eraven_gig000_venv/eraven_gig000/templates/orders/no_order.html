@@ -1,0 +1,15 @@
+<!-- orders/templates/orders/no_order.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="no-order container my-5 animate__animated animate__fadeIn">
+  <h1 class="text-center mb-4">No Pending Orders</h1>
+  <p class="text-center">You currently have no pending orders. Browse our products and add items to your cart.</p>
+  <div class="text-center mt-4">
+    <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg">
+      <i class="bi bi-arrow-left"></i> Continue Shopping
+    </a>
+  </div>
+</div>
+{% endblock %}

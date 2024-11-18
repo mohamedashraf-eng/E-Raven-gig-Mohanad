@@ -9,6 +9,7 @@ import logging
 from django.urls import reverse
 from cms.models import Enrollment
 from ums.decorators import custom_login_required
+import requests  # Ensure requests is imported
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -67,10 +68,12 @@ class SignInView(View):
                 secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
                 samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
             )
-            messages.success(request, 'Logged in successfully.')
+            messages.success(request, 'Welcome back! You are now signed in.')
+            logger.info(f"User '{username}' signed in successfully.")
             return response
         else:
-            messages.error(request, 'Invalid username or password.')
+            messages.error(request, 'Invalid username or password. Please try again.')
+            logger.warning(f"Failed sign-in attempt for username: '{username}'.")
             return render(request, 'pages/sign_in.html', {'error': 'Invalid username or password'})
 
 class SignUpView(View):
@@ -90,7 +93,11 @@ class SignUpView(View):
 
         # Basic validation
         if password1 != password2:
+            messages.error(request, "Passwords do not match. Please try again.")
+            logger.warning(f"Password mismatch during registration for username: '{username}'.")
             return render(request, 'pages/sign_up.html', {'error': 'Passwords do not match.'})
+
+        # Additional validation (e.g., password strength, email format) can be added here
 
         # Prepare payload for ums API
         payload = {
@@ -112,14 +119,17 @@ class SignUpView(View):
 
             if response.status_code == 201:
                 logger.info(f"User '{username}' registered successfully.")
+                messages.success(request, 'Registration successful! Please check your email to verify your account.')
                 return redirect('sign-in')
             else:
                 logger.warning(f"Sign-up failed for user '{username}': {response_data}")
-                error_message = response_data.get('detail', 'Registration failed.')
+                error_message = response_data.get('detail', 'Registration failed. Please try again.')
+                messages.error(request, error_message)
                 return render(request, 'pages/sign_up.html', {'error': error_message})
 
         except requests.exceptions.RequestException as e:
-            logger.error(f"Error connecting to ums API during sign-up: {e}")
+            logger.error(f"Error connecting to ums API during sign-up for user '{username}': {e}")
+            messages.error(request, 'Unable to connect to the registration server. Please try again later.')
             return render(request, 'pages/sign_up.html', {'error': 'Unable to connect to registration server.'})
 
 class LogoutView(View):
@@ -129,10 +139,6 @@ class LogoutView(View):
     """
 
     def get(self, request):
-        # Optionally, you can call the ums API's logout endpoint here
-        # to handle server-side token invalidation if implemented
-        # For now, we'll simply delete the cookies client-side
-
         response = redirect('landing-page')  # Change to your desired redirect URL
 
         # Delete the access token cookie
@@ -147,11 +153,15 @@ class LogoutView(View):
             path='/',
         )
 
+        messages.success(request, 'You have been logged out successfully.')
+        logger.info(f"User '{request.user}' logged out successfully.")
         return response
-    
+
 def check_email(request):
     # Optionally, retrieve the user's email from the session or pass it via query parameters
     user_email = request.GET.get('email', '')
+    messages.info(request, 'Please check your email for a verification link.')
+    logger.info(f"User '{request.user}' prompted to check email: '{user_email}'.")
     return render(request, 'pages/check_email.html', {'user_email': user_email})
 
 @custom_login_required
@@ -162,6 +172,9 @@ def enrolled_courses_view(request):
     # Extract the courses from the enrollments
     enrolled_courses = [enrollment.course for enrollment in enrollments]
     
+    if not enrolled_courses:
+        messages.info(request, 'You are not enrolled in any courses yet. Explore our courses to get started.')
+
     context = {
         'enrolled_courses': enrolled_courses
     }

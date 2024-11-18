@@ -5,14 +5,15 @@
     --primary-color: #0BA2B2; /* Primary actions and highlights */
     --secondary-color: #5CC4B1; /* Secondary actions and hover states */
     --accent-color: #84D1DA; /* Borders, focus states, and accents */
-    --success-color: #77D770; /* Success messages */
-    --warning-color: #C3FC47; /* Warning messages */
+    --success-color: #4caf50; /* Success messages */
+    --error-color: #f44336; /* Error messages */
+    --warning-color: #ff9800; /* Warning messages */
+    --info-color: #2196f3; /* Info messages */
     --background-color: #f4f6f9; /* General background */
     --form-background: #ffffff; /* Form background */
     --text-color: #333333; /* Main text color */
     --label-color: #555555; /* Label text color */
     --error-background: #f8d7da; /* Error message background */
-    --error-color: #721c24; /* Error message text color */
     --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --transition-speed: 0.3s;
 }
@@ -163,7 +164,6 @@ label {
 }
 
 /* Error Message */
-/* Update for error message style */
 .error {
     background-color: var(--error-background);
     color: var(--error-color);
@@ -186,7 +186,6 @@ label {
     display: block;
 }
 
-
 /* Password Strength Indicator */
 .strength-indicator {
     margin-top: 5px;
@@ -194,7 +193,84 @@ label {
     font-weight: 500;
 }
 
-/* Animations */
+/* Messages Container and Messages */
+.messages-container {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.message {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    font-size: 1em;
+    color: #fff;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: slideDown 0.5s forwards;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.message.success {
+    background-color: var(--success-color);
+}
+
+.message.error {
+    background-color: var(--error-color);
+}
+
+.message.warning {
+    background-color: var(--warning-color);
+}
+
+.message.info {
+    background-color: var(--info-color);
+}
+
+.message .close-btn {
+    margin-left: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.2em;
+    line-height: 1;
+}
+
+.message.fade-out {
+    animation: fadeOut 0.5s forwards;
+}
+
+/* Animations for Messages */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+        height: 0;
+        margin-bottom: 0;
+        padding: 0;
+    }
+}
+
+/* Existing Animations */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }

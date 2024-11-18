@@ -1,69 +1,140 @@
-/* header.css */
+/* navbar_custom.css */
 
-/* Navbar Styling */
+/* Header Fade-In Animation */
 .navbar {
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0;
+    animation: fadeInDown 1s forwards;
+    animation-delay: 0.3s;
 }
 
-.navbar-light .navbar-nav .nav-link {
-    color: #555;
-    transition: color 0.3s ease, transform 0.3s ease;
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.navbar-light .navbar-nav .nav-link:hover {
-    color: #0d6efd;
+/* Navbar Brand Logo Styling */
+.navbar-brand img.logo-image {
+    border-radius: 17px;
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand img.logo-image:hover {
     transform: scale(1.05);
 }
 
-.navbar-light .navbar-nav .nav-link.active {
-    color: #0d6efd;
-    font-weight: 600;
-    border-bottom: 2px solid #0d6efd;
+/* Navigation Links Styling */
+.navbar-nav .nav-link {
+    color: #0BA2B2;
+    transition: color 0.3s ease, transform 0.3s ease;
+    margin-right: 15px;
 }
 
-/* Logo Styling */
-.navbar-brand img {
-    transition: transform 0.3s ease;
-}
-
-.navbar-brand:hover img {
+.navbar-nav .nav-link:hover {
+    color: #77D770;
     transform: scale(1.1);
 }
 
-/* Toggle Button Styling */
+/* Get Started Button Styling */
+.btn-brand {
+    background-color: #77D770;
+    border: none;
+    color: white;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-brand:hover {
+    background-color: #5CC4B1;
+    transform: scale(1.05);
+}
+
+/* Toggle Button Styling - Hide on all resolutions */
 .navbar-toggler {
     border: none;
-    outline: none;
-}
-
-.navbar-toggler-icon {
-    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' 
-        xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(0, 0, 0, 0.7)' stroke-width='2' 
-        stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
     transition: transform 0.3s ease;
+    display: none; /* Hide the toggler button */
 }
 
-.navbar-toggler.collapsed .navbar-toggler-icon {
-    transform: rotate(0deg);
+/* Ensure the navbar is always expanded */
+.collapse.navbar-collapse {
+    display: flex !important;
 }
 
-.navbar-toggler:not(.collapsed) .navbar-toggler-icon {
-    transform: rotate(90deg);
+/* Dropdown Menu Styling (if applicable) */
+.dropdown-menu {
+    background-color: #f8f9fa;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.3s ease;
 }
 
-/* Sticky Navbar Shadow */
-.navbar.fixed-top {
-    background-color: #ffffff;
-    transition: box-shadow 0.3s ease;
+.dropdown-item {
+    color: #0BA2B2;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.navbar.fixed-top.shadow-sm {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.dropdown-item:hover {
+    background-color: #84D1DA;
+    color: #ffffff;
+}
+
+/* Center the logo absolutely within the navbar */
+.center-logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1; /* Ensure the logo stays above other elements */
+}
+
+/* Left and Right nav sections */
+.left-nav,
+.right-nav {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+/* Left nav alignment */
+.left-nav {
+    justify-content: flex-start;
+}
+
+/* Right nav alignment */
+.right-nav {
+    justify-content: flex-end;
 }
 
 /* Responsive Adjustments */
 @media (max-width: 992px) {
-    .navbar-nav .nav-link {
-        padding: 0.5rem 1rem;
+    /* Ensure the logo remains centered */
+    .center-logo {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    /* Adjust padding and margins for better spacing */
+    .navbar-nav .nav-link,
+    .btn-brand {
+        margin-right: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    /* Adjust font sizes for better readability on small screens */
+    .navbar-nav .nav-link,
+    .btn-brand {
+        font-size: 0.9rem;
+    }
+
+    /* Ensure the logo doesn't interfere with nav links */
+    .navbar-brand img.logo-image {
+        width: 45px;
+        height: 45px;
     }
 }

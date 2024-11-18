@@ -1,0 +1,11 @@
+<!-- payments/templates/payments/payment_success.html -->
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="payment-success">
+    <h1>Payment Successful!</h1>
+    <p>Your payment has been processed successfully.</p>
+    <p>Order ID: {{ order.id }}</p>
+    <a href="{% url 'products:product_list' %}" class="btn btn-primary">Continue Shopping</a>
+  </div>
+{% endblock %}

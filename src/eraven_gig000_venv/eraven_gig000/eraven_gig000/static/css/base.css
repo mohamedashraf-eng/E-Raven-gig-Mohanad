@@ -18,3 +18,44 @@ body {
     width: 100%;
     bottom: 0;
 }
+
+html {
+    scroll-behavior: smooth;
+  }
+
+  /* Example for WebKit browsers */
+::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--secondary-blue-green);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--dark-blue-green);
+  }
+
+  .btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(11, 162, 178, 0.5);
+  }
+  
+  .tooltip-inner {
+    background-color: var(--dark-blue-green);
+    color: var(--text-light);
+    border-radius: var(--border-radius);
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+  
+  .tooltip.bs-tooltip-top .tooltip-arrow::before,
+  .tooltip.bs-tooltip-auto[x-placement^="top"] .tooltip-arrow::before {
+    border-top-color: var(--dark-blue-green);
+  }
+  

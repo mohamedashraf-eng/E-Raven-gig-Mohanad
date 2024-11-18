@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="product-detail container my-5">
+  <!-- Breadcrumb Navigation -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'landing-page' %}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'products:product_list' %}">Products</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+    </ol>
+  </nav>
+
+  <!-- Limited-Time Offer -->
+  <div class="limited-offer alert alert-warning d-flex align-items-center" role="alert">
+    <i class="bi bi-hourglass-split me-2"></i>
+    <span>Limited-Time Offer: {{ product.discount_percentage|floatformat:0 }}% off! Now only {{ product.price }}{{ product.currency }} instead of {{ product.discounted_price }}{{ product.currency }}. Hurry up before it's gone.</span>
+  </div>
+
+  <div class="row">
+    <!-- Product Image Gallery -->
+    <div class="col-lg-6 col-md-12 mb-4">
+      <div class="product-image-gallery">
+        <!-- Main Image -->
+        <div class="main-image mb-3 position-relative">
+          {% if product.image %}
+            <a href="{{ product.image.url }}" data-bs-toggle="modal" data-bs-target="#imageModal">
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow product-main-image" loading="lazy">
+            </a>
+          {% else %}
+            <a href="{% static 'images/placeholder.png' %}" data-bs-toggle="modal" data-bs-target="#imageModal">
+              <img src="{% static 'images/placeholder.png' %}" alt="No image available" class="img-fluid rounded shadow product-main-image" loading="lazy">
+            </a>
+          {% endif %}
+          <!-- Payment Verification Icons -->
+          <div class="payment-icons position-absolute bottom-0 end-0 p-2">
+            <i class="fab fa-cc-visa fa-2x text-secondary me-2" aria-label="Visa"></i>
+            <i class="fab fa-cc-mastercard fa-2x text-secondary me-2" aria-label="MasterCard"></i>
+            <i class="fab fa-cc-paypal fa-2x text-secondary me-2" aria-label="PayPal"></i>
+            <i class="fas fa-lock fa-2x text-secondary" aria-label="SSL Secure"></i>
+          </div>
+        </div>
+        <!-- Thumbnail Images (Interactive) -->
+        {% if product.additional_images.all %}
+          <div class="thumbnail-images d-flex mt-3">
+            {% for img in product.additional_images.all %}
+              <a href="{{ img.image.url }}" data-bs-toggle="modal" data-bs-target="#imageModal">
+                <img src="{{ img.image.url }}" alt="{{ product.name }}" class="img-thumbnail me-2 thumbnail-image" loading="lazy">
+              </a>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Product Information -->
+    <div class="col-lg-6 col-md-12">
+      <div class="product-info p-4 bg-light rounded shadow-sm h-100 animate__animated animate__fadeInRight">
+        <h1 class="product-title mb-3 text-primary">{{ product.name }}</h1>
+        <p class="product-description mb-4">{{ product.description }}</p>
+
+        <div class="product-price mb-4">
+          {% if product.discounted_price and product.price %}
+              <div class="discount-percentage text-danger fw-bold mb-2">
+                Save {{ product.discount_percentage|floatformat:0 }}%!
+              </div>
+              <h4 class="text-muted text-decoration-line-through d-inline me-2">
+                ${{ product.discounted_price }}
+              </h4>
+              <h4 class="text-success d-inline">
+                ${{ product.price }}
+              </h4>
+          {% else %}
+            <h4 class="text-success">Price: ${{ product.price }}</h4>
+          {% endif %}
+        </div>
+
+        <!-- Add to Cart Form -->
+        <form action="{% url 'orders:cart_add' product.id %}" method="post" class="add-to-cart-form mb-4">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-success btn-lg w-100">Start the Journey <i class="bi bi-cart-plus"></i></button>
+        </form>
+
+        <!-- Product Specifications -->
+        <div class="product-specifications">
+          <h5 class="mb-2 text-secondary">Specifications:</h5>
+          <ul class="list-unstyled">
+            {% for spec in specifications_list %}
+              <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>{{ spec }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- Social Sharing Buttons -->
+        <div class="social-sharing mt-4">
+          <h5 class="mb-2 text-secondary">Share:</h5>
+          <a href="#" class="me-3 text-primary" aria-label="Share on Facebook"><i class="bi bi-facebook fs-4"></i></a>
+          <a href="#" class="me-3 text-info" aria-label="Share on Twitter"><i class="bi bi-twitter fs-4"></i></a>
+          <a href="#" class="text-danger" aria-label="Share on Instagram"><i class="bi bi-instagram fs-4"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trust Badges Section -->
+  <div class="trust-badges mt-4 d-flex justify-content-center flex-wrap">
+    <div class="badge-item p-3 m-2 bg-white rounded shadow-sm d-flex align-items-center">
+      <i class="bi bi-shield-check text-success me-2 fs-3" aria-hidden="true"></i>
+      <span>Secure Checkout</span>
+    </div>
+    <div class="badge-item p-3 m-2 bg-white rounded shadow-sm d-flex align-items-center">
+      <i class="bi bi-coin text-success me-2 fs-3" aria-hidden="true"></i>
+      <span>Money-Back Guarantee</span>
+    </div>
+    <div class="badge-item p-3 m-2 bg-white rounded shadow-sm d-flex align-items-center">
+      <i class="bi bi-chat-dots text-success me-2 fs-3" aria-hidden="true"></i>
+      <span>24/7 Support</span>
+    </div>
+  </div>
+
+  <!-- Ratings and Reviews Section (Optional) -->
+  <div class="ratings-reviews mt-5">
+    <h5 class="mb-3 text-secondary">Customer Reviews</h5>
+    {% for review in product.reviews.all %}
+      <div class="review mb-4 animate__animated animate__fadeInUp">
+        <div class="d-flex align-items-center mb-2">
+          <strong>{{ review.user.username }}</strong>
+          <span class="ms-auto">
+            {% for i in "12345" %}
+              {% if forloop.counter <= review.rating %}
+                <i class="bi bi-star-fill text-warning"></i>
+              {% else %}
+                <i class="bi bi-star text-warning"></i>
+              {% endif %}
+            {% endfor %}
+          </span>
+        </div>
+        <p>{{ review.comment }}</p>
+      </div>
+    {% empty %}
+      <p>No reviews yet. Be the first to review this product!</p>
+    {% endfor %}
+  </div>
+
+  <!-- Image Modal for Lightbox Effect -->
+  <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-body p-0">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+          {% else %}
+            <img src="{% static 'images/placeholder.png' %}" alt="No image available" class="img-fluid">
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

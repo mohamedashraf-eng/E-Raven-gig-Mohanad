@@ -1,0 +1,135 @@
+<!-- products/templates/products/product_list.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="product-page">
+  <h1 class="page-title text-center mb-5 animate__animated animate__fadeInDown">Our Services</h1>
+
+  <div class="row">
+    <!-- Categories Sidebar -->
+    <aside class="col-lg-3 col-md-4 mb-4">
+      <div class="categories-sidebar p-3 bg-light rounded shadow-sm animate__animated animate__fadeInLeft">
+        <h2 class="h5 mb-3 text-theme">Categories</h2>
+        <ul class="list-unstyled">
+          <li><a href="{% url 'products:product_list' %}" class="category-link">All</a></li>
+          {% for cat in categories %}
+            <li><a href="{{ cat.get_absolute_url }}" class="category-link">{{ cat.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Product Cards -->
+    <section class="col-lg-9 col-md-8">
+      <div class="row">
+        {% for product in products %}
+        <div class="col-md-6 col-lg-4 mb-4 animate__animated animate__fadeInUp">
+          <div class="product-card card h-100 shadow-sm border-theme">
+            <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark">
+              <div class="position-relative">
+                {% if product.image %}
+                  <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top product-image" loading="lazy">
+                {% else %}
+                  <img src="{% static 'images/placeholder.png' %}" alt="No image available" class="card-img-top product-image" loading="lazy">
+                {% endif %}
+                {% if product.discount_percentage %}
+                  <span class="badge bg-danger position-absolute top-0 start-0 m-2">
+                    Save {{ product.discount_percentage|floatformat:0 }}%
+                  </span>
+                {% endif %}
+                <div class="overlay d-flex align-items-center justify-content-center">
+                  <i class="bi bi-eye text-white fs-3"></i>
+                </div>
+              </div>
+              <div class="card-body">
+                <h5 class="card-title product-name text-theme">{{ product.name }}</h5>
+      
+                <div class="product-price mb-2">
+                  {% if product.discounted_price and product.price %}
+                    <p class="card-text text-muted text-decoration-line-through d-inline me-2">
+                      ${{ product.discounted_price }}
+                    </p>
+                    <p class="card-text text-success d-inline">
+                      ${{ product.price }}
+                    </p>
+                  {% else %}
+                    <p class="card-text text-success">Price: ${{ product.price }}</p>
+                  {% endif %}
+                </div>
+      
+                <p class="card-text product-description mt-3">{{ product.description }}</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <p class="text-center">No products available in this category.</p>
+        </div>
+      {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      <div class="d-flex justify-content-center align-items-center mt-4 animate__animated animate__fadeIn">
+        <nav aria-label="Page navigation">
+          <ul class="pagination">
+            {% if products.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ products.previous_page_number }}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo; Previous</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link">&laquo; Previous</span>
+              </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+              <span class="page-link">Page {{ products.number }} of {{ products.paginator.num_pages }}</span>
+            </li>
+
+            {% if products.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ products.next_page_number }}" aria-label="Next">
+                  <span aria-hidden="true">Next &raquo;</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link">Next &raquo;</span>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Trust Badges Section -->
+  <div class="trust-badges mt-5 d-flex justify-content-center flex-wrap">
+    <div class="badge-item p-3 m-2 bg-white rounded shadow-sm d-flex align-items-center">
+      <i class="bi bi-shield-check text-success me-2 fs-3" aria-hidden="true"></i>
+      <span>Secure Checkout</span>
+    </div>
+    <div class="badge-item p-3 m-2 bg-white rounded shadow-sm d-flex align-items-center">
+      <i class="bi bi-coin text-success me-2 fs-3" aria-hidden="true"></i>
+      <span>Money-Back Guarantee</span>
+    </div>
+    <div class="badge-item p-3 m-2 bg-white rounded shadow-sm d-flex align-items-center">
+      <i class="bi bi-chat-dots text-success me-2 fs-3" aria-hidden="true"></i>
+      <span>24/7 Support</span>
+    </div>
+  </div>
+
+  <!-- Payment Verification Icons -->
+  <div class="payment-icons mt-4 d-flex justify-content-center">
+    <i class="fab fa-cc-visa fa-2x text-secondary me-3" aria-label="Visa"></i>
+    <i class="fab fa-cc-mastercard fa-2x text-secondary me-3" aria-label="MasterCard"></i>
+    <i class="fab fa-paypal fa-2x text-secondary me-3" aria-label="PayPal"></i>
+    <i class="fas fa-lock fa-2x text-secondary" aria-label="SSL Secure"></i>
+  </div>
+</div>
+{% endblock %}

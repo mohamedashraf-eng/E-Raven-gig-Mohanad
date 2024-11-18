@@ -1,0 +1,8 @@
+<!-- payments/templates/payments/payment_cancel.html -->
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Payment Canceled</h1>
+  <p>Your payment was canceled. If this was a mistake, please try again.</p>
+  <a href="{% url 'orders:checkout' order.id %}" class="btn">Return to Checkout</a>
+{% endblock %}
