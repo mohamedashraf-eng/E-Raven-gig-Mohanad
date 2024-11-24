@@ -333,11 +333,11 @@
                             </div>
                             <div class="col-md-4">
                                 <label for="totalPoints" class="form-label"><strong>Total Points Earned</strong></label>
-                                <input type="text" class="form-control" id="totalPoints" value="{{ user.total_points }}" readonly>
+                                <input type="text" class="form-control" id="totalPoints" value="{{ ranking.points }}" readonly>
                             </div>
                             <div class="col-md-4">
                                 <label for="currentPoints" class="form-label"><strong>Current Points</strong></label>
-                                <input type="text" class="form-control" id="currentPoints" value="{{ user.current_points }}" readonly>
+                                <input type="text" class="form-control" id="currentPoints" value="{{ user.total_points }}" readonly>
                             </div>
                         </div>
                         <div class="mb-3">

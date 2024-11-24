@@ -32,7 +32,7 @@
             <div class="form-container">
                 <h2>Sign Up</h2>
 
-                <!-- Display Django Messages -->
+                {% comment %} <!-- Display Django Messages -->
                 {% if messages %}
                 <div class="messages-container">
                     {% for message in messages %}
@@ -42,7 +42,7 @@
                         </div>
                     {% endfor %}
                 </div>
-                {% endif %}
+                {% endif %} {% endcomment %}
 
                 <form id="sign-up-form" method="POST" action="{% url 'user-registration' %}" data-redirect-url="{% url 'check-email' %}">
                     {% csrf_token %}
