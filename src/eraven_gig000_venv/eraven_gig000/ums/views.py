@@ -123,14 +123,14 @@ class UserRegistrationView(APIView):
             cache.set(f'activation_email_{data["email"]}', activation_id, timeout=60 * 60 * 24)  # Map email to activation_id
 
             # Send activation email with the activation ID
-            self.send_activation_email(activation_id, data['email'], request)
+            self.send_activation_email(activation_id, data['email'], data['username'], request)
 
             # Render the "check_email.html" page with the user's email
             return render(request, 'pages/check_email.html', {'user_email': data['email']})
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def send_activation_email(self, activation_id, email, request):
+    def send_activation_email(self, activation_id, email, username, request):
         current_site = get_current_site(request)
         mail_subject = 'Activate your account.'
         activation_link = reverse('activate', kwargs={'activation_id': activation_id})
@@ -139,6 +139,7 @@ class UserRegistrationView(APIView):
         context = {
             'activation_url': activation_url,
             'domain': current_site.domain,
+            'username': username,
             'protocol': 'https' if request.is_secure() else 'http',
         }
         message = render_to_string('registration/activation_email.html', context)
@@ -150,7 +151,7 @@ class UserRegistrationView(APIView):
             recipient_list=[email],
             fail_silently=False,
         )
-        logger.debug(f"Activation email sent to {email}")
+        logger.debug(f"Resent activation email to {email}")
 
 class ActivateAccountView(APIView):
     permission_classes = [AllowAny]
@@ -159,21 +160,17 @@ class ActivateAccountView(APIView):
         # Retrieve user data from cache
         user_data = cache.get(f'activation_{activation_id}')
         if user_data:
-            # Create and save the user with is_active=True
-            serializer = UserCreateSerializer(data=user_data)
-            if serializer.is_valid():
-                user = serializer.save()
-                user.is_active = True  # Activate the user
-                user.save()
-                
-                # Clear the cached data after successful creation
-                cache.delete(f'activation_{activation_id}')
-                cache.delete(f'activation_email_{user_data["email"]}')
-                
-                # Render the success HTML page upon successful activation
-                return render(request, 'registration/activate_account.html')
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            # Activate the user
+            user = User.objects.get(email=user_data['email'])
+            user.is_active = True
+            user.save()
+            
+            # Clear the cached data after successful creation
+            cache.delete(f'activation_{activation_id}')
+            cache.delete(f'activation_email_{user_data["email"]}')
+            
+            # Render the success HTML page upon successful activation
+            return render(request, 'registration/activate_account.html')
         else:
             # Activation link is invalid or expired
             return render(request, 'registration/activation_invalid.html', status=400)
