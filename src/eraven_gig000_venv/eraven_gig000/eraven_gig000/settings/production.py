@@ -3,10 +3,12 @@
 from .base import *
 import os
 
+# Read .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
 # Security settings
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')  # Retrieve secret key from environment variables
-DEBUG = False
-ALLOWED_HOSTS = ['*']
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-default-key')  # Use env variable for production key
+ALLOWED_HOSTS = ['*', 'wx1332.pythonanywhere.com']
 
 # Production database (e.g., PostgreSQL)
 DATABASES = {
@@ -44,15 +46,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'WARNING',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/django.log'),
-        },
-    },
     'root': {
-        'handlers': ['file'],
         'level': 'WARNING',
     },
 }
