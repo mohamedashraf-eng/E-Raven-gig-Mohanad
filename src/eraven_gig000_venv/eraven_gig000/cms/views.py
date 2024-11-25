@@ -39,6 +39,8 @@ User = get_user_model()
 def article_list(request):
     proficiency = request.GET.get('proficiency')
     articles = Article.objects.filter(proficiency_level=proficiency) if proficiency else Article.objects.all()
+    if not articles.exists():
+        messages.info(request, "No articles found for the selected proficiency level.")
     return render(request, 'cms/article_list.html', {'articles': articles})
 
 
@@ -53,6 +55,7 @@ def article_detail(request, slug):
     # Check if the user is enrolled in the Course
     is_enrolled = Enrollment.objects.filter(user=request.user, course=course).exists()
     if not is_enrolled:
+        messages.error(request, f"You must be enrolled in {course.title} to view this article.")
         return render(request, 'cms/access_denied.html', {'course': course})
     
     # Render the article detail template
@@ -62,6 +65,8 @@ def article_detail(request, slug):
 def video_list(request):
     proficiency = request.GET.get('proficiency')
     videos = Video.objects.filter(proficiency_level=proficiency) if proficiency else Video.objects.all()
+    if not videos.exists():
+        messages.info(request, "No videos found for the selected proficiency level.")
     return render(request, 'cms/video_list.html', {'videos': videos})
 
 
@@ -73,6 +78,8 @@ def video_detail(request, slug):
 def post_list(request):
     proficiency = request.GET.get('proficiency')
     posts = Post.objects.filter(proficiency_level=proficiency) if proficiency else Post.objects.all()
+    if not posts.exists():
+        messages.info(request, "No posts found for the selected proficiency level.")
     return render(request, 'cms/post_list.html', {'posts': posts})
 
 
@@ -84,6 +91,8 @@ def post_detail(request, slug):
 def documentation_list(request):
     proficiency = request.GET.get('proficiency')
     documents = Documentation.objects.filter(proficiency_level=proficiency) if proficiency else Documentation.objects.all()
+    if not documents.exists():
+        messages.info(request, "No documentation found for the selected proficiency level.")
     return render(request, 'cms/documentation_list.html', {'documents': documents})
 
 
@@ -95,6 +104,8 @@ def documentation_detail(request, slug):
 def course_list(request):
     proficiency = request.GET.get('proficiency')
     courses = Course.objects.filter(proficiency_level=proficiency) if proficiency else Course.objects.all()
+    if not courses.exists():
+        messages.info(request, "No courses available for the selected proficiency level.")
     return render(request, 'cms/course_list.html', {'courses': courses})
 
 def course_detail_view(request, slug):
@@ -163,14 +174,24 @@ def course_detail_view(request, slug):
 # LMS Views
 # =======================
 
-def session_detail(request, course_slug): pass
-def workshop_detail(request, course_slug): pass
+def session_detail(request, course_slug):
+    # Implementation pending
+    messages.info(request, "Session details are coming soon.")
+    return redirect('cms:course_detail', slug=course_slug)
+
+def workshop_detail(request, course_slug):
+    # Implementation pending
+    messages.info(request, "Workshop details are coming soon.")
+    return redirect('cms:course_detail', slug=course_slug)
 
 @custom_login_required
 def assignment_list(request, course_slug):
     course = get_object_or_404(Course, slug=course_slug)
     assignments = course.assignments.all()
     user_progress, _ = UserProgress.objects.get_or_create(user=request.user, course=course)
+    
+    if not assignments.exists():
+        messages.info(request, f"No assignments available for {course.title} at this time.")
     
     context = {
         'course': course,
@@ -194,7 +215,7 @@ def assignment_detail(request, course_slug, assignment_id):
         content_type=assignment_content_type,
         object_id=assignment.id
     )
-
+    
     if request.method == 'POST':
         if not request.user.is_authenticated:
             messages.error(request, "You must be logged in to submit assignments.")
@@ -217,6 +238,8 @@ def assignment_detail(request, course_slug, assignment_id):
             messages.success(request, "Assignment submitted successfully!")
             update_user_progress(request.user, course)
             return redirect('cms:assignment_detail', course_slug=course.slug, assignment_id=assignment.id)
+        else:
+            messages.error(request, "Please correct the errors below in your assignment submission.")
     else:
         form = AssignmentSubmissionForm()
     
@@ -233,6 +256,9 @@ def quiz_list(request, course_slug):
     course = get_object_or_404(Course, slug=course_slug)
     quizzes = course.quizzes.all()
     user_progress, _ = UserProgress.objects.get_or_create(user=request.user, course=course)
+    
+    if not quizzes.exists():
+        messages.info(request, f"No quizzes available for {course.title} at this time.")
     
     context = {
         'course': course,
@@ -270,6 +296,8 @@ def quiz_detail(request, course_slug, quiz_id):
             messages.success(request, "Quiz submitted successfully!")
             update_user_progress(request.user, course)
             return redirect('cms:quiz_detail', course_slug=course.slug, quiz_id=quiz.id)
+        else:
+            messages.error(request, "Please correct the errors below in your quiz submission.")
     else:
         form = QuizSubmissionForm()
     
@@ -286,6 +314,9 @@ def challenge_list(request):
     today = timezone.now().date()
     challenges = Challenge.objects.filter()
     user_points = request.user.total_points
+    
+    if not challenges.exists():
+        messages.info(request, "No challenges available at this time.")
     
     return render(request, 'cms/challenge_list.html', {
         'challenges': challenges,
@@ -345,19 +376,36 @@ def challenge_detail_view(request, challenge_id):
         'registered': registered,
     }
     
+    if registered:
+        messages.info(request, "You have already participated in this challenge.")
+    
     return render(request, 'cms/challenge_detail.html', context)
 
 @custom_login_required
 def user_progress_view(request):
-    return render(request, 'cms/user_progress.html', {'progresses': request.user.progresses.all()})
+    progresses = request.user.progresses.all()
+    if not progresses.exists():
+        messages.info(request, "You have not made any progress yet.")
+    return render(request, 'cms/user_progress.html', {'progresses': progresses})
 
 @custom_login_required
 def ranking_view(request):
     top_rankings = Ranking.objects.all().order_by('-points')[:10]
-    return render(request, 'cms/ranking.html', {
+    try:
+        user_rank = request.user.ranking.rank
+    except Ranking.DoesNotExist:
+        user_rank = None
+        messages.info(request, "You are not ranked yet.")
+    
+    context = {
         'rankings': top_rankings,
-        'user_rank': request.user.ranking.rank,
-    })
+        'user_rank': user_rank,
+    }
+    
+    if user_rank:
+        messages.success(request, f"Your current rank is #{user_rank}. Keep up the good work!")
+    
+    return render(request, 'cms/ranking.html', context)
 
 # =======================
 # Helper Functions
@@ -425,6 +473,10 @@ def enroll_course_view(request, course_slug):
 def available_courses_view(request):
     enrolled_courses = request.user.enrolled_courses.values_list('id', flat=True)
     available_courses = Course.objects.exclude(id__in=enrolled_courses)
+    
+    if not available_courses.exists():
+        messages.info(request, "No available courses to enroll at this time.")
+    
     return render(request, 'cms/available_courses.html', {'available_courses': available_courses})
 
 @custom_login_required
@@ -456,6 +508,10 @@ def attend_workshop(request, workshop_id):
 
     # Proceed to deduct points and create a Submission
     try:
+        # Deduct points
+        user.total_points -= workshop.points_cost
+        user.save()
+
         # Create a Submission to record attendance
         Submission.objects.create(
             user=user,
@@ -464,8 +520,7 @@ def attend_workshop(request, workshop_id):
             grade=100  # Assuming full marks for attendance
         )
 
-        messages.success(request, f"You have successfully attended the workshop and earned {workshop.points_cost} points!")
-
+        messages.success(request, f"You have successfully attended the workshop and spent {workshop.points_cost} points!")
     except Exception as e:
         messages.error(request, f"An error occurred while attending the workshop: {str(e)}")
         return redirect('cms:course_detail', slug=workshop.course.slug)
@@ -498,6 +553,7 @@ def join_workshop(request, workshop_id):
         messages.error(request, "No meeting link is available for this workshop.")
         return redirect('cms:course_detail', slug=workshop.course.slug)
 
+    messages.info(request, "Redirecting you to the workshop meeting link.")
     return redirect(workshop.meeting_link)
 
 @custom_login_required
@@ -530,6 +586,8 @@ def read_article(request, article_id):
                 return redirect('cms:course_detail', slug=article.course.slug)
 
             return redirect('cms:course_detail', slug=article.course.slug)
+        else:
+            messages.error(request, "Please correct the errors below in your article read confirmation.")
     else:
         form = ArticleReadForm()
 
@@ -566,6 +624,8 @@ def read_documentation(request, documentation_id):
                 return redirect('cms:course_detail', slug=documentation.course.slug)
 
             return redirect('cms:course_detail', slug=documentation.course.slug)
+        else:
+            messages.error(request, "Please correct the errors below in your documentation read confirmation.")
     else:
         form = DocumentationReadForm()
 

@@ -2,25 +2,15 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from products.models import Product
-from .models import OrderItem, Order
+from .models import OrderItem, Order, Coupon, Product
 from ums.decorators import custom_login_required
-from django.urls import reverse
-from django.urls import reverse
-from django.contrib import messages
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
-from .models import Coupon, Order, OrderItem, Product
-from django.utils.timezone import now
-from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.utils.timezone import now
-from .models import Coupon, Order, OrderItem, Product
-from ums.decorators import custom_login_required
 import json
-from django.utils import timezone
+from django.db import transaction
 
 @custom_login_required
 def cart_detail(request):
@@ -36,31 +26,51 @@ def cart_detail(request):
             'quantity': quantity,
             'cost': cost
         })
+    
+    if not cart_items:
+        messages.info(request, "Your cart is currently empty. Browse our products and add items to your cart!")
+    
     return render(request, 'orders/cart_detail.html', {'cart_items': cart_items, 'total': total})
+
 
 @custom_login_required
 def cart_add(request, product_id):
     cart = request.session.get('cart', {})
     product_id_str = str(product_id)  # Ensure product_id is a string
-    # Only add the bundle 1x
-    cart[product_id_str] = 1
-    request.session['cart'] = cart
+    product = get_object_or_404(Product, id=product_id)
+    
+    if product_id_str in cart:
+        messages.warning(request, f"'{product.name}' is already in your cart.")
+    else:
+        # Only add the bundle 1x
+        cart[product_id_str] = 1
+        request.session['cart'] = cart
+        messages.success(request, f"'{product.name}' has been added to your cart!")
+    
     return redirect('orders:cart_detail')
+
 
 @custom_login_required
 def cart_remove(request, product_id):
     cart = request.session.get('cart', {})
     product_id_str = str(product_id)  # Ensure product_id is a string
+    product = get_object_or_404(Product, id=product_id)
+    
     if product_id_str in cart:
         del cart[product_id_str]
         request.session['cart'] = cart
+        messages.success(request, f"'{product.name}' has been removed from your cart.")
+    else:
+        messages.warning(request, f"'{product.name}' was not found in your cart.")
+    
     return redirect('orders:cart_detail')
+
 
 @custom_login_required
 def checkout(request):
     cart = request.session.get('cart', {})
     if not cart:
-        messages.error(request, "Your cart is empty.")
+        messages.error(request, "Your cart is empty. Please add products before proceeding to checkout.")
         return redirect('products:product_list')
 
     # Initialize coupon-related session variables
@@ -105,9 +115,11 @@ def checkout(request):
             if coupon.discount_type == 'fixed':
                 discount_amount = min(coupon.discount_value, total_cost)
                 total_cost -= discount_amount
+                messages.success(request, f"Coupon '{coupon.code}' applied! You saved ${discount_amount:.2f}.")
             elif coupon.discount_type == 'percentage':
                 discount_amount = min((coupon.discount_value / 100) * total_cost, total_cost)
                 total_cost -= discount_amount
+                messages.success(request, f"Coupon '{coupon.code}' applied! You saved ${discount_amount:.2f}.")
 
             # Increment used count
             coupon.used_count += 1
@@ -134,7 +146,7 @@ def checkout(request):
         request.session['cart'] = {}
         request.session['coupon_id'] = None
 
-        messages.success(request, "Your order has been placed successfully!")
+        messages.success(request, "Your order has been placed successfully! Proceeding to payment.")
         return redirect(reverse('payments:select_payment_method', args=[order.id]))
 
     # Calculate total cost
@@ -183,8 +195,8 @@ def checkout(request):
     }
     return render(request, 'orders/checkout.html', context)
 
+
 @custom_login_required
-@require_POST
 @require_POST
 def apply_coupon(request):
     try:
@@ -192,13 +204,13 @@ def apply_coupon(request):
         coupon_code = data.get('coupon_code', '').strip()
 
         if not coupon_code:
-            return JsonResponse({'success': False, 'message': 'No coupon code provided.'})
+            return JsonResponse({'success': False, 'message': 'Please enter a coupon code.'})
 
         # Fetch the coupon
         try:
             coupon = Coupon.objects.get(code__iexact=coupon_code, active=True)
         except Coupon.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Invalid or inactive coupon.'})
+            return JsonResponse({'success': False, 'message': 'Invalid or inactive coupon code.'})
 
         # Check if coupon is expired
         if coupon.valid_to < timezone.now() or coupon.valid_from > timezone.now():
@@ -206,7 +218,7 @@ def apply_coupon(request):
 
         # Check usage limits
         if coupon.max_uses and coupon.used_count >= coupon.max_uses:
-            return JsonResponse({'success': False, 'message': 'This coupon has reached its usage limit.'})
+            return JsonResponse({'success': False, 'message': 'This coupon has reached its maximum usage limit.'})
 
         # If the coupon is user-specific, verify the user
         if coupon.user.exists() and request.user not in coupon.user.all():
@@ -254,9 +266,10 @@ def apply_coupon(request):
         })
 
     except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'message': 'Invalid JSON data.'})
+        return JsonResponse({'success': False, 'message': 'Invalid request format.'})
     except Exception as e:
-        return JsonResponse({'success': False, 'message': 'An error occurred while applying the coupon.'})
+        return JsonResponse({'success': False, 'message': 'An unexpected error occurred while applying the coupon.'})
+
 
 @custom_login_required
 @require_POST
@@ -264,7 +277,7 @@ def remove_coupon(request):
     try:
         coupon_id = request.session.get('coupon_id')
         if not coupon_id:
-            return JsonResponse({'success': False, 'message': 'No coupon to remove.'})
+            return JsonResponse({'success': False, 'message': 'No coupon is currently applied.'})
 
         coupon = get_object_or_404(Coupon, id=coupon_id)
 
@@ -287,11 +300,11 @@ def remove_coupon(request):
 
         return JsonResponse({
             'success': True,
-            'message': 'Coupon removed successfully.',
+            'message': f"Coupon '{coupon.code}' has been removed.",
             'new_total': f"${total_cost:.2f}",
         })
 
     except Coupon.DoesNotExist:
         return JsonResponse({'success': False, 'message': 'Invalid coupon.'})
     except Exception as e:
-        return JsonResponse({'success': False, 'message': 'An error occurred while removing the coupon.'})
+        return JsonResponse({'success': False, 'message': 'An unexpected error occurred while removing the coupon.'})

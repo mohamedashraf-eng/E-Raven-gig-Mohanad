@@ -105,6 +105,7 @@ class UserRegistrationView(APIView):
         password2 = data.get('password2')
 
         if password1 != password2:
+            messages.error(request, "Passwords do not match.")
             return Response({"password2": ["Passwords do not match."]}, status=status.HTTP_400_BAD_REQUEST)
 
         # Add 'password' field with the value of password1 to satisfy serializer
@@ -115,6 +116,7 @@ class UserRegistrationView(APIView):
             try:
                 user = serializer.save()
             except IntegrityError as e:
+                messages.error(request, "Username or email already exists.")
                 return Response({"detail": "Username or email already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
             # Generate a unique activation ID
@@ -127,9 +129,13 @@ class UserRegistrationView(APIView):
             # Send activation email with the activation ID
             self.send_activation_email(activation_id, data['email'], data['username'], request)
 
+            # Add success message
+            messages.success(request, "Registration successful! Please check your email to activate your account.")
+
             # Render the "check_email.html" page with the user's email
             return render(request, 'pages/check_email.html', {'user_email': data['email']})
         else:
+            messages.error(request, "Please correct the errors below.")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def send_activation_email(self, activation_id, email, username, request):
@@ -153,7 +159,7 @@ class UserRegistrationView(APIView):
             recipient_list=[email],
             fail_silently=False,
         )
-        logger.debug(f"Resent activation email to {email}")
+        logger.debug(f"Sent activation email to {email}")
 
 class ActivateAccountView(APIView):
     permission_classes = [AllowAny]
@@ -162,8 +168,16 @@ class ActivateAccountView(APIView):
         # Retrieve user data from cache
         user_data = cache.get(f'activation_{activation_id}')
         if user_data:
+            try:
+                user = User.objects.get(email=user_data['email'])
+                if user.is_active:
+                    messages.info(request, "Your account is already activated. You can log in now.")
+                    return render(request, 'registration/activate_account.html')
+            except User.DoesNotExist:
+                messages.error(request, "User does not exist.")
+                return render(request, 'registration/activation_invalid.html', status=400)
+
             # Activate the user
-            user = User.objects.get(email=user_data['email'])
             user.is_active = True
             user.save()
             
@@ -171,10 +185,14 @@ class ActivateAccountView(APIView):
             cache.delete(f'activation_{activation_id}')
             cache.delete(f'activation_email_{user_data["email"]}')
             
+            # Add success message
+            messages.success(request, "Your account has been activated successfully! You can now log in.")
+
             # Render the success HTML page upon successful activation
             return render(request, 'registration/activate_account.html')
         else:
             # Activation link is invalid or expired
+            messages.error(request, "Activation link is invalid or has expired.")
             return render(request, 'registration/activation_invalid.html', status=400)
 
 
@@ -184,6 +202,7 @@ class ResendActivationEmailView(APIView):
     def post(self, request):
         email = request.data.get('email')
         if not email:
+            messages.error(request, "Email is required.")
             return Response({"detail": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         # Retrieve existing activation_id using email
@@ -192,9 +211,11 @@ class ResendActivationEmailView(APIView):
             user_data = cache.get(f'activation_{existing_activation_id}')
             if not user_data:
                 # If user_data is missing, prompt re-registration
+                messages.error(request, "Activation data not found. Please register again.")
                 return Response({"detail": "Activation data not found. Please register again."}, status=status.HTTP_400_BAD_REQUEST)
         else:
             # If no activation_id exists, prompt re-registration
+            messages.error(request, "No pending activation found for this email. Please register.")
             return Response({"detail": "No pending activation found for this email. Please register."}, status=status.HTTP_400_BAD_REQUEST)
 
         # Generate a new activation ID
@@ -206,6 +227,9 @@ class ResendActivationEmailView(APIView):
 
         # Send the new activation email
         self.send_activation_email(new_activation_id, email, user_data.get('username'), request)
+
+        # Add success message
+        messages.success(request, "A new activation email has been sent to your email address.")
 
         return Response({"detail": "Activation email resent. Please check your email."}, status=status.HTTP_200_OK)
 
@@ -270,6 +294,11 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             # Remove tokens from response data to avoid redundant transfer
             response.data.pop('access', None)
             response.data.pop('refresh', None)
+            # Add success message
+            messages.success(request, "Logged in successfully.")
+        else:
+            # Add error message
+            messages.error(request, "Invalid username or password.")
         return response
 
 class CustomTokenRefreshView(TokenRefreshView):
@@ -290,11 +319,15 @@ class CustomTokenRefreshView(TokenRefreshView):
 
             # Remove the access token from the response body to avoid redundancy
             response.data.pop('access', None)
+            # Add success message
+            messages.success(request, "Session refreshed successfully.")
         else:
             # Refresh failed: possible invalid or expired refresh token
             # Optionally, clear the refresh token cookie
             response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
             response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE'])
+            # Add error message
+            messages.error(request, "Session expired. Please log in again.")
             response = redirect('sign-in')  # Redirect to sign-in page
             return response
 
@@ -321,11 +354,17 @@ class LogoutView(APIView):
 
     def get(self, request, *args, **kwargs):
         response = HttpResponseRedirect(reverse('landing-page'))
-        return self._delete_auth_cookies(response)
+        response = self._delete_auth_cookies(response)
+        # Add success message
+        messages.success(request, "You have been logged out successfully.")
+        return response
 
     def post(self, request, *args, **kwargs):
         response = Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
-        return self._delete_auth_cookies(response)
+        response = self._delete_auth_cookies(response)
+        # Add success message
+        messages.success(request, "You have been logged out successfully.")
+        return response
 
 class CustomPasswordResetView(PasswordResetView):
     def form_valid(self, form):
@@ -369,12 +408,17 @@ class CustomPasswordResetView(PasswordResetView):
             )
             logger.debug(f"Password reset email sent successfully to {email}")
 
+            # Add success message
+            messages.success(self.request, "A password reset link has been sent to your email address.")
+
             # Redirect to password_reset_done page after successful email
             return redirect(reverse('password_reset_done'))
 
         except User.DoesNotExist:
             logger.warning(f"No user found with email {email}")
             form.add_error('email', "No account found with this email address.")
+            # Add error message
+            messages.error(self.request, "No account found with this email address.")
             return self.form_invalid(form)
     
 def token_lifetime_view(request):
@@ -548,3 +592,5 @@ class UserProfileEditView(LoginRequiredMixin, View):
             'profile_form': profile_form,
             'security_form': security_form,
         })
+
+
