@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from .models import (
     Article, Video, Post, Documentation, Course, Enrollment,
     Assignment, Quiz, Challenge, Submission,
-    UserProgress, PointTransaction, Ranking, Workshop, ArticleRead, DocumentationRead
+    UserProgress, PointTransaction, Ranking, Workshop, ArticleRead, DocumentationRead, Session
 )
 from .serializers import (
     ArticleSerializer, VideoSerializer, PostSerializer,
@@ -27,6 +27,8 @@ from .permissions import IsAuthorOrReadOnly
 from ums.decorators import custom_login_required
 from django.db import transaction
 from django.contrib.contenttypes.models import ContentType
+from itertools import chain
+from operator import attrgetter
 
 User = get_user_model()
 
@@ -98,28 +100,61 @@ def course_list(request):
 def course_detail_view(request, slug):
     course = get_object_or_404(Course, slug=slug)
     
-    # Fetch related content
-    articles = course.articles.all()
-    videos = course.videos.all()
-    assignments = course.assignments.all()
-    quizzes = course.quizzes.all()
-    challenges = course.challenges.all()
-    documentations = course.documentations.all()
-    workshops = course.workshops.all()
-    sessions = course.sessions.all()  # Fetch related sessions
-    related_courses = Course.objects.filter(categories__in=course.categories.all()).exclude(id=course.id).distinct()[:6]
+    # Fetch all timeline-related items
+    assignments = Assignment.objects.filter(course=course)
+    challenges = Challenge.objects.filter(course=course)
+    articles = Article.objects.filter(course=course)
+    videos = Video.objects.filter(course=course)
+    sessions = Session.objects.filter(course=course)
+    documentations = Documentation.objects.filter(course=course)
     
+    # Combine all items into a single list
+    combined_timeline = list(chain(
+        assignments, 
+        challenges, 
+        articles, 
+        videos, 
+        sessions, 
+        documentations
+    ))
+    
+    # Define a key function to extract the relevant date
+    def get_date(item):
+        if hasattr(item, 'due_date'):
+            return item.due_date
+        elif hasattr(item, 'date'):
+            return item.date
+        elif hasattr(item, 'created_at'):
+            return item.created_at
+        elif hasattr(item, 'date_time'):
+            return item.date_time
+        return None
+    
+    # Sort the combined timeline by date in descending order
+    combined_timeline.sort(key=lambda x: get_date(x) or '', reverse=True)
+    
+    icon_map = {
+        "Assignment": "fas fa-file-alt",
+        "Challenge": "fas fa-trophy",
+        "Article": "fas fa-newspaper",
+        "Video": "fas fa-video",
+        "Session": "fas fa-calendar-alt",
+        "Documentation": "fas fa-book",
+    }
+        
+    for item in combined_timeline:
+        item.icon = icon_map.get(item.__class__.__name__, "fas fa-info-circle")
+        
     context = {
         'course': course,
+        'assignments': assignments,
+        'challenges': challenges,
         'articles': articles,
         'videos': videos,
-        'assignments': assignments,
-        'quizzes': quizzes,
-        'challenges': challenges,
+        'sessions': sessions,
         'documentations': documentations,
-        'workshops': workshops,
-        'sessions': sessions,  # Add sessions to context
-        'related_courses': related_courses,
+        # 'related_courses': get_related_courses(course),
+        'combined_timeline': combined_timeline,  # Add the combined timeline to context
     }
     
     return render(request, 'cms/course_detail.html', context)
@@ -127,6 +162,9 @@ def course_detail_view(request, slug):
 # =======================
 # LMS Views
 # =======================
+
+def session_detail(request, course_slug): pass
+def workshop_detail(request, course_slug): pass
 
 @custom_login_required
 def assignment_list(request, course_slug):

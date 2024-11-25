@@ -1,61 +1,70 @@
-/* static/css/course_detail.css */
+/* ========================================
+   1. CSS Variables - Color Palette
+======================================== */
+:root {
+    --color-light-blue: #84D1DA;
+    --color-teal: #5CC4B1;
+    --color-dark-teal: #0BA2B2;
+    --color-green: #77D770;
+    --color-lime-yellow: #C3FC47;
+    --color-secondary: #6c757d; /* Bootstrap's default for secondary */
+    --color-purple: #800080; /* Purple Color */
+    --color-danger: #dc3545; /* Bootstrap's danger color */
+    --color-success: #28a745; /* Bootstrap's success color */
+}
 
-/* Section Titles */
+/* ========================================
+   2. Typography and Section Titles
+======================================== */
 .section-title {
-    color: #0BA2B2;
-    border-bottom: 2px solid #0BA2B2;
+    color: var(--color-dark-teal);
+    border-bottom: 2px solid var(--color-dark-teal);
     display: inline-block;
     padding-bottom: 5px;
     margin-bottom: 15px;
+    font-size: 1.5rem;
 }
 
-/* Course Image */
+/* ========================================
+   3. Images Styling
+======================================== */
+.course-image,
+.related-course-image {
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
 .course-image {
     max-height: 400px;
-    object-fit: cover;
     width: 100%;
-    transition: transform 0.3s;
 }
 
-.course-image:hover {
-    transform: scale(1.02);
-}
-
-/* Workshop Image */
-.workshop-image {
-    max-height: 200px;
-    object-fit: cover;
-    transition: transform 0.3s;
-}
-
-.workshop-image:hover {
-    transform: scale(1.02);
-}
-
-/* Related Course Image */
 .related-course-image {
     max-height: 200px;
-    object-fit: cover;
-    transition: transform 0.3s;
 }
 
+.course-image:hover,
 .related-course-image:hover {
     transform: scale(1.02);
 }
 
-/* Meeting Links */
+/* ========================================
+   4. Links Styling
+======================================== */
 .meeting-link {
-    color: #0BA2B2;
+    color: var(--color-dark-teal);
     text-decoration: none;
     transition: color 0.3s;
 }
 
 .meeting-link:hover {
-    color: #5CC4B1;
+    color: var(--color-teal);
     text-decoration: underline;
 }
 
-/* Card Hover Effects */
+/* ========================================
+   5. Card Styling
+======================================== */
 .card {
     transition: transform 0.3s, box-shadow 0.3s;
 }
@@ -65,45 +74,214 @@
     box-shadow: 0 8px 16px rgba(11, 162, 178, 0.2);
 }
 
-/* Badge Styling */
+/* ========================================
+   6. Badge Styling
+======================================== */
 .badge.bg-light {
-    color: #0BA2B2;
+    color: var(--color-dark-teal);
     font-weight: bold;
 }
 
-/* Button Icons */
-.btn .fa-eye {
-    margin-right: 5px;
-}
-
+/* ========================================
+   7. Button Icons Styling
+======================================== */
+.btn .fa-eye,
 .btn .fa-user-plus,
-.btn .fa-user-check,
 .btn .fa-sign-in-alt,
 .btn .fa-check-circle,
-.btn .fa-user-plus,
-.btn .fa-chalkboard-teacher,
 .btn .fa-lock,
 .btn .fa-chart-line,
-.btn .fa-arrow-left {
+.btn .fa-arrow-left,
+.btn .fa-arrow-right {
     margin-right: 5px;
 }
 
-/* Responsive Adjustments */
+/* ========================================
+   8. Timeline Styling
+======================================== */
+.timeline {
+    position: relative;
+    padding: 1rem 0;
+    list-style: none;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 30px;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: flex-start;
+    opacity: 0; /* Start hidden for animation */
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.timeline-item.animate__animated.animate__fadeInUp {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.timeline-left {
+    position: relative;
+    width: 60px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.timeline-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+}
+
+.timeline-time {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: #6c757d; /* Bootstrap's secondary text color */
+    text-align: center;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    width: calc(100% - 60px);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.timeline-content:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(11, 162, 178, 0.2);
+}
+
+/* Timeline Dot Colors */
+.timeline-dot.bg-danger {
+    background-color: var(--color-lime-yellow) !important;
+    border: 2px solid var(--color-lime-yellow) !important;
+}
+
+.timeline-dot.bg-warning {
+    background-color: var(--color-green) !important;
+    border: 2px solid var(--color-green) !important;
+}
+
+.timeline-dot.bg-primary {
+    background-color: var(--color-light-blue) !important;
+    border: 2px solid var(--color-light-blue) !important;
+}
+
+.timeline-dot.bg-info {
+    background-color: var(--color-teal) !important;
+    border: 2px solid var(--color-teal) !important;
+}
+
+.timeline-dot.bg-dark {
+    background-color: var(--color-dark-teal) !important;
+    border: 2px solid var(--color-dark-teal) !important;
+}
+
+.timeline-dot.bg-secondary {
+    background-color: var(--color-secondary) !important;
+    border: 2px solid var(--color-secondary) !important;
+}
+
+.timeline-dot.bg-purple {
+    background-color: var(--color-purple) !important;
+    border: 2px solid var(--color-purple) !important;
+}
+
+/* Optional: Pulse Animation for Dots */
+.timeline-dot.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(128, 0, 128, 0.4); /* Purple Shadow */
+    }
+    70% {
+        transform: scale(1.2);
+        box-shadow: 0 0 0 10px rgba(128, 0, 128, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(128, 0, 128, 0);
+    }
+}
+
+/* ========================================
+   9. Navigation Tabs Styling
+======================================== */
+.nav-tabs .nav-link {
+    border: none;
+    border-radius: 0;
+    color: var(--color-dark-teal);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: var(--color-light-blue);
+    color: #fff;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: var(--color-dark-teal);
+    color: #fff;
+    border-bottom: 2px solid var(--color-dark-teal);
+}
+
+.nav-tabs .nav-link:focus {
+    box-shadow: none;
+    background-color: var(--color-light-blue);
+    color: #fff;
+}
+
+/* Responsive Adjustments for Tabs */
 @media (max-width: 768px) {
-    .section-title {
-        font-size: 1.25rem;
+    .nav-tabs .nav-link {
+        font-size: 0.9rem;
+        padding: 10px 15px;
     }
+}
 
-    .card-title {
-        font-size: 1.1rem;
-    }
+/* ========================================
+   10. Challenges Related to Course Section Styling
+======================================== */
+.challenges-section {
+    margin-top: 4rem;
+}
 
-    .card-text {
-        font-size: 0.95rem;
-    }
+.challenges-section h3 {
+    color: var(--color-dark-teal);
+}
 
-    .btn-lg {
-        font-size: 1rem;
-        padding: 10px 20px;
-    }
+.challenges-section .card-img-top {
+    height: 180px;
+    object-fit: cover;
+}
+
+.challenges-section .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.challenges-section .btn-primary {
+    margin-top: auto;
 }

@@ -32,31 +32,93 @@
                 <div class="card-body">
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
+                        
+                        <!-- Profile Picture Section -->
+                        <div class="text-center mb-4">
+                            {% if profile_form.profile_picture.value %}
+                                <img src="{{ profile_form.profile_picture.value.url }}" alt="Profile Picture" class="profile-pic-lg mb-3">
+                            {% else %}
+                                <img src="{% static 'images/default_profile.png' %}" alt="Default Profile Picture" class="profile-pic-lg mb-3">
+                            {% endif %}
+                            <div class="mb-3">
+                                {{ profile_form.profile_picture.label_tag }}
+                                {{ profile_form.profile_picture }}
+                                {% if profile_form.profile_picture.errors %}
+                                    <div class="text-danger">{{ profile_form.profile_picture.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="firstName" class="form-label"><strong>First Name</strong></label>
-                                <input type="text" class="form-control" id="firstName" name="first_name" value="{{ user.first_name }}" required>
+                                {{ profile_form.first_name.label_tag }}
+                                {{ profile_form.first_name }}
+                                {% if profile_form.first_name.errors %}
+                                    <div class="text-danger">{{ profile_form.first_name.errors }}</div>
+                                {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <label for="lastName" class="form-label"><strong>Last Name</strong></label>
-                                <input type="text" class="form-control" id="lastName" name="last_name" value="{{ user.last_name }}" required>
+                                {{ profile_form.last_name.label_tag }}
+                                {{ profile_form.last_name }}
+                                {% if profile_form.last_name.errors %}
+                                    <div class="text-danger">{{ profile_form.last_name.errors }}</div>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="email" class="form-label"><strong>Email</strong></label>
-                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                            {{ profile_form.email.label_tag }}
+                            {{ profile_form.email }}
+                            {% if profile_form.email.errors %}
+                                <div class="text-danger">{{ profile_form.email.errors }}</div>
+                            {% endif %}
                         </div>
                         <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="phoneNumber" class="form-label"><strong>Phone Number</strong></label>
+                                {{ profile_form.phone_number }}
+                                {% if profile_form.phone_number.errors %}
+                                    <div class="text-danger">{{ profile_form.phone_number.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="address" class="form-label"><strong>Address</strong></label>
+                                {{ profile_form.address }}
+                                {% if profile_form.address.errors %}
+                                    <div class="text-danger">{{ profile_form.address.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="dateOfBirth" class="form-label"><strong>Date of Birth</strong></label>
+                                {{ profile_form.date_of_birth }}
+                                {% if profile_form.date_of_birth.errors %}
+                                    <div class="text-danger">{{ profile_form.date_of_birth.errors }}</div>
+                                {% endif %}
+                            </div>
                             <div class="col-md-6">
                                 <label for="role" class="form-label"><strong>Role</strong></label>
                                 <input type="text" class="form-control" id="role" value="{% if user.role %}{{ user.role.name }}{% else %}No Role Assigned{% endif %}" readonly>
                             </div>
+                        </div>
+                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="level" class="form-label"><strong>Level</strong></label>
                                 <input type="text" class="form-control" id="level" value="{{ user.level }}" readonly>
                             </div>
+                            <div class="col-md-6">
+                                <label for="bundles" class="form-label"><strong>Purchased Products (Bundles)</strong></label>
+                                <select class="form-select" id="bundles" name="bundles" multiple disabled>
+                                    {% for bundle in user.bundles.all %}
+                                        <option selected>{{ bundle.title }}</option>
+                                    {% empty %}
+                                        <option>No Bundles Purchased</option>
+                                    {% endfor %}
+                                </select>
+                                <small class="form-text text-muted">Purchased bundles cannot be edited here.</small>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+                        <button type="submit" name="save_changes" class="btn btn-primary mt-3">Save Changes</button>
                         <a href="{% url 'user_profile' %}" class="btn btn-secondary mt-3">Cancel</a>
                     </form>
                 </div>
@@ -67,24 +129,33 @@
         <div class="tab-pane fade" id="security" role="tabpanel" aria-labelledby="security-tab">
             <div class="card mb-4 shadow-sm">
                 <div class="card-header bg-warning text-dark">
-                    <h3 class="mb-0">Update Security Settings</h3>
+                    <h3 class="mb-0">Security Settings</h3>
                 </div>
                 <div class="card-body">
                     <form method="post">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label for="currentPassword" class="form-label"><strong>Current Password</strong></label>
-                            <input type="password" class="form-control" id="currentPassword" name="current_password" required>
+                            {{ security_form.current_password.label_tag }}
+                            {{ security_form.current_password }}
+                            {% if security_form.current_password.errors %}
+                                <div class="text-danger">{{ security_form.current_password.errors }}</div>
+                            {% endif %}
                         </div>
                         <div class="mb-3">
-                            <label for="newPassword" class="form-label"><strong>New Password</strong></label>
-                            <input type="password" class="form-control" id="newPassword" name="new_password" required>
+                            {{ security_form.new_password.label_tag }}
+                            {{ security_form.new_password }}
+                            {% if security_form.new_password.errors %}
+                                <div class="text-danger">{{ security_form.new_password.errors }}</div>
+                            {% endif %}
                         </div>
                         <div class="mb-3">
-                            <label for="confirmPassword" class="form-label"><strong>Confirm Password</strong></label>
-                            <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
+                            {{ security_form.confirm_password.label_tag }}
+                            {{ security_form.confirm_password }}
+                            {% if security_form.confirm_password.errors %}
+                                <div class="text-danger">{{ security_form.confirm_password.errors }}</div>
+                            {% endif %}
                         </div>
-                        <button type="submit" class="btn btn-primary mt-3">Update Password</button>
+                        <button type="submit" name="update_password" class="btn btn-primary mt-3">Update Password</button>
                         <a href="{% url 'user_profile' %}" class="btn btn-secondary mt-3">Cancel</a>
                     </form>
                 </div>

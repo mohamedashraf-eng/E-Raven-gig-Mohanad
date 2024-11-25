@@ -1,215 +1,152 @@
-/* static/css/profile.css */
+/* static/css/user_profile.css */
 
-/* CSS Variables for Easy Customization */
+/* Define Color Palette */
 :root {
-    --primary-color: #0BA2B2; /* Primary actions and highlights */
-    --secondary-color: #5CC4B1; /* Secondary actions and hover states */
-    --accent-color: #84D1DA; /* Borders, focus states, and accents */
-    --success-color: #77D770; /* Success messages */
-    --warning-color: #C3FC47; /* Warning messages */
-    --background-color: #f4f6f9; /* General background */
-    --form-background: #ffffff; /* Form background */
-    --text-color: #333333; /* Main text color */
-    --label-color: #555555; /* Label text color */
-    --error-background: #f8d7da; /* Error message background */
-    --error-color: #721c24; /* Error message text color */
-    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    --transition-speed: 0.3s;
+    --color-light-blue: #84D1DA;
+    --color-teal: #5CC4B1;
+    --color-dark-teal: #0BA2B2;
+    --color-green: #77D770;
+    --color-lime-yellow: #C3FC47;
 }
 
-* {
-    box-sizing: border-box;
+/* Section Titles */
+.section-title {
+    color: var(--color-dark-teal);
+    border-bottom: 2px solid var(--color-dark-teal);
+    display: inline-block;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
 }
 
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    font-family: var(--font-family);
-    background-color: var(--background-color);
-    overflow: hidden; /* Prevent scroll during loading */
+/* Larger Profile Picture */
+.profile-pic-lg {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid var(--color-dark-teal);
+    transition: transform 0.3s ease;
 }
 
-.container {
-    display: flex;
-    height: 100vh;
+.profile-pic-lg:hover {
+    transform: scale(1.05);
+}
+
+/* Course Image */
+.course-image {
+    max-height: 400px;
+    object-fit: cover;
     width: 100%;
-    animation: fadeIn 1s ease-in-out;
+    transition: transform 0.3s;
 }
 
-/* Left Panel (Branding) */
-.left-panel {
-    flex: 1;
-    background: linear-gradient(135deg, #5CC4B1 0%, #84D1DA 100%); /* Using your palette */
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    animation: slideInLeft 1s ease-out;
+.course-image:hover {
+    transform: scale(1.02);
 }
 
-.branding {
-    text-align: center;
+/* Workshop Image */
+.workshop-image {
+    max-height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s;
 }
 
-.logo {
-    max-width: 200px;
-    margin-bottom: 30px;
-    animation: logoFadeIn 2s ease-in;
+.workshop-image:hover {
+    transform: scale(1.02);
 }
 
-.slogan {
-    font-size: 1.5em;
-    font-weight: 300;
-    line-height: 1.4;
-    letter-spacing: 0.5px;
+/* Related Course Image */
+.related-course-image {
+    max-height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s;
 }
 
-/* Right Panel (Sign-Up Form) */
-.right-panel {
-    flex: 1;
-    background-color: var(--form-background);
-    padding: 60px 40px;
-    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: slideInRight 1s ease-out;
-    position: relative;
-    z-index: 1;
+.related-course-image:hover {
+    transform: scale(1.02);
 }
 
-.form-container {
-    width: 100%;
-    max-width: 450px;
-    background-color: #ffffff;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-}
-
-.form-container h2 {
-    text-align: center;
-    margin-bottom: 30px;
-    color: var(--text-color);
-    font-size: 2em;
-    font-weight: 600;
-    letter-spacing: 1px;
-}
-
-/* Form Groups */
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: flex;
-    align-items: center;
-    font-weight: 500;
-    color: var(--label-color);
-}
-
-.form-group label i {
-    margin-right: 8px;
-    color: var(--primary-color);
-}
-
-.form-control {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background-color: #f9f9f9;
-    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
-    font-size: 1em;
-}
-
-.form-control:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 8px rgba(11, 162, 178, 0.2); /* rgba of --primary-color */
-    outline: none;
-}
-
-/* Phone Number Container */
-.phone-number-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.phone-code {
-    width: 60px;
-    text-align: center;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background-color: #f1f1f1;
-    cursor: not-allowed;
-}
-
-/* Submit Button */
-.btn {
-    width: 100%;
-    padding: 12px 15px;
-    background-color: var(--primary-color);
-    border: none;
-    color: #ffffff;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: 600;
-    transition: background-color var(--transition-speed), transform var(--transition-speed);
-    box-shadow: 0 4px 6px rgba(11, 162, 178, 0.2); /* rgba of --primary-color */
-}
-
-.btn:hover {
-    background-color: var(--secondary-color);
-    transform: translateY(-2px);
-}
-
-/* Sign-In Link */
-.signin-link {
-    margin-top: 20px;
-    text-align: center;
-    color: #777777;
-    font-size: 0.95em;
-}
-
-.signin-link a {
-    color: var(--primary-color);
+/* Meeting Links */
+.meeting-link {
+    color: var(--color-dark-teal);
     text-decoration: none;
-    font-weight: 500;
-    transition: color var(--transition-speed);
+    transition: color 0.3s;
 }
 
-.signin-link a:hover {
-    color: var(--secondary-color);
+.meeting-link:hover {
+    color: var(--color-teal);
     text-decoration: underline;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-    }
-
-    .left-panel, .right-panel {
-        width: 100%;
-        height: 50vh;
-        box-shadow: none;
-        padding: 40px 20px;
-        animation: none;
-    }
-
-    .right-panel {
-        background-color: var(--form-background);
-    }
-
-    .left-panel {
-        background: linear-gradient(135deg, #5CC4B1 0%, #84D1DA 100%);
-    }
-
-    .form-container {
-        padding: 20px 25px;
-    }
+/* Card Hover Effects */
+.card {
+    transition: transform 0.3s, box-shadow 0.3s;
 }
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(11, 162, 178, 0.2);
+}
+
+/* Badge Styling */
+.badge.bg-light {
+    color: var(--color-dark-teal);
+    font-weight: bold;
+}
+
+/* Button Icons */
+.btn .fa-eye {
+    margin-right: 5px;
+}
+
+.btn .fa-user-plus,
+.btn .fa-user-check,
+.btn .fa-sign-in-alt,
+.btn .fa-check-circle,
+.btn .fa-chalkboard-teacher,
+.btn .fa-lock,
+.btn .fa-chart-line,
+.btn .fa-arrow-left {
+    margin-right: 5px;
+}
+
+
+/* Profile Picture Styling */
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--color-dark-teal);
+    transition: transform 0.3s ease;
+}
+
+.profile-pic:hover {
+    transform: scale(1.05);
+}
+
+/* Get Started Button Styling */
+.btn-brand {
+    background-color: var(--color-green);
+    border: none;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    color: #ffffff;
+}
+
+.btn-brand:hover {
+    background-color: var(--color-teal);
+    transform: scale(1.05);
+}
+
+/* Additional Styling for Read-Only Inputs */
+input[readonly] {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
+
+/* Optional: Styling for Bundles List */
+.bundles-list {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+

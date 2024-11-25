@@ -40,6 +40,10 @@ urlpatterns = [
 
     path('workshop/<int:workshop_id>/attend/', views.attend_workshop, name='attend_workshop'),
     path('workshop/<int:workshop_id>/join/', views.join_workshop, name='join_workshop'),
+    path('workshop/<int:workshop_id>/join/', views.join_workshop, name='join_workshop'),
+    
+    path('session/<slug:course_slug>/<int:id>/', views.session_detail, name='session_detail'),
+    path('workshop//<int:id>/', views.workshop_detail, name='workshop_detail'),
     
     # Article, video, post, and documentation views
     path('articles/', views.article_list, name='article_list'),

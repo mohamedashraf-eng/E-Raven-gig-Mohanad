@@ -1,140 +1,76 @@
-/* navbar_custom.css */
-
-/* Header Fade-In Animation */
-.navbar {
-    opacity: 0;
-    animation: fadeInDown 1s forwards;
-    animation-delay: 0.3s;
+/* Header Navbar */
+.header-navbar {
+    background-color: var(--color-light-blue);
+    padding: 10px 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.header-navbar .navbar-brand.header-logo {
+    font-weight: bold;
+    color: var(--color-dark-teal);
+    text-decoration: none;
+    transition: color 0.3s ease;
 }
 
-/* Navbar Brand Logo Styling */
-.navbar-brand img.logo-image {
-    border-radius: 17px;
-    transition: transform 0.3s ease;
+.header-navbar .navbar-brand.header-logo:hover {
+    color: var(--color-teal);
 }
 
-.navbar-brand img.logo-image:hover {
-    transform: scale(1.05);
+.header-navbar .nav-link {
+    color: var(--color-dark-teal);
+    font-size: 16px;
+    transition: color 0.3s ease;
 }
 
-/* Navigation Links Styling */
-.navbar-nav .nav-link {
-    color: #0BA2B2;
-    transition: color 0.3s ease, transform 0.3s ease;
-    margin-right: 15px;
+.header-navbar .nav-link:hover {
+    color: var(--color-teal);
 }
 
-.navbar-nav .nav-link:hover {
-    color: #77D770;
-    transform: scale(1.1);
+.header-navbar .nav-item {
+    margin: 0 10px;
 }
 
-/* Get Started Button Styling */
-.btn-brand {
-    background-color: #77D770;
-    border: none;
-    color: white;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.btn-brand:hover {
-    background-color: #5CC4B1;
-    transform: scale(1.05);
-}
-
-/* Toggle Button Styling - Hide on all resolutions */
-.navbar-toggler {
+/* Header Toggler Button */
+.header-navbar .navbar-toggler.header-toggler {
     border: none;
     transition: transform 0.3s ease;
-    display: none; /* Hide the toggler button */
 }
 
-/* Ensure the navbar is always expanded */
-.collapse.navbar-collapse {
-    display: flex !important;
+.header-navbar .navbar-toggler.header-toggler:hover {
+    transform: rotate(90deg);
 }
 
-/* Dropdown Menu Styling (if applicable) */
-.dropdown-menu {
-    background-color: #f8f9fa;
-    border: none;
+/* Profile Navbar */
+.profile-navbar {
+    background-color: var(--color-teal);
+    padding: 10px 20px;
+    border-bottom: 2px solid var(--color-dark-teal);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: opacity 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.dropdown-item {
-    color: #0BA2B2;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.dropdown-item:hover {
-    background-color: #84D1DA;
+.profile-navbar .navbar-brand {
     color: #ffffff;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease;
 }
 
-/* Center the logo absolutely within the navbar */
-.center-logo {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1; /* Ensure the logo stays above other elements */
+.profile-navbar .navbar-brand:hover {
+    color: var(--color-lime-yellow);
 }
 
-/* Left and Right nav sections */
-.left-nav,
-.right-nav {
-    flex: 1;
-    display: flex;
-    align-items: center;
+.profile-navbar .nav-link {
+    color: #ffffff;
+    font-size: 16px;
+    transition: color 0.3s ease;
 }
 
-/* Left nav alignment */
-.left-nav {
-    justify-content: flex-start;
+.profile-navbar .nav-link:hover {
+    color: var(--color-lime-yellow);
 }
 
-/* Right nav alignment */
-.right-nav {
-    justify-content: flex-end;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 992px) {
-    /* Ensure the logo remains centered */
-    .center-logo {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
-    /* Adjust padding and margins for better spacing */
-    .navbar-nav .nav-link,
-    .btn-brand {
-        margin-right: 10px;
-    }
-}
-
-@media (max-width: 576px) {
-    /* Adjust font sizes for better readability on small screens */
-    .navbar-nav .nav-link,
-    .btn-brand {
-        font-size: 0.9rem;
-    }
-
-    /* Ensure the logo doesn't interfere with nav links */
-    .navbar-brand img.logo-image {
-        width: 45px;
-        height: 45px;
-    }
+.profile-navbar .nav-item {
+    margin: 0 8px;
 }

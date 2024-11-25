@@ -1,109 +1,135 @@
 /* static/css/course_detail.css */
 
-/* Section Titles */
-.section-title {
-    color: #0BA2B2;
-    border-bottom: 2px solid #0BA2B2;
-    display: inline-block;
-    padding-bottom: 5px;
-    margin-bottom: 15px;
+/* ========================================
+   1. CSS Variables - Color Palette
+   ======================================== */
+   :root {
+    --color-light-blue: #84D1DA;
+    --color-teal: #5CC4B1;
+    --color-dark-teal: #0BA2B2;
+    --color-green: #77D770;
+    --color-lime-yellow: #C3FC47;
+    --color-secondary: #6c757d; /* Bootstrap's default for secondary */
+    --color-purple: #800080; /* Purple Color */
 }
 
-/* Course Image */
-.course-image {
-    max-height: 400px;
-    object-fit: cover;
-    width: 100%;
-    transition: transform 0.3s;
+/* ========================================
+   8. Timeline Styling
+   ======================================== */
+
+/* Timeline Container */
+.timeline {
+    position: relative;
+    padding: 1rem 0;
+    list-style: none;
 }
 
-.course-image:hover {
-    transform: scale(1.02);
+/* Vertical Line */
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 30px;
+    width: 2px;
+    background: #dee2e6;
 }
 
-/* Workshop Image */
-.workshop-image {
-    max-height: 200px;
-    object-fit: cover;
-    transition: transform 0.3s;
+/* Timeline Items */
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+    padding-left: 60px;
+    opacity: 0; /* Start hidden for animation */
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
 
-.workshop-image:hover {
-    transform: scale(1.02);
+/* Animated Timeline Items */
+.timeline-item.animate__animated.animate__fadeInUp {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-/* Related Course Image */
-.related-course-image {
-    max-height: 200px;
-    object-fit: cover;
-    transition: transform 0.3s;
+/* Timeline Dots */
+.timeline-dot {
+    position: absolute;
+    left: 21px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
 }
 
-.related-course-image:hover {
-    transform: scale(1.02);
+/* Override timeline-dot background colors using the palette */
+.timeline-dot.bg-danger {
+    background-color: var(--color-lime-yellow) !important;
+    border: 2px solid var(--color-lime-yellow) !important;
 }
 
-/* Meeting Links */
-.meeting-link {
-    color: #0BA2B2;
-    text-decoration: none;
-    transition: color 0.3s;
+.timeline-dot.bg-warning {
+    background-color: var(--color-green) !important;
+    border: 2px solid var(--color-green) !important;
 }
 
-.meeting-link:hover {
-    color: #5CC4B1;
-    text-decoration: underline;
+.timeline-dot.bg-primary {
+    background-color: var(--color-light-blue) !important;
+    border: 2px solid var(--color-light-blue) !important;
 }
 
-/* Card Hover Effects */
-.card {
+.timeline-dot.bg-info {
+    background-color: var(--color-teal) !important;
+    border: 2px solid var(--color-teal) !important;
+}
+
+.timeline-dot.bg-dark {
+    background-color: var(--color-dark-teal) !important;
+    border: 2px solid var(--color-dark-teal) !important;
+}
+
+.timeline-dot.bg-secondary {
+    background-color: var(--color-secondary) !important;
+    border: 2px solid var(--color-secondary) !important;
+}
+
+/* Add bg-purple Class */
+.timeline-dot.bg-purple {
+    background-color: var(--color-purple) !important;
+    border: 2px solid var(--color-purple) !important;
+}
+
+/* Optional: Pulse Animation for Dots */
+.timeline-dot.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(128, 0, 128, 0.4); /* Purple Shadow */
+    }
+    70% {
+        transform: scale(1.2);
+        box-shadow: 0 0 0 10px rgba(128, 0, 128, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(128, 0, 128, 0);
+    }
+}
+
+/* Timeline Content */
+.timeline-content {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+    width: calc(100% - 60px);
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.card:hover {
+/* Hover Effect on Timeline Content */
+.timeline-content:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(11, 162, 178, 0.2);
-}
-
-/* Badge Styling */
-.badge.bg-light {
-    color: #0BA2B2;
-    font-weight: bold;
-}
-
-/* Button Icons */
-.btn .fa-eye {
-    margin-right: 5px;
-}
-
-.btn .fa-user-plus,
-.btn .fa-user-check,
-.btn .fa-sign-in-alt,
-.btn .fa-check-circle,
-.btn .fa-user-plus,
-.btn .fa-chalkboard-teacher,
-.btn .fa-lock,
-.btn .fa-chart-line,
-.btn .fa-arrow-left {
-    margin-right: 5px;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .section-title {
-        font-size: 1.25rem;
-    }
-
-    .card-title {
-        font-size: 1.1rem;
-    }
-
-    .card-text {
-        font-size: 0.95rem;
-    }
-
-    .btn-lg {
-        font-size: 1rem;
-        padding: 10px 20px;
-    }
 }

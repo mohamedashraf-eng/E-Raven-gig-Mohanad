@@ -96,55 +96,50 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
-        <div class="container position-relative">
-            <!-- Left Section -->
-            <div class="navbar-nav left-nav">
-                <a class="nav-link" href="#">Our Story</a>
-            </div>
+<!-- Navbar -->
+<nav class="header-navbar navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
+    <div class="container position-relative">
+        <!-- Left Section -->
+        <div class="navbar-nav header-left-nav">
+            <a class="nav-link" href="#">Our Story</a>
+        </div>
 
-            <!-- Center Logo -->
-            <a class="navbar-brand center-logo" href="{% url 'landing-page' %}">
-                <img src="{% static 'images/path_logo.png' %}" alt="Logo" width="55" height="55" style="border-radius: 17px;">
-            </a>
+        <!-- Center Logo -->
+        <a class="navbar-brand header-logo" href="{% url 'landing-page' %}">
+            <img src="{% static 'images/path_logo.png' %}" alt="Logo" width="55" height="55" style="border-radius: 17px;">
+        </a>
 
-            <!-- Right Section -->
-            <div class="navbar-nav right-nav">
-                <!-- Toggle button for mobile view -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+        <!-- Right Section -->
+        <div class="navbar-nav header-right-nav">
+            <!-- Toggle Button for Mobile View -->
+            <button class="navbar-toggler header-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#headerNavbarNav"
+                    aria-controls="headerNavbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                <!-- Navbar Links -->
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        {% if request.COOKIES.access_token %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'user_profile' %}">Profile</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'products:product_list' %}">Products</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'orders:cart_detail' %}">Cart</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-                            </li>
-                        {% else %}
-                            <li class="nav-item px-1">
-                                <a class="btn btn-brand" href="{% url 'sign-up' %}">Get Started</a>
-                            </li>
-                            <li class="nav-item px-1">
-                                <a class="nav-link" href="{% url 'sign-in' %}">Sign In</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </div>
+            <!-- Navbar Links -->
+            <div class="collapse navbar-collapse" id="headerNavbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if request.COOKIES.access_token %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'user_profile' %}">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item px-1">
+                            <a class="btn btn-brand" href="{% url 'sign-up' %}">Get Started</a>
+                        </li>
+                        <li class="nav-item px-1">
+                            <a class="nav-link" href="{% url 'sign-in' %}">Sign In</a>
+                        </li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
 
     <!-- Bootstrap JS (Include at the end of the body) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

@@ -7,6 +7,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.urls import reverse
 
 User = settings.AUTH_USER_MODEL
 
@@ -143,6 +144,9 @@ class Session(models.Model):
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
+    def get_detail_url(self):
+        return reverse('cms:session_detail', args=[self.course.slug, self.id])
+    
     def __str__(self):
         return f"{self.title} - {self.course.title}"
 
@@ -191,6 +195,9 @@ class Workshop(models.Model):
     class Meta:
         ordering = ['date_time']
 
+    def get_detail_url(self):
+        return reverse('cms:workshop_detail', args=[self.course.slug, self.id])
+    
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -214,6 +221,9 @@ class Article(models.Model):
         default=0
     )
 
+    def get_detail_url(self):
+        return reverse('cms:article_detail', args=[self.course.slug, self.id])
+    
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -243,6 +253,9 @@ class Video(models.Model):
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
+    def get_detail_url(self):
+        return reverse('cms:video_detail', args=[self.course.slug, self.id])
+    
     def __str__(self):
         return self.title
 
@@ -348,6 +361,9 @@ class Assignment(models.Model):
         help_text="Points awarded for completing the assignment",
         default=0
     )
+    def get_detail_url(self):
+        return reverse('cms:assignment_detail', args=[self.course.slug, self.id])
+
 
     def __str__(self):
         return f"{self.title} ({self.course.title})"
@@ -372,7 +388,9 @@ class Quiz(models.Model):
         help_text="Points awarded for completing the quiz",
         default=0
     )
-
+    def get_detail_url(self):
+        return reverse('cms:quiz_detail', args=[self.course.slug, self.id])
+    
     def __str__(self):
         return f"{self.title} ({self.course.title})"
 
@@ -389,7 +407,9 @@ class Challenge(models.Model):
 
     class Meta:
         unique_together = ('title', 'date')
-
+    def get_detail_url(self):
+        return reverse('cms:challenge_detail', args=[self.id])
+    
     def __str__(self):
         return f"{self.title} on {self.date}"
 

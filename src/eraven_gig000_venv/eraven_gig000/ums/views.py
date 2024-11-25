@@ -43,6 +43,8 @@ from .decorators import custom_login_required
 from cms.models import Quiz, Assignment, Challenge, Course, Workshop, Article, Video, Assignment, Quiz, Challenge, Documentation, TimelineEvent, Submission
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
+from django.contrib import messages
+from .forms import UserProfileForm, UserSecurityForm
 
 logger = logging.getLogger(__name__)
 
@@ -507,18 +509,42 @@ class UserProfileView(View):
 
         return render(request, 'cms/user_profile.html', context)
     
-class UserProfileEditView(LoginRequiredMixin, UpdateView):
-    model = User
+class UserProfileEditView(LoginRequiredMixin, View):
     template_name = 'cms/user_profile_edit.html'
-    fields = ['first_name', 'last_name', 'email']
-    success_url = reverse_lazy('user_profile')
 
-    def get_object(self, queryset=None):
-        return self.request.user
+    def get(self, request, *args, **kwargs):
+        profile_form = UserProfileForm(instance=request.user)
+        security_form = UserSecurityForm(user=request.user)
+        return render(request, self.template_name, {
+            'profile_form': profile_form,
+            'security_form': security_form,
+        })
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        return response
+    def post(self, request, *args, **kwargs):
+        if 'save_changes' in request.POST:
+            profile_form = UserProfileForm(request.POST, request.FILES, instance=request.user)
+            security_form = UserSecurityForm(user=request.user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, 'Your profile has been updated successfully.')
+                return redirect('user_profile')
+            else:
+                messages.error(request, 'Please correct the errors below in your personal data.')
+        elif 'update_password' in request.POST:
+            profile_form = UserProfileForm(instance=request.user)
+            security_form = UserSecurityForm(request.POST, user=request.user)
+            if security_form.is_valid():
+                security_form.save()
+                messages.success(request, 'Your password has been updated successfully.')
+                return redirect('user_profile')
+            else:
+                messages.error(request, 'Please correct the errors below in your security settings.')
+        else:
+            profile_form = UserProfileForm(instance=request.user)
+            security_form = UserSecurityForm(user=request.user)
+            messages.error(request, 'Invalid form submission.')
 
-    def form_invalid(self, form):
-        return super().form_invalid(form)
+        return render(request, self.template_name, {
+            'profile_form': profile_form,
+            'security_form': security_form,
+        })

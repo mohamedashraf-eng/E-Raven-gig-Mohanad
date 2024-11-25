@@ -1,69 +1,76 @@
-/* header.css */
-
-/* Navbar Styling */
-.navbar {
+/* Header Navbar */
+.header-navbar {
+    background-color: var(--color-light-blue);
+    padding: 10px 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.navbar-light .navbar-nav .nav-link {
-    color: #555;
-    transition: color 0.3s ease, transform 0.3s ease;
+.header-navbar .navbar-brand.header-logo {
+    font-weight: bold;
+    color: var(--color-dark-teal);
+    text-decoration: none;
+    transition: color 0.3s ease;
 }
 
-.navbar-light .navbar-nav .nav-link:hover {
-    color: #0d6efd;
-    transform: scale(1.05);
+.header-navbar .navbar-brand.header-logo:hover {
+    color: var(--color-teal);
 }
 
-.navbar-light .navbar-nav .nav-link.active {
-    color: #0d6efd;
-    font-weight: 600;
-    border-bottom: 2px solid #0d6efd;
+.header-navbar .nav-link {
+    color: var(--color-dark-teal);
+    font-size: 16px;
+    transition: color 0.3s ease;
 }
 
-/* Logo Styling */
-.navbar-brand img {
-    transition: transform 0.3s ease;
+.header-navbar .nav-link:hover {
+    color: var(--color-teal);
 }
 
-.navbar-brand:hover img {
-    transform: scale(1.1);
+.header-navbar .nav-item {
+    margin: 0 10px;
 }
 
-/* Toggle Button Styling */
-.navbar-toggler {
+/* Header Toggler Button */
+.header-navbar .navbar-toggler.header-toggler {
     border: none;
-    outline: none;
-}
-
-.navbar-toggler-icon {
-    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' 
-        xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(0, 0, 0, 0.7)' stroke-width='2' 
-        stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
     transition: transform 0.3s ease;
 }
 
-.navbar-toggler.collapsed .navbar-toggler-icon {
-    transform: rotate(0deg);
-}
-
-.navbar-toggler:not(.collapsed) .navbar-toggler-icon {
+.header-navbar .navbar-toggler.header-toggler:hover {
     transform: rotate(90deg);
 }
 
-/* Sticky Navbar Shadow */
-.navbar.fixed-top {
-    background-color: #ffffff;
-    transition: box-shadow 0.3s ease;
+/* Profile Navbar */
+.profile-navbar {
+    background-color: var(--color-teal);
+    padding: 10px 20px;
+    border-bottom: 2px solid var(--color-dark-teal);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.navbar.fixed-top.shadow-sm {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.profile-navbar .navbar-brand {
+    color: #ffffff;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 992px) {
-    .navbar-nav .nav-link {
-        padding: 0.5rem 1rem;
-    }
+.profile-navbar .navbar-brand:hover {
+    color: var(--color-lime-yellow);
+}
+
+.profile-navbar .nav-link {
+    color: #ffffff;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+.profile-navbar .nav-link:hover {
+    color: var(--color-lime-yellow);
+}
+
+.profile-navbar .nav-item {
+    margin: 0 8px;
 }

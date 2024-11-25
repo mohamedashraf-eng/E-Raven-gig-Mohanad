@@ -1,128 +1,96 @@
 /* static/css/user_profile.css */
 
-/* Navbar Tabs Styling */
-.nav-tabs .nav-link {
-    color: #0BA2B2;
-    transition: background-color 0.3s, color 0.3s;
+/* Define Color Palette */
+:root {
+    --color-light-blue: #84D1DA;
+    --color-teal: #5CC4B1;
+    --color-dark-teal: #0BA2B2;
+    --color-green: #77D770;
+    --color-lime-yellow: #C3FC47;
 }
 
-.nav-tabs .nav-link.active {
-    background-color: #0BA2B2;
-    color: white;
-    border-color: #0BA2B2;
+/* Profile Picture Styling */
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--color-dark-teal);
+    transition: transform 0.3s ease;
 }
 
-.nav-tabs .nav-link:hover {
-    background-color: #5CC4B1;
-    color: white;
+.profile-pic:hover {
+    transform: scale(1.05);
 }
 
-/* Card Shadows and Transitions */
-.card {
-    transition: transform 0.3s, box-shadow 0.3s;
+/* Larger Profile Picture */
+.profile-pic-lg {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid var(--color-dark-teal);
+    transition: transform 0.3s ease;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+.profile-pic-lg:hover {
+    transform: scale(1.05);
 }
 
-/* Statistic Cards */
-.statistic-card {
+/* Get Started Button Styling */
+.btn-brand {
+    background-color: var(--color-green);
     border: none;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    color: #ffffff;
 }
 
-.statistic-card .card-title {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-}
-
-.statistic-card .fs-3 {
-    font-size: 2rem;
-    font-weight: bold;
-}
-
-/* Table Styling */
-.table thead th {
-    vertical-align: middle;
-    text-align: center;
-}
-
-.table tbody td {
-    vertical-align: middle;
-}
-
-.table-responsive {
-    overflow-x: auto;
-}
-
-.table-hover tbody tr:hover {
-    background-color: #f1f1f1;
-    cursor: pointer;
-}
-
-/* Accordion Styling */
-.accordion-button:not(.collapsed) {
-    color: #fff;
-    background-color: #0BA2B2;
-}
-
-.accordion-button {
-    transition: background-color 0.3s, color 0.3s;
-}
-
-/* Calendar Styling */
-#calendar {
-    max-width: 100%;
-    margin: 0 auto;
-}
-
-.fc-event {
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
-}
-
-.fc-event:hover {
+.btn-brand:hover {
+    background-color: var(--color-teal);
     transform: scale(1.05);
 }
 
 /* Responsive Adjustments */
-@media (max-width: 768px) {
-    .nav-tabs .nav-link {
-        font-size: 14px;
+@media (max-width: 992px) {
+    /* Center the logo */
+    .navbar .navbar-brand {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
     }
 
-    .statistic-card .card-title {
-        font-size: 0.9rem;
-    }
-
-    .statistic-card .fs-3 {
-        font-size: 1.5rem;
-    }
-
-    .table th, .table td {
-        font-size: 12px;
-    }
-
-    .accordion-button {
-        font-size: 0.9rem;
+    /* Right Section Adjustments */
+    .navbar-nav.right-nav {
+        margin-left: auto;
     }
 }
 
-form input {
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    transition: border-color 0.3s;
+@media (min-width: 993px) {
+    /* Ensure logo is centered on larger screens */
+    .navbar .navbar-brand {
+        margin: 0 auto;
+    }
+
+    /* Right Section Adjustments */
+    .navbar-nav.right-nav {
+        margin-left: auto;
+    }
 }
 
-form input:focus {
-    border-color: #0BA2B2;
-    outline: none;
-    box-shadow: 0 0 5px rgba(11, 162, 178, 0.5);
+/* Additional Styling for Read-Only Inputs */
+input[readonly], select[disabled] {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
 }
 
-/* Submit and Cancel Buttons */
-form .btn {
-    padding: 10px 20px;
-    font-size: 16px;
+/* Optional: Styling for Bundles List */
+.bundles-list {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+/* Optional: Enhance Select Disabled Appearance */
+select[disabled] {
+    background-color: #e9ecef;
+    cursor: not-allowed;
 }
