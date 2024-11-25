@@ -59,3 +59,10 @@ html {
     border-top-color: var(--dark-blue-green);
   }
   
+  .toast-container {
+    z-index: 1050; /* Ensure toasts appear above other elements */
+}
+
+.toast {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

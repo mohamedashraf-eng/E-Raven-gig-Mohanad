@@ -69,6 +69,73 @@ h2 {
     letter-spacing: 1px;
 }
 
+/* Form-Specific Messages Container */
+.form-messages-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px; /* Space between messages and form */
+}
+
+/* Form Message Styles */
+.form-message {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    border-radius: var(--border-radius);
+    color: #fff;
+    font-size: 1em;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: slideInMessage 0.5s forwards;
+    position: relative;
+}
+
+/* Message Types */
+.form-message.success {
+    background-color: var(--success-color);
+}
+
+.form-message.error {
+    background-color: var(--error-color);
+}
+
+.form-message.warning {
+    background-color: var(--warning-color);
+}
+
+.form-message.info {
+    background-color: var(--info-color);
+}
+
+/* Close Button */
+.close-btn {
+    margin-left: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.2em;
+    line-height: 1;
+    transition: color 0.3s;
+}
+
+.close-btn:hover {
+    color: #ddd;
+}
+
+/* Animations for Messages */
+@keyframes slideInMessage {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Form Groups */
 .form-group {
     margin-bottom: 20px;
@@ -163,52 +230,6 @@ label i {
 .forgot-password-link a:hover {
     color: var(--secondary-color);
     text-decoration: underline;
-}
-
-/* Error Messages Styling */
-.error {
-    color: #f44336; /* Red text color for visibility */
-    background-color: #fdecea; /* Light red background for emphasis */
-    border: 1px solid #f5c6cb; /* Red border to outline the error message */
-    padding: 10px 15px; /* Adequate padding for readability */
-    border-radius: 4px; /* Rounded corners for a smoother look */
-    margin-top: 5px; /* Space above the error message */
-    display: none; /* Hidden by default */
-    font-size: 0.9em; /* Slightly smaller font size */
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* Smooth transition for animations */
-    position: relative; /* Position relative for potential icon placement */
-}
-
-/* Display the error message with fade-in animation */
-.error-show {
-    display: block;
-    opacity: 1;
-    transform: translateY(0);
-    animation: fadeIn 0.3s forwards;
-}
-
-/* Fade-in keyframes */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Error Icon Styling (If Implemented) */
-.error-icon {
-    color: #f44336; /* Match the text color */
-    margin-right: 8px; /* Space between icon and text */
-    font-weight: bold; /* Make the icon stand out */
-}
-
-/* Input Fields with Errors */
-.error-active {
-    border-color: #f44336; /* Red border to indicate error */
-    box-shadow: 0 0 8px rgba(244, 67, 54, 0.2); /* Subtle red shadow for emphasis */
-}
-
-/* Smooth transition for error state */
-.form-control {
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* Right Panel (Logo and Slogan) */
@@ -312,72 +333,13 @@ label i {
     .slogan {
         font-size: 1.2em;
     }
-}
 
-/* Messages Container */
-.messages-container {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-/* Message Styles */
-.message {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 20px;
-    border-radius: var(--border-radius);
-    color: #fff;
-    font-size: 1em;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    opacity: 0;
-    transform: translateY(-20px);
-    animation: slideIn 0.5s forwards;
-}
-
-.message.success {
-    background-color: var(--success-color);
-}
-
-.message.error {
-    background-color: var(--error-color);
-}
-
-.message.warning {
-    background-color: var(--warning-color);
-}
-
-.message.info {
-    background-color: var(--info-color);
-}
-
-/* Close Button */
-.close-btn {
-    margin-left: 15px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1.2em;
-    line-height: 1;
-    transition: color 0.3s;
-}
-
-.close-btn:hover {
-    color: #ddd;
-}
-
-/* Animations for Messages */
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
+    .form-messages-container {
+        margin-bottom: 15px;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+    .form-message {
+        font-size: 0.9em;
+        padding: 10px 15px;
     }
 }

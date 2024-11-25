@@ -4,6 +4,7 @@ from pathlib import Path
 import os
 from datetime import timedelta
 import environ
+from django.contrib.messages import constants as message_constants
 
 # Initialize environment variables
 env = environ.Env()
@@ -84,6 +85,15 @@ TEMPLATES = [
         },
     },
 ]
+
+
+MESSAGE_TAGS = {
+    message_constants.DEBUG: 'secondary',
+    message_constants.INFO: 'info',
+    message_constants.SUCCESS: 'success',
+    message_constants.WARNING: 'warning',
+    message_constants.ERROR: 'danger',
+}
 
 # Custom User Model
 AUTH_USER_MODEL = 'ums.User'

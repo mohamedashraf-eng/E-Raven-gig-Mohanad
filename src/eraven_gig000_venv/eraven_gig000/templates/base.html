@@ -40,13 +40,29 @@
         <meta property="og:title" content="Path - English Courses">
         <meta property="og:description" content="Empowering Your Journey to Success with Path English Courses">
         <meta property="og:image" content="{% static 'images/social-preview.png' %}">
-        <meta property="og:url" content="https://path.com">
+        <meta property="og:url" content="https://careerpath.com">
         <meta name="twitter:card" content="summary_large_image">
     </head>
     <body>
         <!-- Header -->
         {% include 'parts/header.html' %}
-        
+              
+      <!-- Toast Container -->
+      <div class="toast-container position-fixed top-0 end-0 p-3" id="toast-container" style="z-index: 1050; margin-top: 10px;">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="toast align-items-center text-bg-{{ message.tags }} border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            {{ message }}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+      </div>
+
         <!-- Main Content -->
         <main id="main-content" class="container my-5">
             {% block content %}
@@ -78,7 +94,21 @@
         <script src="{% static 'js/product-detail.js' %}"></script>
         <script src="{% static 'js/cart_detail.js' %}"></script>
         <script src="{% static 'js/checkout.js' %}"></script>
-
+        <script>
+          // Initialize Bootstrap toasts
+          document.addEventListener('DOMContentLoaded', function () {
+              const toastElements = document.querySelectorAll('.toast');
+              toastElements.forEach(function (toastElement) {
+                  const toast = new bootstrap.Toast(toastElement, {
+                      animation: true,
+                      autohide: true,
+                      delay: 5000 // Auto-hide after 5 seconds
+                  });
+                  toast.show();
+              });
+          });
+      </script>
+      
         {% block extra_js %}{% endblock %}
     </body>
 </html>
