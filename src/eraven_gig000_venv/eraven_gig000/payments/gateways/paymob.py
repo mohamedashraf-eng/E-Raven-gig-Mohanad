@@ -4,6 +4,7 @@ from django.urls import reverse
 from payments.gateways.base import PaymentGateway
 from payments.models import Payment
 from django.shortcuts import redirect
+from orders.models import Order
 
 class PaymobGateway(PaymentGateway):
     def get_payment_url(self, payment: Payment) -> str:
@@ -107,18 +108,19 @@ class PaymobGateway(PaymentGateway):
         status = request.GET.get('status')
         try:
             payment = Payment.objects.get(payment_id=payment_id)
-            
+            order = Order.objects.get(order_id=payment.order)
             # Check if the payment is successful or failed
             if status == 'SUCCESS':
-                payment.status = 'completed'
+                order.status = payment.status = 'Completed'
                 payment.save()
+                order.save()
                 # Redirect to success page
                 return redirect(reverse('payments:payments_success'))
             else:
-                payment.status = 'failed'
+                order.status = payment.status = 'Canceled'
                 payment.save()
+                order.save()
                 # Redirect to failed payment page
                 return redirect(reverse('payments:payment_cancel'))
         except Payment.DoesNotExist:
-            # Handle the case where the payment doesn't exist
-            pass
+            raise Exception(f"Payment doesn't exist.")

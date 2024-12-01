@@ -45,6 +45,8 @@ from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import messages
 from .forms import UserProfileForm, UserSecurityForm
+from orders.models import Order, OrderItem
+from payments.models import Payment
 
 logger = logging.getLogger(__name__)
 
@@ -426,9 +428,10 @@ def token_lifetime_view(request):
     return JsonResponse({'access_token_lifetime': access_token_lifetime})
 
 @method_decorator(custom_login_required, name='dispatch')
+@method_decorator(custom_login_required, name='dispatch')
 class UserProfileView(View):
     """
-    Displays the authenticated user's profile, including courses, progress, points, and timeline events.
+    Displays the authenticated user's profile, including courses, progress, points, timeline events, orders, and payments.
     """
 
     def get_submission_count(self, user, model):
@@ -446,20 +449,16 @@ class UserProfileView(View):
         """
         Retrieves all courses the user can access via enrollments or purchased bundles.
         """
-        # Courses via explicit enrollments
         enrolled_courses = set(
             Enrollment.objects.filter(user=user).values_list('course_id', flat=True)
         )
 
-        # Courses via purchased bundles
         bundle_courses = set(
             Course.objects.filter(products__users=user).values_list('id', flat=True)
         )
 
-        # Combine both sets
         accessible_course_ids = enrolled_courses.union(bundle_courses)
 
-        # Retrieve all accessible courses
         return Course.objects.filter(id__in=accessible_course_ids)
 
     def ensure_enrollments(self, user, courses):
@@ -469,10 +468,8 @@ class UserProfileView(View):
         existing_enrollments = Enrollment.objects.filter(user=user, course__in=courses)
         existing_course_ids = set(existing_enrollments.values_list('course_id', flat=True))
 
-        # Find courses without enrollments
         unenrolled_courses = [course for course in courses if course.id not in existing_course_ids]
 
-        # Bulk create enrollments for unenrolled courses
         Enrollment.objects.bulk_create(
             [Enrollment(user=user, course=course) for course in unenrolled_courses]
         )
@@ -482,7 +479,6 @@ class UserProfileView(View):
         Ensures that a UserProgress entry exists for each enrollment.
         """
         for enrollment in enrollments:
-            # Check if UserProgress already exists for this user and course
             UserProgress.objects.get_or_create(
                 user=user,
                 course=enrollment.course,
@@ -536,12 +532,18 @@ class UserProfileView(View):
                 
         enrollments = {enrollment.course_id: enrollment for enrollment in Enrollment.objects.filter(user=user)}
         
-        # **10. Context Dictionary**
+        # **10. Orders and Payments**
+        # Retrieve orders and payments related to the user
+        orders = Order.objects.filter(user=user).select_related('coupon').prefetch_related('items')
+        payments = Payment.objects.filter(order__user=user).select_related('order')
+
+        # **11. Context Dictionary**
         context = {
             'quiz_count': quiz_count,
             'assignment_count': assignment_count,
             'challenge_count': challenge_count,
             'workshop_count': workshop_count,
+            'workshops': Workshop.objects.all(),
             'courses': accessible_courses,  # Accessible courses (from enrollments and bundles)
             'enrollments': enrollments,     # Dictionary of enrollments for quick lookup
             'progresses': progresses,
@@ -549,6 +551,8 @@ class UserProfileView(View):
             'point_transactions': point_transactions,
             'rankings': top_rankings,
             'timeline_events': valid_timeline_events,
+            'orders': orders,              # User's orders
+            'payments': payments,          # User's payments
         }
 
         return render(request, 'cms/user_profile.html', context)

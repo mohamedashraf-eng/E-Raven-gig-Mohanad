@@ -135,7 +135,7 @@ def handle_submission_grade(sender, instance, created, **kwargs):
             # Handle earning points
             if points_earned > 0:
                 title = content_object.title
-                description = f'Earned {points_earned} points for high grade on {content_model}: {title}'
+                description = f'Earned {points_earned} points for {content_model}: {title}'
                 transaction_type = 'earn'
                 create_point_transaction(user, transaction_type, points_earned, description)
                 update_ranking_and_profile(user, points_earned, transaction_type)
@@ -144,7 +144,7 @@ def handle_submission_grade(sender, instance, created, **kwargs):
             if points_spent > 0:
                 if user.total_points >= points_spent:
                     transaction_type = 'spend'
-                    description = f"Spent {points_spent} points for low grade on {content_model}: {content_object.title}"
+                    description = f"Spent {points_spent} points for {content_model}: {content_object.title}"
                     create_point_transaction(user, transaction_type, points_spent, description)
                     update_ranking_and_profile(user, points_spent, transaction_type)
                 else:

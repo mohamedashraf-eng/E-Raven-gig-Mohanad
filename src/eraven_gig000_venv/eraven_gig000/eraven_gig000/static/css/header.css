@@ -134,3 +134,11 @@
     opacity: 1;
     transition: 0s;
 }
+
+.text-warning {
+    color: #f39c12; /* Custom yellow */
+}
+
+.text-success {
+    color: #28a745; /* Custom green */
+}

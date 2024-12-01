@@ -499,19 +499,15 @@ def attend_workshop(request, workshop_id):
 
     if already_attended:
         messages.info(request, "You have already attended this workshop.")
-        return redirect('cms:course_detail', slug=workshop.course.slug)
+        return join_workshop(request, workshop_id)
 
     # Check if the user has enough points
     if user.total_points < workshop.points_cost:
         messages.error(request, f"You do not have enough points to attend this workshop. Required: {workshop.points_cost}, Available: {user.total_points}.")
-        return redirect('cms:course_detail', slug=workshop.course.slug)
+        return redirect('user_profile')
 
     # Proceed to deduct points and create a Submission
     try:
-        # Deduct points
-        user.total_points -= workshop.points_cost
-        user.save()
-
         # Create a Submission to record attendance
         Submission.objects.create(
             user=user,
@@ -519,13 +515,12 @@ def attend_workshop(request, workshop_id):
             object_id=workshop.id,
             grade=100  # Assuming full marks for attendance
         )
-
-        messages.success(request, f"You have successfully attended the workshop and spent {workshop.points_cost} points!")
+        messages.success(request, f"You have successfully registered for the workshop and spent {workshop.points_cost} points!")
     except Exception as e:
         messages.error(request, f"An error occurred while attending the workshop: {str(e)}")
-        return redirect('cms:course_detail', slug=workshop.course.slug)
+        return redirect('user_profile')
 
-    return redirect('cms:course_detail', slug=workshop.course.slug)
+    return redirect('user_profile')
 
 @custom_login_required
 def join_workshop(request, workshop_id):
@@ -547,11 +542,11 @@ def join_workshop(request, workshop_id):
 
     if not attended:
         messages.error(request, "You need to attend the workshop before joining.")
-        return redirect('cms:course_detail', slug=workshop.course.slug)
+        return redirect('user_profile')
 
     if not workshop.meeting_link:
         messages.error(request, "No meeting link is available for this workshop.")
-        return redirect('cms:course_detail', slug=workshop.course.slug)
+        return redirect('user_profile')
 
     messages.info(request, "Redirecting you to the workshop meeting link.")
     return redirect(workshop.meeting_link)

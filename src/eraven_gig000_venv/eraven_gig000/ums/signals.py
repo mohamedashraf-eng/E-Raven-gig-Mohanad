@@ -19,6 +19,9 @@ def update_user_points_and_level(sender, instance, created, **kwargs):
         user.level = (ranking.points // 100) + 1
         user.save(update_fields=['level'])
 
+        if user.total_points > ranking.points:
+            ranking.points = user.total_points
+            
         # Save updated ranking, keeping points separate from user.total_points if needed
         ranking.save()
 

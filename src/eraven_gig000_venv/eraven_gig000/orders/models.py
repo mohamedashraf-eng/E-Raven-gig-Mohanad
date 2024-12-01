@@ -80,7 +80,7 @@ class Order(models.Model):
         ordering = ['-created']
 
     def __str__(self):
-        return f'Order {self.id} by {self.user.username}'
+        return f'{self.id}'
 
     def get_total_cost(self):
         """Calculate the total cost including any discount applied."""

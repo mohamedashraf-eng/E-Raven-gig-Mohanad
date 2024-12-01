@@ -18,7 +18,7 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=3, default='EGP')
     timestamp = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=50, default='pending')  # e.g., pending, completed, failed
+    status = models.CharField(max_length=50, default='Pending')  # e.g., pending, completed, failed
 
     class Meta:
         ordering = ['-timestamp']

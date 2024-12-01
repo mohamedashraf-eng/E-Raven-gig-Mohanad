@@ -4,6 +4,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const loadingScreen = document.getElementById('loading-screen');
     const loadingQuote = document.querySelector('.loading-quote');
 
+    // Check if the element exists
+    if (!loadingQuote) {
+        console.error("Loading quote element not found!");
+        return;
+    }
+
     const quotes = [
         "Learning never exhausts the mind. – Leonardo da Vinci",
         "The beautiful thing about learning is that nobody can take it away from you. – B.B. King",
