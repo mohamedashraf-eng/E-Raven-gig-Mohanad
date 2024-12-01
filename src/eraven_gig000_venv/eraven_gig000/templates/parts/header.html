@@ -101,16 +101,16 @@
     <div class="container position-relative">
         <!-- Left Section -->
         {% if request.COOKIES.access_token %}
-        <div class="navbar-nav header-left-nav d-flex align-items-center">
-            <span class="d-flex align-items-center me-3">
-                <i class="bi bi-star-fill me-2 fs-4 text-warning"></i>  <!-- Yellow Filled Star -->
-                <span>{{ user.total_points }}</span>
-            </span>
-            <span class="d-flex align-items-center">
-                <i class="bi bi-arrow-up-circle-fill me-2 fs-4 text-success"></i>  <!-- Green Upward Arrow -->
-                <span>{{ user.level }}</span>
-            </span>
-        </div>
+            <div class="navbar-nav header-left-nav d-flex align-items-center">
+                <span class="d-flex align-items-center me-3">
+                    <i class="bi bi-star-fill me-2 fs-4 text-warning"></i>  <!-- Yellow Filled Star -->
+                    <span>{{ user.total_points }}</span>
+                </span>
+                <span class="d-flex align-items-center">
+                    <i class="bi bi-arrow-up-circle-fill me-2 fs-4 text-success"></i>  <!-- Green Upward Arrow -->
+                    <span>{{ user.level }}</span>
+                </span>
+            </div>
         {% else %}
             <div class="navbar-nav header-left-nav">
                 <a class="nav-link" href="#">Our Story</a>
