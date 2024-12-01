@@ -34,7 +34,7 @@
                       </a>
                     </div>
                   </td>
-                  <td>${{ item.cost }}</td>
+                  <td>EGP {{ item.cost }}</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -46,7 +46,7 @@
             <div>
               <strong>Coupon Applied:</strong> "{{ coupon.code }}" 
               {% if discount_amount %}
-                - Discount: {{ discount_amount }}
+                - Discount: EGP {{ discount_amount }}
               {% endif %}
             </div>
             <button type="button" class="btn-close" aria-label="Close" id="remove-coupon-btn"></button>
@@ -54,7 +54,7 @@
         {% endif %}
         
         <div class="d-flex justify-content-end mt-4">
-          <h4 class="mb-0">Total: <span class="text-success" id="total-cost">${{ total_cost }}</span></h4>
+          <h4 class="mb-0">Total: <span class="text-success" id="total-cost">EGP {{ total_cost }}</span></h4>
         </div>
       </div>
     </div>

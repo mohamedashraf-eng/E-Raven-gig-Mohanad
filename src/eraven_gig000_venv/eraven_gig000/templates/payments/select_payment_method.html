@@ -1,4 +1,3 @@
-<!-- payments/templates/payments/select_payment_method.html -->
 {% extends "base.html" %}
 {% load static %}
 
@@ -32,7 +31,7 @@
             </tbody>
         </div>
         <div class="d-flex justify-content-end mt-4">
-          <h4 class="mb-0">Total: <span class="text-success">${{ order.total_cost }}</span></h4>
+          <h4 class="mb-0">Total: <span class="text-success">EGP {{ order.total_cost }}</span></h4>
         </div>
       </div>
     </div>
@@ -51,45 +50,22 @@
           <div class="mb-4">
             <label class="form-label">Choose a Payment Method</label>
             <div class="payment-options">
-              <!-- Stripe Card -->
-              <div class="payment-card" data-gateway="stripe">
-                <div class="card-content">
-                  <i class="fab fa-stripe-s fa-3x text-primary mb-3"></i>
-                  <h5>Stripe</h5>
+              
+              <!-- Visa/Mastercard Option -->
+              <div class="payment-card" data-gateway="paymob">
+                <div class="card-content d-flex align-items-center justify-content-center mb-4 p-4 border border-light rounded hover-effect">
+                  <img src="{% static 'images/visa-mastercard-icon.png' %}" alt="Visa/Mastercard" class="me-3" style="width: 250px; height: auto;">
+                  {% comment %} <h5>Credit Card</h5> {% endcomment %}
                 </div>
               </div>
               
-              <!-- PayPal Card -->
-              <div class="payment-card" data-gateway="paypal">
-                <div class="card-content">
-                  <i class="fab fa-paypal fa-3x text-primary mb-3"></i>
-                  <h5>PayPal</h5>
+              <!-- E-Wallet Option -->
+              {% comment %} <div class="payment-card" data-gateway="paymob">
+                <div class="card-content d-flex align-items-center justify-content-center mb-4 p-4 border border-light rounded hover-effect">
+                  <img src="{% static 'images/ewallet-icon.png' %}" alt="E-Wallet" class="me-3" style="width: 100px; height: auto;">
+                  <h5>E-Wallet</h5>
                 </div>
-              </div>
-              
-              <!-- Google Pay Card -->
-              <div class="payment-card" data-gateway="googlepay">
-                <div class="card-content">
-                  <i class="fab fa-google-pay fa-3x text-success mb-3"></i>
-                  <h5>Google Pay</h5>
-                </div>
-              </div>
-              
-              <!-- Apple Pay Card -->
-              <div class="payment-card" data-gateway="applepay">
-                <div class="card-content">
-                  <i class="fab fa-apple-pay fa-3x text-secondary mb-3"></i>
-                  <h5>Apple Pay</h5>
-                </div>
-              </div>
-              
-              <!-- Bank Transfer Card -->
-              <div class="payment-card" data-gateway="banktransfer">
-                <div class="card-content">
-                  <i class="fas fa-university fa-3x text-primary mb-3"></i>
-                  <h5>Bank Transfer</h5>
-                </div>
-              </div>
+              </div> {% endcomment %}
             </div>
             <input type="hidden" name="gateway" id="gateway-input" required>
           </div>
@@ -118,10 +94,10 @@
   
   <!-- Payment Verification Icons -->
   <div class="payment-icons mt-4 d-flex justify-content-center">
-    <i class="fab fa-cc-visa fa-2x text-secondary me-3" aria-label="Visa"></i>
-    <i class="fab fa-cc-mastercard fa-2x text-secondary me-3" aria-label="MasterCard"></i>
-    <i class="fab fa-paypal fa-2x text-secondary me-3" aria-label="PayPal"></i>
-    <i class="fas fa-lock fa-2x text-secondary" aria-label="SSL Secure"></i>
+    <i class="fab fa-cc-visa fa-3x text-secondary me-3" aria-label="Visa"></i>
+    <i class="fab fa-cc-mastercard fa-3x text-secondary me-3" aria-label="MasterCard"></i>
+    <i class="fab fa-paymob fa-3x text-secondary me-3" aria-label="Paymob"></i> <!-- Add Paymob icon here -->
+    <i class="fas fa-lock fa-3x text-secondary" aria-label="SSL Secure"></i>
   </div>
 </div>
 {% endblock %}

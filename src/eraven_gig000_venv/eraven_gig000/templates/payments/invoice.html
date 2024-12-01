@@ -43,9 +43,9 @@
           {% for item in order.items.all %}
             <tr>
               <td>{{ item.product.name }}</td>
-              <td class="text-end">${{ item.product.price }}</td>
+              <td class="text-end">EGP {{ item.product.price }}</td>
               <td class="text-end">{{ item.quantity }}</td>
-              <td class="text-end">${{ item.cost }}</td>
+              <td class="text-end">EGP {{ item.cost }}</td>
             </tr>
           {% endfor %}
         </tbody>
@@ -53,7 +53,7 @@
     </div>
     
     <div class="d-flex justify-content-end mt-4">
-      <h4 class="mb-0">Total: <span class="text-success">${{ order.total_cost }}</span></h4>
+      <h4 class="mb-0">Total: <span class="text-success">EGP {{ order.total_cost }}</span></h4>
     </div>
     
     <div class="mt-5 text-center">

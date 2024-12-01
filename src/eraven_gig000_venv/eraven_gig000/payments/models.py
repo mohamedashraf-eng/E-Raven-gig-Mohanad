@@ -7,6 +7,7 @@ class Payment(models.Model):
     GATEWAY_CHOICES = [
         ('stripe', 'Stripe'),
         ('paypal', 'PayPal'),
+        ('paymob', 'Paymob'),
         # Add other gateways here
     ]
 
@@ -15,7 +16,7 @@ class Payment(models.Model):
     gateway = models.CharField(max_length=50, choices=GATEWAY_CHOICES)
     payment_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)  # Unique UUID
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=3, default='USD')
+    currency = models.CharField(max_length=3, default='EGP')
     timestamp = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=50, default='pending')  # e.g., pending, completed, failed
 

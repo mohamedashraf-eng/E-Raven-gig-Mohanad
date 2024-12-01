@@ -18,9 +18,7 @@ class PaymentGateway(ABC):
     def get_gateway_class(cls, gateway_name):
         """Retrieve the gateway class based on the gateway name."""
         gateway_classes = {
-            'stripe': 'payments.gateways.stripe.StripeGateway',
-            'paypal': 'payments.gateways.paypal.PayPalGateway',
-            # Add other gateways here
+            'paymob': 'payments.gateways.paymob.PaymobGateway',
         }
         path = gateway_classes.get(gateway_name)
         if path:

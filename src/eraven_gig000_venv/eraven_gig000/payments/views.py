@@ -9,7 +9,7 @@ from ums.decorators import custom_login_required
 from .gateways.base import PaymentGateway
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-
+from .gateways.paymob import PaymobGateway
 import uuid  # Ensure UUID is imported if needed
 
 @custom_login_required
@@ -45,7 +45,7 @@ def select_payment_method(request, order_id):
             order=order,
             gateway=selected_gateway,
             amount=order.get_total_cost(),
-            currency='USD'  # You can make this dynamic as needed
+            currency='EGP'
         )
 
         try:
@@ -74,13 +74,20 @@ def payment_cancel(request):
     # Render a cancellation page
     return render(request, 'payments/payment_cancel.html')
 
-@csrf_exempt
-def payment_webhook(request, gateway):
-    try:
-        gateway_class = PaymentGateway.get_gateway_class(gateway)
-        gateway_instance = gateway_class()
-        gateway_instance.process_response(request)
-        return HttpResponse(status=200)
-    except Exception as e:
-        # Log the error
-        return HttpResponse(status=400)
+@csrf_exempt  # Exempt CSRF protection for this view if needed for external redirects
+def paymob_response(request):
+    # Process the response from Paymob after payment attempt
+    payment_id = request.GET.get('payment_id')
+    status = request.GET.get('status')
+
+    if payment_id:
+        # Call the process_response method from the PaymobGateway class
+        try:
+            # Assuming you have a `PaymobGateway` class with `process_response` method
+            gateway = PaymobGateway()
+            return gateway.process_response(request)
+        except Exception as e:
+            # Handle any errors that might occur during response processing
+            return HttpResponse(f"Error processing payment response: {str(e)}", status=400)
+    
+    return HttpResponse("Invalid response from Paymob", status=400)

@@ -9,88 +9,180 @@
     --color-lime-yellow: #C3FC47;
 }
 
-/* Profile Picture Styling */
-.profile-pic {
-    width: 40px;
-    height: 40px;
+/* Scoped Styles for User Profile Edit Page */
+.profile-edit-page {
+    /* Optional: Add any base styles specific to the profile edit page */
+}
+
+/* 1. Navigation Tabs Hover Effect */
+.profile-edit-page .nav-tabs .nav-link:not(.active):hover {
+    background-color: var(--color-green); /* Green background on hover */
+    color: #ffffff;                        /* White text */
+    border-bottom: 2px solid var(--color-green); /* Green bottom border */
+}
+
+.profile-edit-page .nav-tabs .nav-link.active {
+    background-color: var(--color-dark-teal); /* Active tab color */
+    color: #ffffff;                           /* White text */
+    border-bottom: 2px solid var(--color-dark-teal); /* Active tab bottom border */
+}
+
+/* Smooth transition for tabs */
+.profile-edit-page .nav-tabs .nav-link {
+    transition: background-color 0.3s, color 0.3s, border-bottom 0.3s;
+}
+
+/* 2. Smaller, Clean Circular Profile Picture */
+.profile-edit-page .profile-pic-lg {
+    width: 80px;               /* Reduced width */
+    height: 80px;              /* Reduced height */
     object-fit: cover;
-    border-radius: 50%;
-    border: 2px solid var(--color-dark-teal);
-    transition: transform 0.3s ease;
+    border-radius: 50%;        /* Circular shape */
+    border: 2px solid var(--color-dark-teal); /* Subtle border */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
 }
 
-.profile-pic:hover {
-    transform: scale(1.05);
+.profile-edit-page .profile-pic-lg:hover {
+    transform: scale(1.05);    /* Slight zoom on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
 }
 
-/* Larger Profile Picture */
-.profile-pic-lg {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 3px solid var(--color-dark-teal);
-    transition: transform 0.3s ease;
+/* 3. Modern and Clean Form Inputs */
+.profile-edit-page form .form-control,
+.profile-edit-page form .form-select {
+    border: 1px solid #ced4da;        /* Light gray border */
+    border-radius: 8px;                /* Rounded corners */
+    padding: 10px 15px;                /* Adequate padding */
+    font-size: 1rem;                    /* Consistent font size */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: #ffffff;          /* White background */
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); /* Subtle inner shadow */
 }
 
-.profile-pic-lg:hover {
-    transform: scale(1.05);
+.profile-edit-page form .form-control:focus,
+.profile-edit-page form .form-select:focus {
+    border-color: var(--color-teal);    /* Teal border on focus */
+    box-shadow: 0 0 0 0.2rem rgba(92, 196, 177, 0.25); /* Teal glow on focus */
+    outline: none;                       /* Remove default outline */
 }
 
-/* Get Started Button Styling */
-.btn-brand {
-    background-color: var(--color-green);
-    border: none;
+/* 4. Labels Styling */
+.profile-edit-page form .form-label {
+    font-weight: 600;                   /* Bold labels */
+    color: var(--color-dark-teal);      /* Dark teal color */
+    margin-bottom: 5px;                 /* Space below labels */
+}
+
+/* 5. Buttons Styling */
+.profile-edit-page .btn-primary {
+    background-color: var(--color-teal); /* Teal background */
+    border-color: var(--color-teal);     /* Teal border */
     transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.profile-edit-page .btn-primary:hover {
+    background-color: var(--color-green); /* Green on hover */
+    border-color: var(--color-green);     /* Green border on hover */
+    transform: translateY(-2px);           /* Slight lift on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
+}
+
+.profile-edit-page .btn-secondary {
+    background-color: #6c757d; /* Bootstrap secondary color */
+    border-color: #6c757d;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.profile-edit-page .btn-secondary:hover {
+    background-color: #5a6268; /* Darker secondary color on hover */
+    border-color: #545b62;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 6. Profile Picture Input Styling */
+.profile-edit-page .form-control-file {
+    padding: 5px 0;
+}
+
+.profile-edit-page .profile-pic-lg + .mb-3 {
+    margin-top: 10px;
+}
+
+/* 7. Error Messages Styling */
+.profile-edit-page .text-danger {
+    font-size: 0.875rem; /* Smaller font for error messages */
+}
+
+/* 8. Read-Only Inputs Styling */
+.profile-edit-page input[readonly],
+.profile-edit-page select[disabled] {
+    background-color: #e9ecef; /* Light gray background */
+    cursor: not-allowed;        /* Not-allowed cursor */
+}
+
+/* 9. Responsive Adjustments */
+@media (max-width: 768px) {
+    .profile-edit-page .profile-pic-lg {
+        width: 60px;
+        height: 60px;
+    }
+
+    .profile-edit-page form .form-label {
+        font-size: 0.9rem;
+    }
+
+    .profile-edit-page form .form-control,
+    .profile-edit-page form .form-select {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+
+    .profile-edit-page .btn-primary,
+    .profile-edit-page .btn-secondary {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* 10. Optional: Smooth Scroll for Tabs */
+.profile-edit-page .nav-tabs {
+    border-bottom: 2px solid var(--color-teal);
+}
+
+.profile-edit-page .nav-tabs .nav-link {
+    border: none;
+    border-radius: 0;
+    color: var(--color-dark-teal);
+}
+
+.profile-edit-page .nav-tabs .nav-link.active {
     color: #ffffff;
-}
-
-.btn-brand:hover {
     background-color: var(--color-teal);
-    transform: scale(1.05);
+    border-radius: 8px 8px 0 0;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 992px) {
-    /* Center the logo */
-    .navbar .navbar-brand {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
-    /* Right Section Adjustments */
-    .navbar-nav.right-nav {
-        margin-left: auto;
-    }
+/* 11. Optional: Card Styling */
+.profile-edit-page .card {
+    border: none;
+    border-radius: 12px;
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 
-@media (min-width: 993px) {
-    /* Ensure logo is centered on larger screens */
-    .navbar .navbar-brand {
-        margin: 0 auto;
-    }
-
-    /* Right Section Adjustments */
-    .navbar-nav.right-nav {
-        margin-left: auto;
-    }
+.profile-edit-page .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(11, 162, 178, 0.2);
 }
 
-/* Additional Styling for Read-Only Inputs */
-input[readonly], select[disabled] {
-    background-color: #f8f9fa;
-    cursor: not-allowed;
+/* 12. Additional Enhancements for Inputs */
+.profile-edit-page form .form-control,
+.profile-edit-page form .form-select {
+    height: auto; /* Allow height to adjust based on content */
 }
 
-/* Optional: Styling for Bundles List */
-.bundles-list {
-    list-style-type: disc;
-    padding-left: 20px;
-}
-
-/* Optional: Enhance Select Disabled Appearance */
-select[disabled] {
-    background-color: #e9ecef;
-    cursor: not-allowed;
+/* 13. File Input Styling */
+.profile-edit-page form .form-control[type="file"] {
+    padding: 6px 12px;
+    cursor: pointer;
 }

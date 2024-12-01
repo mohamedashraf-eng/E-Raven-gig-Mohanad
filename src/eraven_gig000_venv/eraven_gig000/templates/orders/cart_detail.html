@@ -37,7 +37,7 @@
                   </a>
                 </div>
               </td>
-              <td class="price-cell">${{ item.product.price }}</td>
+              <td class="price-cell">EGP {{ item.product.price }}</td>
               <td>
                 <a href="{% url 'orders:cart_remove' item.product.id %}" class="btn btn-danger btn-sm remove-btn" aria-label="Remove {{ item.product.name }} from cart">
                   <i class="bi bi-trash"></i> Remove
@@ -51,7 +51,7 @@
 
     <div class="d-flex justify-content-end align-items-center mt-4">
       <div class="me-3">
-        <h4 class="mb-0">Total: <span class="text-success">${{ total }}</span></h4>
+        <h4 class="mb-0">Total: <span class="text-success">EGP {{ total }}</span></h4>
       </div>
       <a href="{% url 'orders:checkout' %}" class="btn btn-primary btn-lg proceed-btn">
         <i class="bi bi-cart-check"></i> Proceed to Checkout

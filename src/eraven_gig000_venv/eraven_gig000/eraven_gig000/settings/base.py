@@ -27,6 +27,12 @@ PAYPAL_CLIENT_SECRET = os.getenv('PAYPAL_CLIENT_SECRET')
 
 SITE_URL = os.getenv('SITE_URL', 'http://localhost:8000')  # Default to localhost if not set
 
+PAYMOB_API_KEY = os.getenv('PAYMOB_API_KEY', '')
+PAYMOB_INTEGRATION_ID = os.getenv('PAYMOB_INTEGRATION_ID', '')
+PAYMOB_USERNAME = os.getenv('PAYMOB_USERNAME', '')
+PAYMOB_PASSWORD = os.getenv('PAYMOB_PASSWORD', '')
+PAYMOB_IFRAME_ID = os.getenv('PAYMOB_IFRAME_ID', '')
+
 # Installed Applications
 INSTALLED_APPS = [
     # Django Apps

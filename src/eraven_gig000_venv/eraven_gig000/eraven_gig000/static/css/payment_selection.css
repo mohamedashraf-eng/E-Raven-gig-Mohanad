@@ -375,3 +375,20 @@
   margin-top: 10px;
   color: #0BA2B2; /* Dark Blue-Green */
 }
+
+/* Add hover effect on payment method cards */
+.payment-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+}
+
+/* Styling for the payment method card */
+.payment-card {
+  cursor: pointer;
+}
+
+/* Optional: Adding some padding and spacing for better aesthetics */
+.card-content {
+  padding: 20px;
+}

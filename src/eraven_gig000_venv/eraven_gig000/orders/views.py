@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+from django.utils import timezone
 from django.utils.timezone import now
 import json
 from django.db import transaction
@@ -268,6 +269,7 @@ def apply_coupon(request):
     except json.JSONDecodeError:
         return JsonResponse({'success': False, 'message': 'Invalid request format.'})
     except Exception as e:
+        print(e)
         return JsonResponse({'success': False, 'message': 'An unexpected error occurred while applying the coupon.'})
 
 

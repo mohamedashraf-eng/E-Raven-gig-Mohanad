@@ -9,8 +9,31 @@
     --color-lime-yellow: #C3FC47;
 }
 
-/* Section Titles */
-.section-title {
+/* Scoped Styles for User Profile Page */
+.profile-page {
+    /* Base styles specific to the profile page can be added here */
+}
+
+/* 1. Navigation Tabs Hover Effect */
+.profile-page .nav-tabs .nav-link:not(.active):hover {
+    background-color: var(--color-green); /* Bootstrap's green color */
+    color: #ffffff;                       /* White text */
+    border-bottom: 2px solid var(--color-green); /* Green bottom border */
+}
+
+.profile-page .nav-tabs .nav-link.active {
+    background-color: var(--color-dark-teal); /* Existing active tab color */
+    color: #ffffff;                           /* White text */
+    border-bottom: 2px solid var(--color-dark-teal); /* Active tab bottom border */
+}
+
+/* Add a smooth transition effect */
+.profile-page .nav-tabs .nav-link {
+    transition: background-color 0.3s, color 0.3s, border-bottom 0.3s;
+}
+
+/* 2. Section Titles */
+.profile-page .section-title {
     color: var(--color-dark-teal);
     border-bottom: 2px solid var(--color-dark-teal);
     display: inline-block;
@@ -18,8 +41,8 @@
     margin-bottom: 15px;
 }
 
-/* Larger Profile Picture */
-.profile-pic-lg {
+/* 3. Larger Profile Picture */
+.profile-page .profile-pic-lg {
     width: 120px;
     height: 120px;
     object-fit: cover;
@@ -28,91 +51,87 @@
     transition: transform 0.3s ease;
 }
 
-.profile-pic-lg:hover {
+.profile-page .profile-pic-lg:hover {
     transform: scale(1.05);
 }
 
-/* Course Image */
-.course-image {
+/* 4. Course Image */
+.profile-page .course-image {
     max-height: 400px;
     object-fit: cover;
     width: 100%;
     transition: transform 0.3s;
 }
 
-.course-image:hover {
+.profile-page .course-image:hover {
     transform: scale(1.02);
 }
 
-/* Workshop Image */
-.workshop-image {
+/* 5. Workshop Image */
+.profile-page .workshop-image {
     max-height: 200px;
     object-fit: cover;
     transition: transform 0.3s;
 }
 
-.workshop-image:hover {
+.profile-page .workshop-image:hover {
     transform: scale(1.02);
 }
 
-/* Related Course Image */
-.related-course-image {
+/* 6. Related Course Image */
+.profile-page .related-course-image {
     max-height: 200px;
     object-fit: cover;
     transition: transform 0.3s;
 }
 
-.related-course-image:hover {
+.profile-page .related-course-image:hover {
     transform: scale(1.02);
 }
 
-/* Meeting Links */
-.meeting-link {
+/* 7. Meeting Links */
+.profile-page .meeting-link {
     color: var(--color-dark-teal);
     text-decoration: none;
     transition: color 0.3s;
 }
 
-.meeting-link:hover {
+.profile-page .meeting-link:hover {
     color: var(--color-teal);
     text-decoration: underline;
 }
 
-/* Card Hover Effects */
-.card {
+/* 8. Card Hover Effects */
+.profile-page .card {
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.card:hover {
+.profile-page .card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(11, 162, 178, 0.2);
 }
 
-/* Badge Styling */
-.badge.bg-light {
+/* 9. Badge Styling */
+.profile-page .badge.bg-light {
     color: var(--color-dark-teal);
     font-weight: bold;
 }
 
-/* Button Icons */
-.btn .fa-eye {
+/* 10. Button Icons */
+.profile-page .btn .fa-eye,
+.profile-page .btn .fa-user-plus,
+.profile-page .btn .fa-user-check,
+.profile-page .btn .fa-sign-in-alt,
+.profile-page .btn .fa-check-circle,
+.profile-page .btn .fa-chalkboard-teacher,
+.profile-page .btn .fa-lock,
+.profile-page .btn .fa-chart-line,
+.profile-page .btn .fa-arrow-left {
     margin-right: 5px;
 }
 
-.btn .fa-user-plus,
-.btn .fa-user-check,
-.btn .fa-sign-in-alt,
-.btn .fa-check-circle,
-.btn .fa-chalkboard-teacher,
-.btn .fa-lock,
-.btn .fa-chart-line,
-.btn .fa-arrow-left {
-    margin-right: 5px;
-}
-
-
-/* Profile Picture Styling */
-.profile-pic {
+/* 11. Profile Picture Styling */
+.profile-page .profile-pic {
     width: 40px;
     height: 40px;
     object-fit: cover;
@@ -121,32 +140,95 @@
     transition: transform 0.3s ease;
 }
 
-.profile-pic:hover {
+.profile-page .profile-pic:hover {
     transform: scale(1.05);
 }
 
-/* Get Started Button Styling */
-.btn-brand {
+/* 12. Get Started Button Styling */
+.profile-page .btn-brand {
     background-color: var(--color-green);
     border: none;
     transition: background-color 0.3s ease, transform 0.3s ease;
     color: #ffffff;
 }
 
-.btn-brand:hover {
+.profile-page .btn-brand:hover {
     background-color: var(--color-teal);
     transform: scale(1.05);
 }
 
-/* Additional Styling for Read-Only Inputs */
-input[readonly] {
+/* 13. Additional Styling for Read-Only Inputs */
+.profile-page input[readonly] {
     background-color: #f8f9fa;
     cursor: not-allowed;
 }
 
-/* Optional: Styling for Bundles List */
-.bundles-list {
+/* 14. Optional: Styling for Bundles List */
+.profile-page .bundles-list {
     list-style-type: disc;
     padding-left: 20px;
 }
 
+/* 15. Example: Table Row Highlighting for Current User */
+.profile-page .table-primary {
+    background-color: #d1e7dd !important; /* Light green background for the user's row */
+}
+
+/* 16. Ensuring that specific card headers have consistent styling */
+.profile-page .card-header.bg-primary,
+.profile-page .card-header.bg-success,
+.profile-page .card-header.bg-info,
+.profile-page .card-header.bg-dark,
+.profile-page .card-header.bg-warning {
+    color: #ffffff;
+}
+
+/* 17. Specific override for warning header with text-dark */
+.profile-page .card-header.bg-warning.text-dark {
+    color: #000000;
+}
+
+/* 18. Example: Form Inputs in Personal Data Tab */
+.profile-page #personal-data .form-control {
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+}
+
+/* 19. Example: Table in Global Ranking Section */
+.profile-page .table-bordered {
+    border: 1px solid #dee2e6;
+}
+
+.profile-page .table-hover tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* 20. Example: Calendar Styling */
+.profile-page #calendar {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* 21. Ensuring that badges have consistent padding and font size */
+.profile-page .badge {
+    font-size: 0.9rem;
+    padding: 0.5em 0.75em;
+}
+
+/* 22. Example: Buttons in Profile Page */
+.profile-page .btn-primary {
+    background-color: var(--color-green); /* Override to match hover color */
+    border-color: var(--color-green);
+}
+
+.profile-page .btn-primary:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+/* 23. Example: Cards Hover Effect */
+.profile-page .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(11, 162, 178, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
