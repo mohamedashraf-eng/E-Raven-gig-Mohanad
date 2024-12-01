@@ -58,7 +58,7 @@ def select_payment_method(request, order_id):
             return render(request, 'payments/select_payment_method.html', {
                 'order': order,
                 'available_gateways': available_gateways,
-                'error': f'Payment gateway error: {str(e)}'
+                'error': f'Payment gateway error'
             })
 
     return render(request, 'payments/select_payment_method.html', {
