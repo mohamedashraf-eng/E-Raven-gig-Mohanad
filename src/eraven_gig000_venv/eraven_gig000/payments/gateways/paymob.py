@@ -11,8 +11,8 @@ class PaymobGateway(PaymentGateway):
         # Step 1: Get an authentication token from Paymob
         auth_payload = {
             "api_key": settings.PAYMOB_API_KEY,
-            # "username": settings.PAYMOB_USERNAME,
-            # "password": settings.PAYMOB_PASSWORD
+            "username": settings.PAYMOB_USERNAME,
+            "password": settings.PAYMOB_PASSWORD
         }
 
         headers = {
