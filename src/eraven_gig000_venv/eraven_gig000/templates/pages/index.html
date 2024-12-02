@@ -1,7 +1,57 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center">Path - Lading Page</h1>
-</div>
+    <!-- Hero Section -->
+    <section class="hero-section text-center py-5">
+        <h1 class="display-4">Welcome to English Path</h1>
+        <p class="lead">Take your English skills to the next level with our experienced instructors and personalized courses.</p>
+    </section>
 
-{% endblock content%}
+    <!-- Featured Products Section (optional) -->
+    <section class="featured-products my-5">
+        <h2 class="text-center mb-4">Featured Bundles</h2>
+        <div class="row justify-content-center"> <!-- Added justify-content-center to center the cards -->
+            {% for product in products %}
+                {% if forloop.counter <= 3 %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card product-card">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="card-img-top product-image" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="{% static 'default_product_image.jpg' %}" class="card-img-top product-image" alt="Default image">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">{{ product.description|truncatewords:20 }}</p>
+                                
+                                {% if product.discounted_price > 0 %}
+                                    <p class="card-text">
+                                        <span class="text-muted text-decoration-line-through">{{ product.display_price }}</span>
+                                        <span class="text-success">
+                                            {{ product.currency }} {{ product.discounted_price|floatformat:2 }}
+                                        </span>
+                                    </p>
+                                {% else %}
+                                    <p class="card-text">
+                                        <span class="text-success">{{ product.currency }} {{ product.display_price }}</span>
+                                    </p>
+                                {% endif %}
+                                
+                                <a href="{{ product.get_absolute_url }}" class="btn btn-primary animated-btn">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Call to Action Section (optional) -->
+    <section class="cta-section text-center py-5 text-white">
+        <h2>Get Started Today!</h2>
+        <p>Take advantage of our limited-time offers and exclusive deals!</p>
+    </section>
+</div>
+{% endblock %}

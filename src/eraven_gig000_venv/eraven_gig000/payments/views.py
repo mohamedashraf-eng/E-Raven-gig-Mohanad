@@ -69,8 +69,8 @@ def select_payment_method(request, order_id):
 def payment_success(request):
     # Render a success page
     return render(request, 'payments/payment_success.html')
-
 def payment_cancel(request):
+
     # Render a cancellation page
     return render(request, 'payments/payment_cancel.html')
 

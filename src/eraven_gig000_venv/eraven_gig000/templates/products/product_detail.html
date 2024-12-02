@@ -37,7 +37,8 @@
           <div class="payment-icons position-absolute bottom-0 end-0 p-2">
             <i class="fab fa-cc-visa fa-2x text-secondary me-2" aria-label="Visa"></i>
             <i class="fab fa-cc-mastercard fa-2x text-secondary me-2" aria-label="MasterCard"></i>
-            <i class="fab fa-cc-paypal fa-2x text-secondary me-2" aria-label="PayPal"></i>
+            {% comment %} <i class="fab fa-cc-paypal fa-2x text-secondary me-2" aria-label="PayPal"></i>
+            <i class="fab fa-cc-stripe fa-2x text-secondary me-2" aria-label="Stripe"></i> {% endcomment %}
             <i class="fas fa-lock fa-2x text-secondary" aria-label="SSL Secure"></i>
           </div>
         </div>
@@ -91,14 +92,7 @@
             {% endfor %}
           </ul>
         </div>
-
-        <!-- Social Sharing Buttons -->
-        <div class="social-sharing mt-4">
-          <h5 class="mb-2 text-secondary">Share:</h5>
-          <a href="#" class="me-3 text-primary" aria-label="Share on Facebook"><i class="bi bi-facebook fs-4"></i></a>
-          <a href="#" class="me-3 text-info" aria-label="Share on Twitter"><i class="bi bi-twitter fs-4"></i></a>
-          <a href="#" class="text-danger" aria-label="Share on Instagram"><i class="bi bi-instagram fs-4"></i></a>
-        </div>
+        
       </div>
     </div>
   </div>
@@ -117,30 +111,6 @@
       <i class="bi bi-chat-dots text-success me-2 fs-3" aria-hidden="true"></i>
       <span>24/7 Support</span>
     </div>
-  </div>
-
-  <!-- Ratings and Reviews Section (Optional) -->
-  <div class="ratings-reviews mt-5">
-    <h5 class="mb-3 text-secondary">Customer Reviews</h5>
-    {% for review in product.reviews.all %}
-      <div class="review mb-4 animate__animated animate__fadeInUp">
-        <div class="d-flex align-items-center mb-2">
-          <strong>{{ review.user.username }}</strong>
-          <span class="ms-auto">
-            {% for i in "12345" %}
-              {% if forloop.counter <= review.rating %}
-                <i class="bi bi-star-fill text-warning"></i>
-              {% else %}
-                <i class="bi bi-star text-warning"></i>
-              {% endif %}
-            {% endfor %}
-          </span>
-        </div>
-        <p>{{ review.comment }}</p>
-      </div>
-    {% empty %}
-      <p>No reviews yet. Be the first to review this product!</p>
-    {% endfor %}
   </div>
 
   <!-- Image Modal for Lightbox Effect -->

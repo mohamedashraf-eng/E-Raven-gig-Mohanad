@@ -8,14 +8,17 @@ from django.contrib import messages
 import logging
 from django.urls import reverse
 from cms.models import Enrollment
+from products.models import Product
 from ums.decorators import custom_login_required
 import requests  # Ensure requests is imported
+
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
 def landing_page_view(request):
-    return render(request, 'pages/index.html')
+    products = Product.objects.filter(available=True)  # Fetching available products
+    return render(request, 'pages/index.html', {'products': products})
 
 def about_view(request):
     return render(request, 'pages/about.html')
