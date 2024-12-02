@@ -48,13 +48,13 @@
                 <div class="product-price mb-2">
                   {% if product.discounted_price and product.price %}
                     <p class="card-text text-muted text-decoration-line-through d-inline me-2">
-                      ${{ product.discounted_price }}
+                      EGP {{ product.discounted_price }}
                     </p>
                     <p class="card-text text-success d-inline">
-                      ${{ product.price }}
+                      EGP {{ product.price }}
                     </p>
                   {% else %}
-                    <p class="card-text text-success">Price: ${{ product.price }}</p>
+                    <p class="card-text text-success">Price: EGP {{ product.price }}</p>
                   {% endif %}
                 </div>
       
