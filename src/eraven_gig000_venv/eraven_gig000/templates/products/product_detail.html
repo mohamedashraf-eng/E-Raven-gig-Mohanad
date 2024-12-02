@@ -15,7 +15,7 @@
   <!-- Limited-Time Offer -->
   <div class="limited-offer alert alert-warning d-flex align-items-center" role="alert">
     <i class="bi bi-hourglass-split me-2"></i>
-    <span>Limited-Time Offer: {{ product.discount_percentage|floatformat:0 }}% off! Now only {{ product.price }}{{ product.currency }} instead of {{ product.discounted_price }}{{ product.currency }}. Hurry up before it's gone.</span>
+    <span>Limited-Time Offer: {{ product.discount_percentage|floatformat:0 }}% off! Now only {{ product.price }} EGP instead of {{ product.discounted_price }} EGP. Hurry up before it's gone.</span>
   </div>
 
   <div class="row">
@@ -67,13 +67,13 @@
                 Save {{ product.discount_percentage|floatformat:0 }}%!
               </div>
               <h4 class="text-muted text-decoration-line-through d-inline me-2">
-                ${{ product.discounted_price }}
+                EGP {{ product.discounted_price }}
               </h4>
               <h4 class="text-success d-inline">
-                ${{ product.price }}
+                EGP {{ product.price }}
               </h4>
           {% else %}
-            <h4 class="text-success">Price: ${{ product.price }}</h4>
+            <h4 class="text-success">Price: EGP {{ product.price }}</h4>
           {% endif %}
         </div>
 
